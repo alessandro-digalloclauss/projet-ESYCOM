@@ -296,7 +296,7 @@
   <div class="section-title">&#128202; Tableau de bord &mdash; Bilan Carbone ESYCOM</div>
   <div class="alert info">Donn&eacute;es issues des fichiers CSV g&eacute;n&eacute;r&eacute;s depuis les Excel 2024. Allez dans <strong>Saisie</strong> pour importer vos CSV et recalculer.</div>
   <div class="kpi-grid">
-    <div class="kpi"><label>Total GES 2024</label><div class="val" id="kpi-total">385,6</div><small>tCO&#8322;eq</small></div>
+    <div class="kpi"><label>Total GES 2024</label><div class="val" id="kpi-total">385,5</div><small>tCO&#8322;eq</small></div>
     <div class="kpi blue"><label>Par personne 2024</label><div class="val" id="kpi-pp">6,50</div><small>tCO&#8322;eq / ETP</small></div>
     <div class="kpi orange"><label>2024 vs 2023</label><div class="val" id="kpi-evol">−6,9%</div><small>variation annuelle</small></div>
     <div class="kpi red"><label>Poste dominant</label><div class="val" id="kpi-top">Achats</div><small>module le plus &eacute;metteur</small></div>
@@ -413,7 +413,7 @@
       <!-- Bâtiment -->
       <div class="import-section" id="sec-batiment">
         <div class="import-section-header" style="background:#e0f7fa;color:#00695c">
-          B&acirc;timent &mdash; &eacute;nergie &amp; eau
+          B&acirc;timent &mdash; &eacute;nergie
         </div>
         <div class="upload-zone-small" id="zone-batiment"
           ondragover="event.preventDefault();this.classList.add('drag')"
@@ -425,7 +425,7 @@
         </div>
         <p style="font-size:.75rem;color:#78909c;margin:.25rem .75rem .5rem;line-height:1.4">
           Colonnes attendues :<br>
-          <code>B&acirc;timent ; Eau (m&sup3;) ; &Eacute;lectricit&eacute; (kWh) ; RCU/G&eacute;othermie (MWh) ; Gaz (kWh) ; Plaquettes foresti&egrave;res (kg) ; Gaz r&eacute;frig&eacute;rant R134a (kg) ; Part labo (%)</code>
+          <code>B&acirc;timent ; &Eacute;lectricit&eacute; (kWh) ; RCU/G&eacute;othermie (MWh) ; Gaz (kWh) ; Plaquettes foresti&egrave;res (kg) ; Part labo (%)</code>
         </p>
         <div id="status-batiment" class="import-status"></div>
       </div>
@@ -441,9 +441,6 @@
     <button class="module-tab" onclick="showMod('domicile',this)">&#128652; Domicile</button>
     <button class="module-tab" onclick="showMod('informatique',this)">&#128187; Informatique</button>
     <button class="module-tab" onclick="showMod('achats',this)">&#128722; Achats</button>
-    <button class="module-tab" onclick="showMod('dechets',this)">&#128465;&#65039; D&eacute;chets</button>
-    <button class="module-tab" onclick="showMod('refrigerants',this)">&#10052;&#65039; R&eacute;frig&eacute;rants</button>
-    <button class="module-tab" onclick="showMod('eau',this)">&#128167; Eau</button>
     <button class="module-tab" onclick="showMod('alimentation',this)">&#127374; Alimentation</button>
     <button class="module-tab" onclick="showMod('construction',this)">&#127963;&#65039; Construction</button>
   </div>
@@ -585,47 +582,6 @@
     </div>
   </div>
 
-  <div class="card module-panel" id="mod-dechets">
-    <h2>&#128465;&#65039; D&eacute;chets</h2>
-    <div class="tbl-wrap"><table id="tbl-dechets"><thead><tr><th>Type</th><th>Valorisation</th><th>Quantit&eacute; (kg)</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
-    <div class="form-row" style="margin-top:1rem">
-      <div class="field"><label>Type</label>
-        <select id="dec-type">
-          <option value="dib">DIB</option><option value="chimique">D&eacute;chets chimiques</option>
-          <option value="deee">DEEE (&eacute;lectronique)</option><option value="papier">Papier/carton</option>
-          <option value="plastique">Plastique</option><option value="verre">Verre</option>
-        </select>
-      </div>
-      <div class="field"><label>Valorisation</label>
-        <select id="dec-valo"><option value="incineration">Incin&eacute;ration</option><option value="enf">Enfouissement</option><option value="recyclage">Recyclage</option></select>
-      </div>
-      <div class="field"><label>Quantit&eacute; (kg)</label><input id="dec-qty" type="number" placeholder="0"></div>
-    </div>
-    <div class="btn-row"><button class="btn btn-green" onclick="addDec()">+ Ajouter</button></div>
-  </div>
-
-  <div class="card module-panel" id="mod-refrigerants">
-    <h2>&#10052;&#65039; Gaz r&eacute;frig&eacute;rants</h2>
-    <div class="tbl-wrap"><table id="tbl-refrigerants"><thead><tr><th>Gaz</th><th>Fuite (kg)</th><th>PRG</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
-    <div class="form-row" style="margin-top:1rem">
-      <div class="field"><label>Type de gaz</label>
-        <select id="ref-type"><option value="R410A">R410A &mdash; PRG 2088</option><option value="R134a">R134a &mdash; PRG 1430</option><option value="R32">R32 &mdash; PRG 675</option></select>
-      </div>
-      <div class="field"><label>Quantit&eacute; fuite (kg)</label><input id="ref-qty" type="number" step="0.1" placeholder="0"></div>
-    </div>
-    <div class="btn-row"><button class="btn btn-green" onclick="addRef()">+ Ajouter</button></div>
-  </div>
-
-  <div class="card module-panel" id="mod-eau">
-    <h2>&#128167; Consommation d'eau</h2>
-    <div class="tbl-wrap"><table id="tbl-eau"><thead><tr><th>B&acirc;timent</th><th>m&#179;</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
-    <div class="form-row" style="margin-top:1rem">
-      <div class="field"><label>B&acirc;timent</label><input id="eau-bat" placeholder="ex: B&acirc;t. Copernic"></div>
-      <div class="field"><label>Consommation (m&#179;)</label><input id="eau-m3" type="number" placeholder="0"></div>
-    </div>
-    <div class="btn-row"><button class="btn btn-green" onclick="addEau()">+ Ajouter</button></div>
-  </div>
-
   <div class="card module-panel" id="mod-alimentation">
     <h2>&#127374; Alimentation (restauration collective)</h2>
     <div class="tbl-wrap"><table id="tbl-alimentation"><thead><tr><th>Type repas</th><th>Nb repas/an</th><th>kgCO&#8322;/repas</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
@@ -671,7 +627,7 @@
 <!-- RESULTATS -->
 <div id="page-resultats" class="page">
   <div class="section-title">&#128200; R&eacute;sultats &mdash; Bilan Carbone ESYCOM 2024 <span id="res-source-badge" style="font-size:.72rem;font-weight:600;padding:.2rem .8rem;border-radius:20px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;margin-left:.5rem">&#128203; Donn&eacute;es officielles 2024</span></div>
-  <div class="alert success" id="res-alert">&#128202; Bilan officiel ESYCOM 2024 &mdash; <strong>385,6 tCO&#8322;eq</strong> (source&nbsp;: GES-1point5 / Labos 1point5)</div>
+  <div class="alert success" id="res-alert">&#128202; Bilan officiel ESYCOM 2024 &mdash; <strong>385,5 tCO&#8322;eq</strong> (source&nbsp;: GES-1point5 / Labos 1point5)</div>
   <div class="chart-grid">
     <div class="chart-box" style="grid-column:span 2"><h3>&#127942; &Eacute;missions par poste (tCO&#8322;eq)</h3><canvas id="chartResults" style="max-height:350px"></canvas></div>
   </div>
@@ -689,11 +645,11 @@
 <div id="page-comparaison" class="page">
   <!-- COMPARAISONS CONCRÈTES -->
   <div class="section-title" style="margin-top:2rem">&#127759; Le bilan ESYCOM 2024 en exemples concrets</div>
-  <div class="alert info">385,6 tCO&#8322;eq &mdash; ce que &ccedil;a repr&eacute;sente dans la vie r&eacute;elle. Source&nbsp;: ADEME Base Carbone, GES-1point5.</div>
+  <div class="alert info">385,5 tCO&#8322;eq &mdash; ce que &ccedil;a repr&eacute;sente dans la vie r&eacute;elle. Source&nbsp;: ADEME Base Carbone, GES-1point5.</div>
 
   <!-- TOTAL -->
   <div class="card" style="border-top:4px solid #e65100">
-    <h2 style="color:#e65100">&#127758; Total 2024 &mdash; 385,6 tCO&#8322;eq</h2>
+    <h2 style="color:#e65100">&#127758; Total 2024 &mdash; 385,5 tCO&#8322;eq</h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
       <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
         <div style="font-size:2rem">&#128106;</div>
@@ -878,7 +834,7 @@
     <div id="p-tab-historique" class="prev-tab-panel active">
       <h2 style="font-size:15px;margin-bottom:1rem">Évolution des émissions 2022–2024 par poste</h2>
       <div class="prev-legend" id="p-legend-histo"></div>
-      <div class="prev-chart-wrap"><canvas id="p-chartHisto" role="img" aria-label="Émissions ESYCOM 2022 à 2024">2022: 285t, 2023: 414t, 2024: 385.6t</canvas></div>
+      <div class="prev-chart-wrap"><canvas id="p-chartHisto" role="img" aria-label="Émissions ESYCOM 2022 à 2024">2022: 285t, 2023: 414t, 2024: 385.5t</canvas></div>
       <hr class="prev-hr">
       <table class="prev-dt" id="p-tableHisto"></table>
       <div class="prev-hl" style="margin-top:1rem">
@@ -928,7 +884,7 @@
       <table class="prev-dt" id="p-tableIndic"></table>
       <div class="prev-chart-sm" style="margin-top:1.25rem"><canvas id="p-chartIndic" role="img" aria-label="Intensité carbone/ETP 2022-2024">4.38, 7.02, 5.51</canvas></div>
       <div class="prev-hl" style="margin-top:1rem">
-        🎯 Objectif CNRS 2030 : −50% → cible ≈ <strong>143 tCO₂e</strong> (vs 385,6 en 2024).
+        🎯 Objectif CNRS 2030 : −50% → cible ≈ <strong>143 tCO₂e</strong> (vs 385,5 en 2024).
         Cela nécessite une action structurelle sur les achats (premier poste d'émission).
       </div>
     </div>
@@ -967,7 +923,7 @@
 
 </div>
 </main>
-<div id="total-live">Total: <span id="live-tot">385,6</span> tCO&#8322;eq</div>
+<div id="total-live">Total: <span id="live-tot">385,5</span> tCO&#8322;eq</div>
 
 <script>
 const EF={
@@ -977,15 +933,12 @@ const EF={
   dom:{voiture_seul:.218,covoiturage:.109,velo:0,rer_metro:.006,bus:.113,transilien:.004},
   it:{laptop:285,desktop:320,ecran:290,serveur:1800,smartphone:55,imprimante:95}, // Ecodiag EcoInfo CNRS 2024 (fabrication+distribution+fin de vie)
   ach:{chimie:.90,bio:.75,mecanique:.60,it_mat:.50,bureau:.40,services:.20,autre:.35},
-  dec:{dib:{incineration:.455,enf:.590,recyclage:.040},chimique:{incineration:1.3,enf:1.5,recyclage:.5},deee:{incineration:.5,enf:.6,recyclage:.15},papier:{incineration:.85,enf:.5,recyclage:.10},plastique:{incineration:2.0,enf:.5,recyclage:.15},verre:{incineration:.30,enf:.20,recyclage:.05}},
-  ref:{R410A:2088,R134a:1430,R32:675},
-  eau:.313,
   ali:{viande:4.0,poisson:1.5,vegeta:.5},
   construction:{beton:600,acier:700,bois:200,mixte:500} // kgCO2/m² brut, amortissement 50 ans appliqué dans le calcul
 };
-const MODS={electricite:"Electricite",chauffage:"Chauffage",deplacements:"Missions",domicile:"Domicile-travail",informatique:"Materiel IT",achats:"Achats",dechets:"Dechets",refrigerants:"Refrigerants",eau:"Eau",alimentation:"Alimentation",construction:"Construction"};
-const COLS={electricite:"#42a5f5",chauffage:"#ef5350",deplacements:"#ffa726",domicile:"#26c6da",informatique:"#7e57c2",achats:"#66bb6a",dechets:"#8d6e63",refrigerants:"#26a69a",eau:"#29b6f6",alimentation:"#d4e157",construction:"#78909c"};
-const D={electricite:[],chauffage:[],deplacements:[],domicile:[],informatique:[],achats:[],dechets:[],refrigerants:[],eau:[],alimentation:[],construction:[]};
+const MODS={electricite:"Electricite",chauffage:"Chauffage",deplacements:"Missions",domicile:"Domicile-travail",informatique:"Materiel IT",achats:"Achats",alimentation:"Alimentation",construction:"Construction"};
+const COLS={electricite:"#42a5f5",chauffage:"#ef5350",deplacements:"#ffa726",domicile:"#26c6da",informatique:"#7e57c2",achats:"#66bb6a",alimentation:"#d4e157",construction:"#78909c"};
+const D={electricite:[],chauffage:[],deplacements:[],domicile:[],informatique:[],achats:[],alimentation:[],construction:[]};
 
 function showPage(id,btn){
   if(id==="prediction") setTimeout(initPrevision,120);
@@ -1014,9 +967,6 @@ function addDep(){const dest=document.getElementById("d-dest").value||"Mission",
 function addDom(){const m=document.getElementById("dom-mode").value,nb=+document.getElementById("dom-nb").value||1,dist=+document.getElementById("dom-dist").value||0,j=+document.getElementById("dom-jours").value||220,co2=dist*j*nb*EF.dom[m];D.domicile.push({co2,c:[m,nb,dist,j,co2.toFixed(1)+" kg"]});rt("domicile")}
 function addIT(){const t=document.getElementById("it-type").value,mod=document.getElementById("it-mod").value||"-",qty=+document.getElementById("it-qty").value||1,am=+document.getElementById("it-amort").value||5,co2=(EF.it[t]*qty)/am;D.informatique.push({co2,c:[t,mod,qty,am+"ans",co2.toFixed(1)+" kg/an"]});rt("informatique")}
 function addAch(){const cat=document.getElementById("ach-cat").value,mt=+document.getElementById("ach-montant").value||0,co2=mt*EF.ach[cat];D.achats.push({co2,c:[cat,mt+"e",EF.ach[cat],co2.toFixed(1)+" kg"]});rt("achats")}
-function addDec(){const t=document.getElementById("dec-type").value,v=document.getElementById("dec-valo").value,q=+document.getElementById("dec-qty").value||0,co2=q*(EF.dec[t][v]||.5);D.dechets.push({co2,c:[t,v,q,co2.toFixed(1)+" kg"]});rt("dechets")}
-function addRef(){const t=document.getElementById("ref-type").value,q=+document.getElementById("ref-qty").value||0,prg=EF.ref[t],co2=q*prg;D.refrigerants.push({co2,c:[t,q,prg,co2.toFixed(1)+" kg"]});rt("refrigerants")}
-function addEau(){const b=document.getElementById("eau-bat").value||"Batiment",m3=+document.getElementById("eau-m3").value||0,co2=m3*EF.eau;D.eau.push({co2,c:[b,m3,co2.toFixed(1)+" kg"]});rt("eau")}
 function addAli(){const t=document.getElementById("ali-type").value,nb=+document.getElementById("ali-nb").value||0,f=EF.ali[t],co2=nb*f;D.alimentation.push({co2,c:[t,nb,f,co2.toFixed(1)+" kg"]});rt("alimentation")}
 function addConst(){const b=document.getElementById("con-bat").value||"Batiment",s=+document.getElementById("con-surf").value||0,t=document.getElementById("con-type").value,fe=EF.construction[t],co2=s*1.3*fe/50;D.construction.push({co2,c:[b,s,t,fe,co2.toFixed(1)+" kg/an"]});rt("construction")}
 
@@ -1028,8 +978,6 @@ function prefIT(){D.informatique=[];[["laptop","Divers",45,5],["desktop","PC lab
 function prefAch(){D.achats=[];[["chimie",42000],["bio",85000],["mecanique",31000],["it_mat",28000],["services",56000]].forEach(([cat,mt])=>{const co2=mt*EF.ach[cat];D.achats.push({co2,c:[cat,mt+"e",EF.ach[cat],co2.toFixed(1)+" kg"]})});rt("achats")}
 function loadAll(){
   prefElec();prefChauf();prefDep();prefDom();prefIT();prefAch();
-  D.eau=[];[["Bat. Copernic",4200],["Bat. Bois Baudry",2800]].forEach(([b,m3])=>{D.eau.push({co2:m3*EF.eau,c:[b,m3,(m3*EF.eau).toFixed(1)+" kg"]})});rt("eau");
-  D.dechets=[];[["dib","incineration",2400],["chimique","incineration",320],["deee","recyclage",180]].forEach(([t,v,q])=>{const co2=q*(EF.dec[t][v]||.5);D.dechets.push({co2,c:[t,v,q,co2.toFixed(1)+" kg"]})});rt("dechets");
   D.alimentation=[];[["viande",4500],["vegeta",2200],["poisson",1200]].forEach(([t,nb])=>{const co2=nb*EF.ali[t];D.alimentation.push({co2,c:[t,nb,EF.ali[t],co2.toFixed(1)+" kg"]})});rt("alimentation");
   alert("Toutes les donnees ESYCOM 2024 ont ete chargees !");
 }
@@ -1040,10 +988,9 @@ let rChart=null;
 // ── DONNÉES OFFICIELLES ESYCOM 2024 (source GES-1point5 / Labos 1point5) ──
 const DATA_2024_OFFICIAL = {
   electricite:7600, chauffage:18400, deplacements:85200, domicile:12800,
-  informatique:6000, achats:235000, dechets:0, refrigerants:0,
-  eau:100, alimentation:0, construction:20500
+  informatique:6000, achats:235000, alimentation:0, construction:20500
 };
-// 7600+18400+85200+12800+6000+235000+100+20500 = 385600 kg = 385,6 tCO₂eq ✓
+// 7600+18400+85200+12800+6000+235000+20500 = 385500 kg = 385,5 tCO₂eq ✓
 
 let userCalculated = false;  // true dès qu'un calcul personnalisé a été lancé
 
@@ -1064,7 +1011,7 @@ function renderResultats(tots, grand, ETP, isDefault) {
   // Alerte
   const alertEl = document.getElementById('res-alert');
   if (isDefault) {
-    alertEl.innerHTML = '&#128202; Bilan officiel ESYCOM 2024 &mdash; <strong>385,6 tCO&#8322;eq</strong> (source&nbsp;: GES-1point5 / Labos 1point5)';
+    alertEl.innerHTML = '&#128202; Bilan officiel ESYCOM 2024 &mdash; <strong>385,5 tCO&#8322;eq</strong> (source&nbsp;: GES-1point5 / Labos 1point5)';
     alertEl.className = 'alert success';
   } else {
     alertEl.innerHTML = 'Bilan calcul&eacute; &mdash; Total&nbsp;: <strong>' + (grand/1000).toFixed(2) + ' tCO&#8322;eq</strong> &mdash; <em>Vos donn&eacute;es saisies</em>';
@@ -1174,11 +1121,11 @@ function initDashboard(){
   if(dInit)return;dInit=true;
 
   // ── Répartition par module 2024 (source GES-1point5) ──
-  const mock2024={electricite:7600,chauffage:18400,deplacements:85200,domicile:12800,informatique:6000,achats:235000,dechets:0,refrigerants:0,eau:100,alimentation:0,construction:20500};
+  const mock2024={electricite:7600,chauffage:18400,deplacements:85200,domicile:12800,informatique:6000,achats:235000,alimentation:0,construction:20500};
   new Chart(document.getElementById("chartPie").getContext("2d"),{
     type:"doughnut",
     data:{labels:Object.values(MODS),datasets:[{data:Object.keys(mock2024).map(m=>+(mock2024[m]/1000).toFixed(2)),backgroundColor:Object.values(COLS),borderWidth:2}]},
-    options:{plugins:{legend:{position:"right",labels:{font:{size:10}}},title:{display:true,text:"ESYCOM 2024 — 385,6 tCO₂eq (GES-1point5)",font:{size:9},color:"#90a4ae"},tooltip:{callbacks:{label:c=>`${c.label} : ${c.raw} t (${(c.raw/385.6*100).toFixed(1)}%)`}}},cutout:"55%"}
+    options:{plugins:{legend:{position:"right",labels:{font:{size:10}}},title:{display:true,text:"ESYCOM 2024 — 385,5 tCO₂eq (GES-1point5)",font:{size:9},color:"#90a4ae"},tooltip:{callbacks:{label:c=>`${c.label} : ${c.raw} t (${(c.raw/385.5*100).toFixed(1)}%)`}}},cutout:"55%"}
   });
 
   // ── Évolution 2022 → 2023 → 2024 — top 5 postes ──
@@ -1284,7 +1231,7 @@ async function parseCSVClient(file, forcedType=null){
     else if(headers.includes('Catégorie IT')||headers.includes('Désignation produit')) type='informatique';
     else if(headers.includes('#mission')||headers.includes('Mode de transport')) type='missions';
     else if(headers.includes('Source')&&headers.includes('N° commande')) type='commandes';
-    else if(headers.some(h=>/lec/i.test(h))&&headers.some(h=>/eau/i.test(h))) type='batiment';
+    else if(headers.some(h=>/lec/i.test(h))&&headers.some(h=>/rcu|oth|mwh|plaq|bois/i.test(h))) type='batiment';
     else if(headers.some(h=>/mode/i.test(h))&&headers.some(h=>/kg|co2/i.test(h))) type='domicile';
   }
 
@@ -1375,11 +1322,9 @@ async function parseCSVClient(file, forcedType=null){
       return m ? parseFloat(m[0].replace(',','.')) : 0;
     };
     // Colonnes reconnues (insensible à la casse et aux variantes)
-    const hEau   = headers.find(h=>/eau/i.test(h));
     const hElec  = headers.find(h=>/lec/i.test(h));                     // Électricité (kWh)
     const hGeoth = headers.find(h=>/rcu|oth|mwh/i.test(h));             // RCU/Géothermie (MWh)
     const hGazNat= headers.find(h=>/gaz/i.test(h)&&/kwh/i.test(h));    // Gaz naturel (kWh) → chauffage
-    const hGazRef= headers.find(h=>/refrig/i.test(h)||(/gaz/i.test(h)&&!/kwh/i.test(h)&&/kg/i.test(h))); // Gaz réfrigérant (kg)
     const hPlaq  = headers.find(h=>/plaq|bois/i.test(h));               // Plaquettes forestières (kg)
     const hPart  = headers.find(h=>/part|%|labo/i.test(h));             // Part labo (%)
     const hBat   = headers[0]; // première colonne = nom du bâtiment
@@ -1390,15 +1335,6 @@ async function parseCSVClient(file, forcedType=null){
       // Part labo : multiplier entre 0 et 1 (colonne en %, ex. "3.0" → 0.03)
       const part = hPart ? Math.min(1, parseNum(r[hPart]) / 100) : 1;
 
-      // Eau → mod-eau (EF.eau = 0.313 kgCO₂/m³)
-      if(hEau){
-        const m3 = parseNum(r[hEau]) * part;
-        if(m3 > 0){
-          const co2 = Math.round(m3 * EF.eau * 10) / 10;
-          D.eau.push({co2, c:[bat, m3.toFixed(0), (part*100).toFixed(1)+'%', co2.toFixed(1)+' kg']});
-          rt('eau');
-        }
-      }
       // Électricité → mod-electricite (EF.elec = 0.0491 kgCO₂/kWh)
       if(hElec){
         const kwh = parseNum(r[hElec]) * part;
@@ -1437,23 +1373,12 @@ async function parseCSVClient(file, forcedType=null){
           rt('chauffage');
         }
       }
-      // Gaz réfrigérant (kg) → mod-refrigerants. Détecte R134a/R410A/R32 dans le nom de colonne.
-      if(hGazRef && hGazRef !== hGazNat){
-        const kg = parseNum(r[hGazRef]);
-        if(kg > 0){
-          const gasType = /R134a/i.test(hGazRef) ? 'R134a' : /R32/i.test(hGazRef) ? 'R32' : 'R410A';
-          const prg = EF.ref[gasType];
-          const co2 = Math.round(kg * prg * 10) / 10;
-          D.refrigerants.push({co2, c:[gasType+' ('+bat+')', kg, prg, co2.toFixed(1)+' kg']});
-          rt('refrigerants');
-        }
-      }
     });
   }
 
   if(type==='batiment'){
     // Injection directe dans D — pas besoin de applyModuleData
-    if(forcedType) setModuleStatus(forcedType,`✅ ${file.name} — données réparties dans Électricité, Eau, Chauffage, Réfrigérants`, 'ok');
+    if(forcedType) setModuleStatus(forcedType,`✅ ${file.name} — données réparties dans Électricité, Chauffage`, 'ok');
     const grand=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
     const ETP2=parseInt(document.getElementById('etp-val')?.value)||65;
     if(grand>0){
@@ -1625,7 +1550,7 @@ const P_COLORS = { achats:'#1a6f44', missions:'#d97706', energie:'#2563eb', cons
 const P_DATA = {
   2022:{ achats:97.0, missions:82.0, energie:46.0, construction:20.5, domicile:25.0, it:14.5, total:285.0, etp:65, publis:46 },
   2023:{ achats:210.0, missions:105.0, energie:35.0, construction:20.5, domicile:28.0, it:15.5, total:414.0, etp:59, publis:52 },
-  2024:{ achats:235.0, missions:85.2, energie:26.0, construction:20.5, domicile:12.8, it:6.0, total:385.6, etp:70, publis:55 },
+  2024:{ achats:235.0, missions:85.2, energie:26.0, construction:20.5, domicile:12.8, it:6.0, total:385.5, etp:70, publis:55 },
 };
 const P_PLANCHERS = { achats:40, missions:8, energie:12, construction:20.5, domicile:4, it:1.5 };
 const P_PLAFONDS  = { achats:500, missions:200, energie:60, construction:20.5, domicile:35, it:25 };
@@ -1673,7 +1598,7 @@ let pChartHisto, pChartProj, pChartIndic;
 
 function pRenderKPIs(){
   const kpis=[
-    {l:'Émissions 2024',v:'385,6 tCO₂e',s:'données GES-1point5',c:''},
+    {l:'Émissions 2024',v:'385,5 tCO₂e',s:'données GES-1point5',c:''},
     {l:'vs 2023',v:'−7 %',s:'baisse après pic 2023 (+45%)',c:'green'},
     {l:'Statu quo 2030',v:'572,8 tCO₂e',s:'sans mesure — cible 143 t',c:'red'},
     {l:'Optimiste 2030',v:'152,8 tCO₂e',s:'proche objectif CNRS (143 t)',c:'green'},
@@ -1691,7 +1616,7 @@ function pRenderHistorique(){
   pChartHisto=new Chart(ctx,{type:'bar',data:{labels:['2022','2023','2024'],datasets:P_POSTES.map(p=>({label:P_LABELS[p],data:[P_DATA[2022][p],P_DATA[2023][p],P_DATA[2024][p]],backgroundColor:P_COLORS[p]}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw} tCO₂e`}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,ticks:{callback:v=>v+' t'},grid:{color:'rgba(0,0,0,0.05)'}}}}});
   const yrs=[2022,2023,2024];
   let rows=P_POSTES.map(p=>{const vals=yrs.map(y=>P_DATA[y][p]);const tr=pPct(vals[0],vals[2]);return `<tr><td>${P_LABELS[p]}</td>${vals.map(v=>`<td>${v.toFixed(1)}</td>`).join('')}<td>${pBadge(tr)}</td></tr>`;});
-  rows.push(`<tr class="total"><td>TOTAL</td>${yrs.map(y=>`<td>${P_DATA[y].total.toFixed(1)}</td>`).join('')}<td>${pBadge(pPct(285,385.6))}</td></tr>`);
+  rows.push(`<tr class="total"><td>TOTAL</td>${yrs.map(y=>`<td>${P_DATA[y].total.toFixed(1)}</td>`).join('')}<td>${pBadge(pPct(285,385.5))}</td></tr>`);
   document.getElementById('p-tableHisto').innerHTML=`<thead><tr><th>Poste</th><th>2022</th><th>2023</th><th>2024</th><th>Tendance 22→24</th></tr></thead><tbody>${rows.join('')}</tbody>`;
 }
 
@@ -1701,7 +1626,7 @@ const pDashes={tendance:[],stabilisation:[6,3],optimiste:[8,4],pessimiste:[3,3]}
 
 function pRenderScCards(){
   document.getElementById('p-scenarioCards').innerHTML=Object.entries(P_SCENARIOS).map(([k,sc])=>{
-    const v26=pProj(k,2026).total; const tr=pPct(385.6,v26);
+    const v26=pProj(k,2026).total; const tr=pPct(385.5,v26);
     return `<div class="prev-sc-card ${sc.cls} ${k===pSelSc?'selected':''}" onclick="pSelScenario('${k}')"><div class="sc-name">${sc.nom}</div><div class="sc-desc">${sc.desc}</div><div class="sc-val">${v26.toFixed(1)} <span style="font-size:12px;font-weight:400;color:#888">tCO₂e 2026</span></div><div style="margin-top:6px">${pBadge(tr)}</div></div>`;
   }).join('');
 }
@@ -1746,10 +1671,10 @@ function pUpdateResultM(){
   pSelMesures.forEach(id=>{ const m=P_MESURES.find(x=>x.id===id); reds[m.poste]+=base[m.poste]*m.pct/100; cout+=m.cout; });
   const apres={}; let tot=0;
   P_POSTES.forEach(p=>{ apres[p]=Math.max(0,+(base[p]-reds[p]).toFixed(1)); tot+=apres[p]; });
-  tot=+tot.toFixed(1); const sav=+(385.6-tot).toFixed(1); const savPct=+((sav/385.6)*100).toFixed(1);
+  tot=+tot.toFixed(1); const sav=+(385.5-tot).toFixed(1); const savPct=+((sav/385.5)*100).toFixed(1);
   if(!pSelMesures.size){ document.getElementById('p-mesureResult').innerHTML='<p class="prev-note">Sélectionnez une ou plusieurs mesures ci-dessus.</p>'; return; }
   const rows=P_POSTES.map(p=>`<div class="prev-result-row"><span>${P_LABELS[p]}</span><span style="display:flex;gap:16px;align-items:center"><span style="color:#888;font-size:12px">${base[p].toFixed(1)} t</span>${reds[p]>0?`<span style="color:#1a6f44;font-size:12px">−${reds[p].toFixed(1)} t</span>`:''}<strong>${apres[p].toFixed(1)} tCO₂e</strong></span></div>`).join('');
-  document.getElementById('p-mesureResult').innerHTML=`<div class="prev-result-box"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem"><span style="font-size:13px;font-weight:600">Résultat simulation — impact sur 2025</span><span class="prev-badge prev-badge-green">−${sav} tCO₂e (−${savPct}%)</span></div>${rows}<div class="prev-result-row"><span>TOTAL</span><span style="display:flex;gap:16px;align-items:center"><span style="color:#888;font-size:12px">385,6 t</span><span style="color:#1a6f44;font-size:12px">−${sav} t</span><strong>${tot.toFixed(1)} tCO₂e</strong></span></div><div style="margin-top:.75rem;font-size:12px;color:#666">Coût total : <strong>${cout.toLocaleString('fr-FR')} €/an</strong>${cout>0?' · Efficacité : <strong>'+((sav/(cout/1000)).toFixed(1))+'</strong> tCO₂e / k€':''}</div></div>`;
+  document.getElementById('p-mesureResult').innerHTML=`<div class="prev-result-box"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem"><span style="font-size:13px;font-weight:600">Résultat simulation — impact sur 2025</span><span class="prev-badge prev-badge-green">−${sav} tCO₂e (−${savPct}%)</span></div>${rows}<div class="prev-result-row"><span>TOTAL</span><span style="display:flex;gap:16px;align-items:center"><span style="color:#888;font-size:12px">385,5 t</span><span style="color:#1a6f44;font-size:12px">−${sav} t</span><strong>${tot.toFixed(1)} tCO₂e</strong></span></div><div style="margin-top:.75rem;font-size:12px;color:#666">Coût total : <strong>${cout.toLocaleString('fr-FR')} €/an</strong>${cout>0?' · Efficacité : <strong>'+((sav/(cout/1000)).toFixed(1))+'</strong> tCO₂e / k€':''}</div></div>`;
 }
 
 function pRenderIndicateurs(){
@@ -1757,7 +1682,7 @@ function pRenderIndicateurs(){
   function ind(y){ const d=P_DATA[y]; return {'Intensité / membre (tCO₂e/ETP)':(d.total/d.etp).toFixed(2),'Intensité surface (tCO₂e/m²)':(d.total/6192).toFixed(4),'IPEC (publis / tCO₂e)':(d.publis/d.total).toFixed(4)}; }
   const inds=yrs.map(y=>ind(y)); const names=Object.keys(inds[0]);
   const rows=names.map(n=>{ const vs=yrs.map((_,i)=>inds[i][n]); const tr=pPct(+vs[0],+vs[2]); const isIPEC=n.includes('IPEC'); return `<tr><td>${n}</td>${vs.map(v=>`<td>${v}</td>`).join('')}<td>${pBadge(tr,isIPEC)}</td></tr>`; });
-  rows.push(`<tr class="total"><td>Émissions totales</td>${yrs.map(y=>`<td>${P_DATA[y].total.toFixed(1)}</td>`).join('')}<td>${pBadge(pPct(285,385.6))}</td></tr>`);
+  rows.push(`<tr class="total"><td>Émissions totales</td>${yrs.map(y=>`<td>${P_DATA[y].total.toFixed(1)}</td>`).join('')}<td>${pBadge(pPct(285,385.5))}</td></tr>`);
   document.getElementById('p-tableIndic').innerHTML=`<thead><tr><th>Indicateur</th><th>2022</th><th>2023</th><th>2024</th><th>Évolution</th></tr></thead><tbody>${rows.join('')}</tbody>`;
   pChartIndic=new Chart(document.getElementById('p-chartIndic').getContext('2d'),{type:'bar',data:{labels:['2022','2023','2024'],datasets:[{label:'tCO₂e/ETP',data:[4.38,7.02,5.51],backgroundColor:['#1a6f44','#b83232','#d97706']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.raw} tCO₂e/ETP`}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{callback:v=>v+' t/ETP'}}}}});
 }
@@ -1795,7 +1720,7 @@ const ML_LABS = {
   }
 };
 
-const ML_ESYCOM_HIST = { 2022:285, 2023:414, 2024:385.6 };
+const ML_ESYCOM_HIST = { 2022:285, 2023:414, 2024:385.5 };
 
 let mlCurrentLab = 'LAAS';
 const mlCharts = {};
