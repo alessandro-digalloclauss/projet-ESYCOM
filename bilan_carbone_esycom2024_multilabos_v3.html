@@ -7,152 +7,226 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --green:#1b5e20;--green-mid:#2e7d32;--green-light:#43a047;--green-pale:#e8f5e9;--green-acc:#66bb6a;
-    --blue:#1565c0;--blue-light:#42a5f5;--blue-pale:#e3f2fd;
-    --orange:#e65100;--orange-pale:#fff3e0;
-    --red:#c62828;--red-pale:#ffebee;
-    --gray:#546e7a;--gray-light:#eceff1;--gray-bg:#f0f4f8;
-    --white:#fff;
-    --shadow:0 2px 16px rgba(0,0,0,.08);
-    --shadow-md:0 4px 24px rgba(0,0,0,.12);
-    --radius:14px;--radius-sm:8px;
+    /* Botanical archival palette — remapped onto legacy var names so the whole document re-themes */
+    --green:#1e3a2b;--green-mid:#2f5d44;--green-light:#5e7d52;--green-pale:#e7e9d6;--green-acc:#7c8f5a;
+    --blue:#3a6b8a;--blue-light:#6b9bb5;--blue-pale:#e2eaef;
+    --orange:#bf5a36;--orange-pale:#f4e6dc;
+    --red:#a8392a;--red-pale:#f1ddd7;
+    --gray:#6a665a;--gray-light:#e7e1d3;--gray-bg:#f2eee4;
+    --white:#fffdf7;
+    --ink:#1c211c;--ink-soft:#3c423a;
+    --line:#ddd6c6;--line-soft:#e9e3d5;
+    --paper:#f2eee4;
+    --shadow:0 1px 2px rgba(45,40,25,.06), 0 6px 22px -12px rgba(45,40,25,.18);
+    --shadow-md:0 2px 6px rgba(45,40,25,.08), 0 18px 40px -18px rgba(45,40,25,.28);
+    --radius:6px;--radius-sm:4px;
+    --font-display:'Fraunces',Georgia,serif;
+    --font-body:'IBM Plex Sans',system-ui,sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',system-ui,sans-serif;background:var(--gray-bg);color:#1a2a35;line-height:1.5}
+  body{
+    font-family:var(--font-body);background:var(--paper);color:var(--ink);line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(70,60,35,.035) 1px, transparent 0),
+      linear-gradient(180deg,#f4f0e7 0%,var(--paper) 100%);
+    background-size:4px 4px, 100% 100%;background-attachment:fixed;
+  }
+  ::selection{background:var(--green);color:#fdf6e3}
 
-  /* ── HEADER ── */
+  /* ── HEADER — editorial masthead ── */
   header{
-    background:linear-gradient(135deg,var(--green) 0%,var(--green-mid) 60%,#388e3c 100%);
-    color:#fff;padding:0 1.5rem;display:flex;align-items:stretch;
-    box-shadow:0 3px 12px rgba(0,0,0,.22);position:sticky;top:0;z-index:200;
+    background:
+      radial-gradient(120% 180% at 100% 0%, rgba(124,143,90,.20) 0%, transparent 55%),
+      linear-gradient(180deg,#1f3d2d 0%,#16301f 100%);
+    color:#f3ecd9;padding:0 1.75rem;display:flex;align-items:stretch;flex-wrap:wrap;
+    border-bottom:1px solid #0e2114;position:sticky;top:0;z-index:200;
+    box-shadow:0 1px 0 rgba(124,143,90,.25) inset, 0 10px 30px -18px rgba(20,40,25,.9);
   }
-  header h1{font-size:1rem;font-weight:800;padding:.85rem 0;white-space:nowrap;letter-spacing:-.3px;display:flex;align-items:center;gap:.5rem;margin-right:1rem}
-  header .badge{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:.15rem .65rem;font-size:.72rem;font-weight:700;letter-spacing:.5px}
-  nav{display:flex;flex-wrap:nowrap;overflow-x:auto}
+  header h1{
+    font-family:var(--font-display);font-size:1.18rem;font-weight:600;font-optical-sizing:auto;
+    padding:.9rem 0;white-space:nowrap;letter-spacing:.1px;display:flex;align-items:center;gap:.55rem;
+    margin-right:1.75rem;color:#f7f1e0;
+  }
+  header h1::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 3px rgba(191,90,54,.25)}
+  header .badge{
+    font-family:var(--font-mono);background:rgba(124,143,90,.18);border:1px solid rgba(243,236,217,.28);
+    border-radius:3px;padding:.1rem .5rem;font-size:.68rem;font-weight:500;letter-spacing:1px;color:#dfe6c8;
+  }
+  nav{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:.15rem}
   nav button{
-    background:transparent;color:rgba(255,255,255,.75);border:none;
-    padding:.85rem 1rem;cursor:pointer;font-size:.82rem;font-family:inherit;font-weight:500;
-    border-bottom:3px solid transparent;transition:all .18s;white-space:nowrap;
+    background:transparent;color:rgba(243,236,217,.62);border:none;
+    padding:.95rem .9rem;cursor:pointer;font-size:.78rem;font-family:var(--font-body);font-weight:500;
+    border-bottom:2px solid transparent;transition:color .18s,border-color .18s;white-space:nowrap;
+    letter-spacing:.2px;display:inline-flex;align-items:center;gap:.45rem;
   }
-  nav button:hover{color:#fff;background:rgba(255,255,255,.08)}
-  nav button.active{color:#fff;border-bottom-color:#a5d6a7;font-weight:700}
+  nav button:hover{color:#f7f1e0}
+  nav button.active{color:#f7f1e0;border-bottom-color:var(--orange);font-weight:600}
+  .ico{width:15px;height:15px;flex-shrink:0;display:inline-block;vertical-align:middle}
+  nav button .ico{opacity:.55;transition:opacity .18s}
+  nav button:hover .ico,nav button.active .ico{opacity:1}
+  nav button.active .ico{color:var(--orange)}
 
   /* ── LAYOUT ── */
-  main{max-width:1320px;margin:0 auto;padding:2rem 1.5rem}
-  .page{display:none}.page.active{display:block}
+  main{max-width:1320px;margin:0 auto;padding:2.4rem 1.5rem 4rem}
+  .page{display:none}.page.active{display:block;animation:pageIn .5s cubic-bezier(.22,.61,.36,1) both}
+  @keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-  /* ── SECTION TITLE ── */
+  /* ── SECTION TITLE — editorial kicker + serif headline ── */
   .section-title{
-    font-size:1.35rem;font-weight:800;margin-bottom:1.5rem;color:#1a2a35;
-    display:flex;align-items:center;gap:.6rem;
+    font-family:var(--font-display);font-size:1.9rem;font-weight:600;font-optical-sizing:auto;
+    margin-bottom:1.6rem;color:var(--ink);letter-spacing:-.4px;line-height:1.12;
+    display:flex;align-items:baseline;gap:.7rem;padding-bottom:1rem;
+    border-bottom:1px solid var(--line);position:relative;
   }
-  .section-title::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,var(--green-pale),transparent);margin-left:.5rem}
+  .section-title::before{
+    content:"";position:absolute;bottom:-1px;left:0;width:64px;height:3px;background:var(--orange);
+  }
+
+  /* ── REPORT COVER ── */
+  .report-cover{
+    position:relative;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:1.5rem;
+    background:
+      radial-gradient(120% 160% at 0% 0%, rgba(124,143,90,.10) 0%, transparent 50%),
+      linear-gradient(180deg,#fffdf7 0%,#faf6ec 100%);
+    border:1px solid var(--line);border-radius:var(--radius);
+    border-top:3px solid var(--green);
+    padding:2rem 2rem 1.75rem;margin-bottom:1.5rem;box-shadow:var(--shadow);overflow:hidden;
+  }
+  .report-cover::after{
+    content:"";position:absolute;top:-40%;right:-6%;width:240px;height:240px;border-radius:50%;
+    border:1px solid rgba(124,143,90,.25);pointer-events:none;
+  }
+  .rc-left{min-width:280px}
+  .rc-kicker{font-family:var(--font-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:2.4px;color:var(--green-mid);margin-bottom:.7rem}
+  .rc-title{font-family:var(--font-display);font-weight:600;font-optical-sizing:auto;font-size:2.9rem;line-height:1;letter-spacing:-1px;color:var(--ink)}
+  .rc-sub{font-size:.9rem;color:var(--ink-soft);margin-top:.7rem;max-width:34ch;line-height:1.5}
+  .rc-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.1rem}
+  .rc-tag{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.4px;color:var(--green-mid);background:var(--green-pale);border:1px solid rgba(124,143,90,.35);border-radius:3px;padding:.22rem .6rem}
+  .rc-right{text-align:right;position:relative;z-index:1}
+  .rc-fig-label{font-family:var(--font-mono);font-size:.66rem;text-transform:uppercase;letter-spacing:1.4px;color:var(--gray);margin-bottom:.2rem}
+  .rc-fig{display:flex;align-items:baseline;gap:.45rem;justify-content:flex-end}
+  .rc-num{font-family:var(--font-display);font-weight:800;font-optical-sizing:auto;font-size:3.6rem;line-height:.9;color:var(--green);letter-spacing:-1.5px;font-feature-settings:"tnum"}
+  .rc-unit{font-family:var(--font-mono);font-size:1rem;color:var(--green-mid)}
+  .rc-fig-sub{font-family:var(--font-mono);font-size:.74rem;color:var(--gray);margin-top:.5rem}
+  @media(max-width:640px){.rc-title{font-size:2.2rem}.rc-num{font-size:2.8rem}.rc-right{text-align:left}.rc-fig{justify-content:flex-start}}
 
   /* ── CARDS ── */
-  .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1.5rem}
-  .card h2{font-size:.97rem;font-weight:700;color:var(--gray);margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
+  .card{
+    background:var(--white);border-radius:var(--radius);border:1px solid var(--line);
+    box-shadow:var(--shadow);padding:1.6rem;margin-bottom:1.5rem;
+  }
+  .card h2{
+    font-family:var(--font-mono);font-size:.74rem;font-weight:600;color:var(--green-mid);
+    margin-bottom:1.3rem;display:flex;align-items:center;gap:.5rem;
+    text-transform:uppercase;letter-spacing:1.5px;padding-bottom:.7rem;border-bottom:1px solid var(--line-soft);
+  }
 
   /* ── KPI ── */
-  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin-bottom:1.5rem}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:1.1rem;margin-bottom:1.6rem}
   .kpi{
     background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
-    padding:1.3rem 1.5rem;position:relative;overflow:hidden;
-    border-top:4px solid var(--green-light);transition:box-shadow .2s,transform .2s;
+    padding:1.35rem 1.4rem 1.25rem;position:relative;overflow:hidden;
+    border:1px solid var(--line);border-left:3px solid var(--green-acc);
+    transition:box-shadow .25s,transform .25s;
   }
-  .kpi:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
-  .kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--green),var(--green-acc))}
-  .kpi.blue::before{background:linear-gradient(90deg,var(--blue),var(--blue-light))}
-  .kpi.orange::before{background:linear-gradient(90deg,var(--orange),#ffb300)}
-  .kpi.red::before{background:linear-gradient(90deg,var(--red),#e57373)}
-  .kpi label{font-size:.72rem;text-transform:uppercase;letter-spacing:.7px;color:var(--gray);font-weight:600;display:block;margin-bottom:.4rem}
-  .kpi .val{font-size:2rem;font-weight:800;color:var(--green-mid);line-height:1.1}
+  .kpi:hover{box-shadow:var(--shadow-md);transform:translateY(-3px)}
+  .kpi.blue{border-left-color:var(--blue)}
+  .kpi.orange{border-left-color:var(--orange)}
+  .kpi.red{border-left-color:var(--red)}
+  .kpi label{
+    font-family:var(--font-mono);font-size:.66rem;text-transform:uppercase;letter-spacing:1.2px;
+    color:var(--gray);font-weight:500;display:block;margin-bottom:.55rem;
+  }
+  .kpi .val{font-family:var(--font-display);font-size:2.3rem;font-weight:600;font-optical-sizing:auto;color:var(--green);line-height:1;font-feature-settings:"tnum"}
   .kpi.blue .val{color:var(--blue)}.kpi.orange .val{color:var(--orange)}.kpi.red .val{color:var(--red)}
-  .kpi small{font-size:.72rem;color:#90a4ae;margin-top:.25rem;display:block}
-  /* retire l'ancienne border-left */
-  .kpi{border-left:none}
+  .kpi small{font-family:var(--font-mono);font-size:.66rem;color:var(--gray);margin-top:.5rem;display:block;letter-spacing:.3px}
 
   /* ── CHART GRID ── */
   .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
   @media(max-width:800px){.chart-grid{grid-template-columns:1fr}}
   .chart-box{
     background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
-    padding:1.5rem;overflow:hidden;
+    padding:1.5rem;overflow:hidden;border:1px solid var(--line);
   }
   .chart-box h3{
-    font-size:.88rem;font-weight:700;color:var(--gray);margin-bottom:1rem;
-    padding-bottom:.6rem;border-bottom:1px solid var(--gray-light);
-    display:flex;align-items:center;gap:.4rem;
+    font-family:var(--font-mono);font-size:.72rem;font-weight:600;color:var(--green-mid);margin-bottom:1.1rem;
+    padding-bottom:.65rem;border-bottom:1px solid var(--line-soft);
+    display:flex;align-items:center;gap:.4rem;text-transform:uppercase;letter-spacing:1.3px;
   }
   canvas{max-height:280px}
 
   /* ── ALERTS ── */
-  .alert{padding:.8rem 1.15rem;border-radius:var(--radius-sm);font-size:.86rem;margin-bottom:1.2rem;border:none;display:flex;align-items:flex-start;gap:.6rem}
-  .alert::before{flex-shrink:0;margin-top:.05em;font-size:1.1rem}
-  .alert.info{background:var(--blue-pale);color:#0d47a1;border-left:4px solid var(--blue-light)}
-  .alert.info::before{content:"ℹ️"}
-  .alert.success{background:var(--green-pale);color:var(--green-mid);border-left:4px solid var(--green-acc)}
-  .alert.success::before{content:"✅"}
-  .alert.warning{background:var(--orange-pale);color:var(--orange);border-left:4px solid #ffb300}
-  .alert.warning::before{content:"⚠️"}
+  .alert{padding:.85rem 1.15rem;border-radius:var(--radius-sm);font-size:.86rem;margin-bottom:1.2rem;border:1px solid transparent;display:flex;align-items:flex-start;gap:.6rem;line-height:1.5}
+  .alert::before{content:"";flex-shrink:0;margin-top:.08em;width:17px;height:17px;background-repeat:no-repeat;background-position:center;background-size:contain}
+  .alert.info{background:var(--blue-pale);color:#234c63;border-color:rgba(58,107,138,.28);border-left:3px solid var(--blue)}
+  .alert.info::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233a6b8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cline x1='12' y1='11.5' x2='12' y2='16.5'/%3E%3Cline x1='12' y1='7.5' x2='12' y2='7.5'/%3E%3C/svg%3E")}
+  .alert.success{background:var(--green-pale);color:var(--green);border-color:rgba(124,143,90,.4);border-left:3px solid var(--green-acc)}
+  .alert.success::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232f5d44' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpolyline points='8 12.5 11 15.5 16.5 9'/%3E%3C/svg%3E")}
+  .alert.warning{background:var(--orange-pale);color:#8a3c1f;border-color:rgba(191,90,54,.3);border-left:3px solid var(--orange)}
+  .alert.warning::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23bf5a36' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3 L22 20 H2 Z'/%3E%3Cline x1='12' y1='10' x2='12' y2='14'/%3E%3Cline x1='12' y1='17' x2='12' y2='17'/%3E%3C/svg%3E")}
 
   /* ── MODULE TABS ── */
-  .module-tabs{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.5rem}
+  .module-tabs{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.6rem}
   .module-tab{
-    padding:.38rem 1rem;border-radius:20px;
-    border:1.5px solid #cfd8dc;background:var(--white);cursor:pointer;
-    font-size:.8rem;font-family:inherit;font-weight:500;color:var(--gray);
-    transition:all .15s;
+    padding:.42rem .95rem;border-radius:3px;
+    border:1px solid var(--line);background:var(--white);cursor:pointer;
+    font-size:.78rem;font-family:var(--font-body);font-weight:500;color:var(--ink-soft);
+    transition:all .15s;letter-spacing:.1px;display:inline-flex;align-items:center;gap:.4rem;
   }
-  .module-tab:hover{border-color:var(--green-light);color:var(--green-mid);background:var(--green-pale)}
-  .module-tab.active{background:var(--green-mid);color:#fff;border-color:var(--green-mid);font-weight:700;box-shadow:0 2px 8px rgba(46,125,50,.3)}
+  .module-tab .ico{width:14px;height:14px;opacity:.7}
+  .module-tab.active .ico{opacity:1}
+  .module-tab:hover{border-color:var(--green-acc);color:var(--green-mid);background:var(--green-pale)}
+  .module-tab.active{background:var(--green);color:#f3ecd9;border-color:var(--green);font-weight:600;box-shadow:0 2px 8px -3px rgba(30,58,43,.5)}
   .module-panel{display:none}.module-panel.active{display:block}
 
   /* ── FORMS ── */
-  .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1rem}
-  .field{display:flex;flex-direction:column;gap:.3rem}
-  .field label{font-size:.78rem;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+  .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.15rem;margin-bottom:1.15rem}
+  .field{display:flex;flex-direction:column;gap:.4rem}
+  .field label{font-family:var(--font-mono);font-size:.66rem;color:var(--gray);font-weight:500;text-transform:uppercase;letter-spacing:1px}
   .field input,.field select{
-    padding:.55rem .9rem;border:1.5px solid #cfd8dc;border-radius:var(--radius-sm);
-    font-size:.9rem;font-family:inherit;background:var(--white);transition:border-color .15s;
+    padding:.58rem .9rem;border:1px solid var(--line);border-radius:var(--radius-sm);
+    font-size:.9rem;font-family:var(--font-body);background:var(--white);color:var(--ink);transition:border-color .15s,box-shadow .15s;
   }
-  .field input:focus,.field select:focus{outline:none;border-color:var(--green-light);box-shadow:0 0 0 3px rgba(67,160,71,.12)}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--green-mid);box-shadow:0 0 0 3px rgba(47,93,68,.14)}
 
   /* ── BUTTONS ── */
   .btn{
-    padding:.6rem 1.4rem;border-radius:var(--radius-sm);border:none;cursor:pointer;
-    font-size:.9rem;font-family:inherit;font-weight:700;transition:all .18s;letter-spacing:.2px;
+    padding:.62rem 1.4rem;border-radius:var(--radius-sm);border:1px solid transparent;cursor:pointer;
+    font-size:.84rem;font-family:var(--font-body);font-weight:600;transition:all .18s;letter-spacing:.2px;
   }
   .btn-green{
-    background:linear-gradient(135deg,var(--green-light),var(--green-mid));
-    color:#fff;box-shadow:0 2px 10px rgba(46,125,50,.3);
+    background:var(--green);color:#f3ecd9;box-shadow:0 2px 10px -4px rgba(30,58,43,.6);
   }
-  .btn-green:hover{background:linear-gradient(135deg,#4caf50,var(--green-light));box-shadow:0 4px 16px rgba(46,125,50,.4);transform:translateY(-1px)}
-  .btn-blue{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(21,101,192,.25)}
-  .btn-blue:hover{background:var(--blue-light)}
+  .btn-green:hover{background:var(--green-mid);box-shadow:0 5px 18px -6px rgba(30,58,43,.6);transform:translateY(-1px)}
+  .btn-blue{background:var(--blue);color:#f6fafc}
+  .btn-blue:hover{background:#2f5874}
   .btn-outline{
-    background:var(--white);color:var(--green-mid);
-    border:2px solid var(--green-light);
+    background:transparent;color:var(--green-mid);
+    border:1px solid var(--green-acc);
   }
   .btn-outline:hover{background:var(--green-pale)}
   .btn-row{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem}
 
   /* ── TABLES ── */
-  .tbl-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid #eceff1}
+  .tbl-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--line)}
   table{width:100%;border-collapse:collapse;font-size:.86rem}
-  th{background:var(--gray-light);text-align:left;padding:.6rem 1rem;color:var(--gray);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-  td{padding:.5rem 1rem;border-bottom:1px solid #f1f5f9}
+  th{background:#efe9da;text-align:left;padding:.6rem 1rem;color:var(--green-mid);font-family:var(--font-mono);font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--line)}
+  td{padding:.55rem 1rem;border-bottom:1px solid var(--line-soft)}
+  td:last-child,th:last-child{font-family:var(--font-mono);font-feature-settings:"tnum"}
   tr:last-child td{border-bottom:none}
-  tr:hover td{background:#f8fafc}
+  tr:hover td{background:#f7f2e6}
 
   /* ── RESULT BARS ── */
   .result-item{display:flex;align-items:center;gap:1rem;margin-bottom:.7rem;padding:.2rem 0}
-  .result-item .rl{width:180px;font-size:.84rem;color:var(--gray);flex-shrink:0;font-weight:500}
-  .result-item .bw{flex:1;height:18px;background:#eceff1;border-radius:20px;overflow:hidden}
-  .result-item .bf{height:100%;border-radius:20px;transition:width 1.2s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--green-acc),var(--green-mid))}
-  .result-item .rv{width:110px;text-align:right;font-weight:700;font-size:.9rem;flex-shrink:0}
+  .result-item .rl{width:180px;font-size:.84rem;color:var(--ink-soft);flex-shrink:0;font-weight:500}
+  .result-item .bw{flex:1;height:16px;background:#e9e3d5;border-radius:3px;overflow:hidden}
+  .result-item .bf{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--green-acc),var(--green-mid))}
+  .result-item .rv{width:110px;text-align:right;font-weight:600;font-size:.9rem;flex-shrink:0;font-family:var(--font-mono);font-feature-settings:"tnum"}
 
   /* ── IMPORT / UPLOAD ── */
   .import-section{border:1px solid #e0e7ef;border-radius:var(--radius);overflow:hidden;background:var(--white);box-shadow:0 1px 6px rgba(0,0,0,.05);transition:box-shadow .2s}
@@ -165,7 +239,7 @@
   }
   .upload-zone-small:hover,.upload-zone-small.drag{border-color:var(--green-light);background:var(--green-pale);border-style:solid}
   .upload-zone-small input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-  .upload-zone-small p{font-size:.78rem;color:#90a4ae;margin:0;font-weight:500}
+  .upload-zone-small p{font-size:.78rem;color:#9a937f;margin:0;font-weight:500}
   .import-status{margin:.25rem .6rem .6rem;font-size:.8rem;min-height:1.2rem;border-radius:6px;padding:.3rem .7rem}
   .import-status.ok{background:var(--green-pale);color:var(--green-mid);font-weight:700}
   .import-status.err{background:var(--red-pale);color:var(--red)}
@@ -179,121 +253,152 @@
   .compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-bottom:1.5rem}
   .labo-card{
     background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
-    padding:1.3rem;border-top:4px solid var(--green-acc);transition:box-shadow .2s,transform .2s;
+    padding:1.35rem;border:1px solid var(--line);border-top:3px solid var(--green-acc);transition:box-shadow .25s,transform .25s;
   }
-  .labo-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+  .labo-card:hover{box-shadow:var(--shadow-md);transform:translateY(-3px)}
   .labo-card.hi{
-    background:linear-gradient(135deg,#fff8e1 0%,#fff3cd 100%);
-    border-top-color:#f59e0b;box-shadow:0 4px 20px rgba(245,158,11,.2);
+    background:linear-gradient(135deg,#f7eddc 0%,#f3e6cf 100%);
+    border-top-color:var(--orange);box-shadow:0 4px 20px -8px rgba(191,90,54,.35);
   }
-  .labo-card h4{font-size:.92rem;font-weight:700;margin-bottom:.25rem;color:#1a2a35}
-  .labo-card .sub{font-size:.73rem;color:#90a4ae;margin-bottom:.75rem;line-height:1.4}
-  .labo-card .tot{font-size:1.45rem;font-weight:800;color:var(--green-mid)}
-  .labo-card.hi .tot{color:#b45309}
-  .labo-card .pp{font-size:.8rem;color:var(--gray);margin-top:.2rem;font-weight:500}
+  .labo-card h4{font-family:var(--font-display);font-size:1.05rem;font-weight:600;margin-bottom:.25rem;color:var(--ink)}
+  .labo-card .sub{font-size:.73rem;color:var(--gray);margin-bottom:.75rem;line-height:1.4}
+  .labo-card .tot{font-family:var(--font-display);font-size:1.65rem;font-weight:600;color:var(--green-mid);font-feature-settings:"tnum"}
+  .labo-card.hi .tot{color:var(--orange)}
+  .labo-card .pp{font-family:var(--font-mono);font-size:.76rem;color:var(--gray);margin-top:.25rem}
 
   /* ── LIVE COUNTER ── */
   #total-live{
     position:fixed;bottom:1.5rem;right:1.5rem;
-    background:linear-gradient(135deg,var(--green-mid),var(--green));
-    color:#fff;border-radius:40px;padding:.65rem 1.4rem;
-    box-shadow:0 6px 24px rgba(27,94,32,.45);
-    font-weight:800;font-size:.92rem;z-index:100;
-    display:flex;align-items:center;gap:.4rem;
+    background:linear-gradient(180deg,#1f3d2d,#16301f);
+    color:#f3ecd9;border-radius:4px;padding:.6rem 1.2rem;
+    box-shadow:0 10px 30px -10px rgba(20,40,25,.7);border:1px solid #0e2114;
+    font-family:var(--font-mono);font-weight:500;font-size:.86rem;z-index:100;letter-spacing:.3px;
+    display:flex;align-items:center;gap:.45rem;
     transition:transform .2s;cursor:default;
   }
-  #total-live:hover{transform:scale(1.03)}
+  #total-live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--orange)}
+  #total-live:hover{transform:translateY(-2px)}
 
 /* PRÉVISIONS */
 
 #page-prediction *{box-sizing:border-box;margin:0;padding:0}
 #page-prediction .prev-wrap{padding:0}
-#page-prediction .prev-tabs{display:flex;gap:0;border-bottom:1px solid #e0ddd5;margin-bottom:1.5rem;flex-wrap:wrap}
-#page-prediction .prev-tab{padding:.6rem 1.2rem;font-size:13px;font-weight:500;color:#666;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;border-top:none;border-left:none;border-right:none;transition:color .15s,border-color .15s}
-#page-prediction .prev-tab.active{color:#1a6f44;border-bottom-color:#1a6f44}
+#page-prediction .prev-tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:1.5rem;flex-wrap:wrap}
+#page-prediction .prev-tab{padding:.6rem 1.2rem;font-size:13px;font-weight:500;font-family:var(--font-body);color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;border-top:none;border-left:none;border-right:none;transition:color .15s,border-color .15s}
+#page-prediction .prev-tab.active{color:var(--green-mid);border-bottom-color:var(--orange)}
 #page-prediction .prev-tab-panel{display:none}
 #page-prediction .prev-tab-panel.active{display:block}
-#page-prediction .prev-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
-#page-prediction .prev-metric{background:#f4f3ee;border-radius:8px;padding:.9rem 1rem}
-#page-prediction .prev-metric-label{font-size:11px;color:#666;margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em}
-#page-prediction .prev-metric-val{font-size:22px;font-weight:600;color:#1a1a1a}
-#page-prediction .prev-metric-sub{font-size:11px;color:#888;margin-top:2px}
-#page-prediction .prev-metric.green .prev-metric-val{color:#1a6f44}
-#page-prediction .prev-metric.red .prev-metric-val{color:#b83232}
-#page-prediction .prev-metric.amber .prev-metric-val{color:#d97706}
+#page-prediction .prev-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:1.75rem}
+#page-prediction .prev-metric{background:#efe9da;border:1px solid var(--line-soft);border-radius:var(--radius-sm);padding:1.05rem 1.15rem}
+#page-prediction .prev-metric-label{font-family:var(--font-mono);font-size:10px;color:var(--gray);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em}
+#page-prediction .prev-metric-val{font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--ink);font-feature-settings:"tnum"}
+#page-prediction .prev-metric-sub{font-family:var(--font-mono);font-size:10px;color:var(--gray);margin-top:3px}
+#page-prediction .prev-metric.green .prev-metric-val{color:var(--green-mid)}
+#page-prediction .prev-metric.red .prev-metric-val{color:var(--red)}
+#page-prediction .prev-metric.amber .prev-metric-val{color:var(--orange)}
 #page-prediction .prev-chart-wrap{position:relative;width:100%;height:280px}
 #page-prediction .prev-chart-sm{position:relative;width:100%;height:200px}
 #page-prediction .prev-sc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:1.5rem}
-#page-prediction .prev-sc-card{border:1.5px solid #e0ddd5;border-radius:10px;padding:1rem;cursor:pointer;transition:border-color .15s,background .15s}
-#page-prediction .prev-sc-card:hover{border-color:#aaa}
-#page-prediction .prev-sc-card.selected{border-color:#1a6f44;background:#f0faf5}
+#page-prediction .prev-sc-card{border:1px solid var(--line);border-radius:var(--radius-sm);padding:1.15rem 1.2rem;cursor:pointer;transition:border-color .15s,background .15s}
+#page-prediction .prev-sc-card:hover{border-color:var(--green-acc)}
+#page-prediction .prev-sc-card.selected{border-color:var(--green-mid);background:var(--green-pale)}
 #page-prediction .prev-sc-card .sc-name{font-size:13px;font-weight:600;margin-bottom:4px}
-#page-prediction .prev-sc-card .sc-desc{font-size:11px;color:#666;margin-bottom:8px}
-#page-prediction .prev-sc-card .sc-val{font-size:20px;font-weight:700}
-#page-prediction .prev-sc-card.tendance .sc-val{color:#d97706}
-#page-prediction .prev-sc-card.stabilisation .sc-val{color:#2563eb}
-#page-prediction .prev-sc-card.optimiste .sc-val{color:#1a6f44}
-#page-prediction .prev-sc-card.pessimiste .sc-val{color:#b83232}
+#page-prediction .prev-sc-card .sc-desc{font-size:11px;color:var(--gray);margin-bottom:8px}
+#page-prediction .prev-sc-card .sc-val{font-family:var(--font-display);font-size:22px;font-weight:600;font-feature-settings:"tnum"}
+#page-prediction .prev-sc-card.tendance .sc-val{color:#c98a2b}
+#page-prediction .prev-sc-card.stabilisation .sc-val{color:#3a6b8a}
+#page-prediction .prev-sc-card.optimiste .sc-val{color:#2f5d44}
+#page-prediction .prev-sc-card.pessimiste .sc-val{color:#a8392a}
 #page-prediction .prev-measures-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:1.25rem}
-#page-prediction .prev-measure-item{border:1.5px solid #e0ddd5;border-radius:8px;padding:.85rem 1rem;cursor:pointer;transition:border-color .15s,background .15s}
-#page-prediction .prev-measure-item.selected{border-color:#1a6f44;background:#f0faf5}
+#page-prediction .prev-measure-item{border:1px solid var(--line);border-radius:var(--radius-sm);padding:.85rem 1rem;cursor:pointer;transition:border-color .15s,background .15s}
+#page-prediction .prev-measure-item.selected{border-color:var(--green-mid);background:var(--green-pale)}
 #page-prediction .prev-measure-item .m-name{font-size:13px;font-weight:600;margin-bottom:2px}
-#page-prediction .prev-measure-item .m-meta{font-size:11px;color:#666}
-#page-prediction .prev-result-box{background:#f0faf5;border:1px solid #9fdfc0;border-radius:8px;padding:1rem 1.25rem;margin-top:1rem}
-#page-prediction .prev-result-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;border-bottom:.5px solid #d0edd8}
+#page-prediction .prev-measure-item .m-meta{font-family:var(--font-mono);font-size:11px;color:var(--gray)}
+#page-prediction .prev-result-box{background:var(--green-pale);border:1px solid var(--green-acc);border-radius:var(--radius-sm);padding:1rem 1.25rem;margin-top:1rem}
+#page-prediction .prev-result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:13px;border-bottom:1px solid rgba(124,143,90,.25)}
 #page-prediction .prev-result-row:last-child{border-bottom:none;font-weight:600;font-size:14px}
 #page-prediction .prev-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500}
-#page-prediction .prev-badge-green{background:#d1fae5;color:#065f46}
-#page-prediction .prev-badge-red{background:#fee2e2;color:#991b1b}
+#page-prediction .prev-badge-green{background:var(--green-pale);color:var(--green)}
+#page-prediction .prev-badge-red{background:var(--red-pale);color:var(--red)}
 #page-prediction .prev-dt{width:100%;border-collapse:collapse;font-size:13px}
-#page-prediction .prev-dt th{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:#666;padding:6px 8px;border-bottom:1px solid #e0ddd5;text-align:right}
+#page-prediction .prev-dt th{font-family:var(--font-mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gray);padding:9px 14px;border-bottom:1px solid var(--line);text-align:right}
 #page-prediction .prev-dt th:first-child{text-align:left}
-#page-prediction .prev-dt td{padding:7px 8px;border-bottom:.5px solid #f0ede5;text-align:right}
-#page-prediction .prev-dt td:first-child{text-align:left;color:#444}
-#page-prediction .prev-dt tr.total td{font-weight:600;color:#1a1a1a;background:#fafaf8;border-top:1px solid #e0ddd5}
+#page-prediction .prev-dt td{padding:9px 14px;border-bottom:1px solid var(--line-soft);text-align:right;font-family:var(--font-mono);font-feature-settings:"tnum"}
+#page-prediction .prev-dt td:first-child{text-align:left;color:var(--ink-soft);font-family:var(--font-body)}
+#page-prediction .prev-dt tr.total td{font-weight:600;color:var(--ink);background:#efe9da;border-top:1px solid var(--line)}
 #page-prediction .prev-legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;font-size:12px;color:#555}
 #page-prediction .prev-legend-item{display:flex;align-items:center;gap:5px}
 #page-prediction .prev-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
 #page-prediction .prev-note{font-size:12px;color:#888;margin-top:.75rem}
-#page-prediction .prev-hr{border:none;border-top:.5px solid #e0ddd5;margin:1.25rem 0}
-#page-prediction .prev-hl{background:#fffbeb;border:.5px solid #fcd34d;border-radius:8px;padding:.85rem 1rem;margin:.75rem 0;font-size:13px}
-#page-prediction select{font-size:13px;padding:6px 10px;border:.5px solid #ccc;border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer}
+#page-prediction .prev-hr{border:none;border-top:1px solid var(--line);margin:1.25rem 0}
+#page-prediction .prev-hl{background:var(--orange-pale);border:1px solid rgba(191,90,54,.3);border-radius:var(--radius-sm);padding:.85rem 1rem;margin:.75rem 0;font-size:13px;color:#7a3415}
+#page-prediction select{font-size:13px;font-family:var(--font-body);padding:6px 10px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--white);color:var(--ink);cursor:pointer}
 
 /* ── MULTI-LABOS STYLES ── */
 .ml-lab-nav{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.25rem}
-.ml-lab-btn{padding:.38rem 1rem;border-radius:20px;border:1.5px solid #cfd8dc;background:#fff;cursor:pointer;font-size:.8rem;font-family:inherit;font-weight:600;color:#546e7a;transition:all .15s;display:flex;align-items:center;gap:.4rem}
-.ml-lab-btn:hover{border-color:#43a047;color:#2e7d32;background:#e8f5e9}
-.ml-lab-btn.active{background:#2e7d32;color:#fff;border-color:#2e7d32;box-shadow:0 2px 8px rgba(46,125,50,.3)}
-.ml-lab-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.ml-lab-btn{padding:.42rem 1rem;border-radius:3px;border:1px solid var(--line);background:var(--white);cursor:pointer;font-size:.78rem;font-family:var(--font-body);font-weight:500;color:var(--ink-soft);transition:all .15s;display:flex;align-items:center;gap:.45rem}
+.ml-lab-btn:hover{border-color:var(--green-acc);color:var(--green-mid);background:var(--green-pale)}
+.ml-lab-btn.active{background:var(--green);color:#f3ecd9;border-color:var(--green);box-shadow:0 2px 8px -3px rgba(30,58,43,.5)}
+.ml-lab-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .ml-lab-panel{display:none}.ml-lab-panel.active{display:block}
 .ml-comp-chart-wrap{position:relative;width:100%;height:320px}
 .ml-kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.25rem}
-.ml-kpi{background:#f4f3ee;border-radius:8px;padding:.9rem 1rem;border-left:4px solid #ccc}
-.ml-kpi .ml-kpi-l{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
-.ml-kpi .ml-kpi-v{font-size:20px;font-weight:700;color:#1a2a35}
-.ml-kpi .ml-kpi-s{font-size:11px;color:#888;margin-top:2px}
-.ml-info-box{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:#1b5e20}
-.ml-partial-box{background:#fff8e1;border:1px solid #ffd54f;border-radius:8px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:#e65100}
+.ml-kpi{background:#efe9da;border:1px solid var(--line-soft);border-radius:var(--radius-sm);padding:.9rem 1rem;border-left:3px solid var(--green-acc)}
+.ml-kpi .ml-kpi-l{font-family:var(--font-mono);font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.ml-kpi .ml-kpi-v{font-family:var(--font-display);font-size:21px;font-weight:600;color:var(--ink);font-feature-settings:"tnum"}
+.ml-kpi .ml-kpi-s{font-family:var(--font-mono);font-size:10px;color:var(--gray);margin-top:3px}
+.ml-info-box{background:var(--green-pale);border:1px solid var(--green-acc);border-radius:var(--radius-sm);padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:var(--green)}
+.ml-partial-box{background:var(--orange-pale);border:1px solid rgba(191,90,54,.3);border-radius:var(--radius-sm);padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:#7a3415}
 
 
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+  <symbol id="i-results" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="4" y2="11"/><line x1="10" y1="20" x2="10" y2="5"/><line x1="16" y1="20" x2="16" y2="13"/><line x1="22" y1="20" x2="2" y2="20"/></symbol>
+  <symbol id="i-compare" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M5 7 2 14h6Z"/><path d="M19 7l-3 7h6Z"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 4 14 11 14 10 22 20 9 13 9 13 2"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 1-5 1 1 2 1 2 3 1-2 1-5 2-8Z"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15.5 3 11V8l3 .5 2 2 6 1.2L11 4l2.5.4 3 7.3 3.5 1c1 .3 1.5.8 1.5 1.5s-.5 1.1-1 1.3Z"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.5-4.5A2 2 0 0 1 8.4 7h7.2a2 2 0 0 1 1.9 1.5L19 13"/><path d="M4 13h16v4H4z"/><circle cx="7.5" cy="17.5" r="1.3"/><circle cx="16.5" cy="17.5" r="1.3"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="11" rx="1.5"/><line x1="2" y1="20" x2="22" y2="20"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2 3h2.5l2.2 12.2A1.5 1.5 0 0 0 8.2 16.5H18a1.5 1.5 0 0 0 1.5-1.2L21 7H5.2"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><line x1="9" y1="7" x2="9" y2="7"/><line x1="15" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="9" y2="11"/><line x1="15" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="9" y2="15"/><line x1="15" y1="15" x2="15" y2="15"/><path d="M10 21v-3h4v3"/></symbol>
+</defs></svg>
 <header>
-  <h1>&#127807; Bilan Carbone ESYCOM <span class="badge">2024</span></h1>
+  <h1>Bilan Carbone ESYCOM <span class="badge">2024</span></h1>
   <nav>
-    <button class="active" onclick="showPage('dashboard',this)">&#128202; Dashboard</button>
-    <button onclick="showPage('saisie',this)">&#9999;&#65039; Saisie</button>
-    <button onclick="showPage('resultats',this)">&#128200; R&eacute;sultats</button>
-    <button onclick="showPage('comparaison',this)">&#9878;&#65039; Comparaison</button>
-  <button onclick="showPage('prediction',this)">&#128200; Pr&#233;visions</button>
+    <button class="active" onclick="showPage('dashboard',this)"><svg class="ico"><use href="#i-dashboard"/></svg>Dashboard</button>
+    <button onclick="showPage('saisie',this)"><svg class="ico"><use href="#i-edit"/></svg>Saisie</button>
+    <button onclick="showPage('resultats',this)"><svg class="ico"><use href="#i-results"/></svg>R&eacute;sultats</button>
+    <button onclick="showPage('comparaison',this)"><svg class="ico"><use href="#i-compare"/></svg>Comparaison</button>
+  <button onclick="showPage('prediction',this)"><svg class="ico"><use href="#i-trend"/></svg>Pr&#233;visions</button>
   </nav>
 </header>
 <main>
 
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
-  <div class="section-title">&#128202; Tableau de bord &mdash; Bilan Carbone ESYCOM</div>
+  <div class="report-cover">
+    <div class="rc-left">
+      <div class="rc-kicker">Rapport annuel &middot; UMR ESYCOM</div>
+      <h1 class="rc-title">Bilan Carbone&nbsp;2024</h1>
+      <p class="rc-sub">Empreinte gaz &agrave; effet de serre &mdash; m&eacute;thode GES-1point5 / Labos&nbsp;1point5</p>
+      <div class="rc-tags">
+        <span class="rc-tag">Multi-labos</span>
+        <span class="rc-tag">59 ETP</span>
+        <span class="rc-tag">7 postes d'&eacute;mission</span>
+      </div>
+    </div>
+    <div class="rc-right">
+      <div class="rc-fig-label">Total des &eacute;missions</div>
+      <div class="rc-fig"><span class="rc-num">385,5</span><span class="rc-unit">tCO&#8322;eq</span></div>
+      <div class="rc-fig-sub">&minus;6,9&nbsp;% vs 2023 &middot; 6,50&nbsp;tCO&#8322;eq/ETP</div>
+    </div>
+  </div>
   <div class="alert info">Donn&eacute;es issues des fichiers CSV g&eacute;n&eacute;r&eacute;s depuis les Excel 2024. Allez dans <strong>Saisie</strong> pour importer vos CSV et recalculer.</div>
   <div class="kpi-grid">
     <div class="kpi"><label>Total GES 2024</label><div class="val" id="kpi-total">385,5</div><small>tCO&#8322;eq</small></div>
@@ -302,41 +407,41 @@
     <div class="kpi red"><label>Poste dominant</label><div class="val" id="kpi-top">Achats</div><small>module le plus &eacute;metteur</small></div>
   </div>
   <div class="chart-grid">
-    <div class="chart-box"><h3>&#128205; R&eacute;partition par module (tCO&#8322;eq)</h3><canvas id="chartPie"></canvas></div>
-    <div class="chart-box"><h3>&#128197; &Eacute;volution 2022 &rarr; 2023 &rarr; 2024</h3><canvas id="chartBar"></canvas></div>
-    <div class="chart-box"><h3>&#9992;&#65039; D&eacute;placements &mdash; modes de transport</h3><canvas id="chartTravel"></canvas></div>
-    <div class="chart-box"><h3>&#128722; Achats &mdash; cat&eacute;gories DDRS</h3><canvas id="chartPurchases"></canvas></div>
+    <div class="chart-box"><h3>R&eacute;partition par module (tCO&#8322;eq)</h3><canvas id="chartPie"></canvas></div>
+    <div class="chart-box"><h3>&Eacute;volution 2022 &rarr; 2023 &rarr; 2024</h3><canvas id="chartBar"></canvas></div>
+    <div class="chart-box"><h3>D&eacute;placements &mdash; modes de transport</h3><canvas id="chartTravel"></canvas></div>
+    <div class="chart-box"><h3>Achats &mdash; cat&eacute;gories DDRS</h3><canvas id="chartPurchases"></canvas></div>
   </div>
 </div>
 
 <!-- SAISIE -->
 <div id="page-saisie" class="page">
-  <div class="section-title">&#9999;&#65039; Saisie des donn&eacute;es &mdash; 13 modules GES</div>
+  <div class="section-title">Saisie des donn&eacute;es &mdash; 13 modules GES</div>
 
   <!-- PARAMÈTRE ETP -->
   <div class="card" style="display:flex;align-items:center;gap:1.5rem;padding:.9rem 1.2rem;margin-bottom:1rem;flex-wrap:wrap">
-    <label style="font-weight:600;font-size:.9rem">&#128100; Effectif labo (ETP 2024) :</label>
+    <label style="font-weight:600;font-size:.9rem">Effectif labo (ETP 2024) :</label>
     <input id="etp-val" type="number" min="1" max="500" value="65" style="width:90px;padding:.4rem .6rem;border:1.5px solid #cfd8dc;border-radius:8px;font-size:1rem;font-weight:700;color:var(--green-mid)">
     <span style="font-size:.8rem;color:var(--gray)">Utilis&eacute; pour le calcul tCO&#8322;/ETP &mdash; r&eacute;f. 65 ETP (2022) / 59 ETP (2023)</span>
   </div>
 
   <!-- ZONE IMPORT FICHIERS -->
   <div class="card">
-    <h2>&#128193; Importer les donn&eacute;es CSV</h2>
+    <h2>Importer les donn&eacute;es CSV</h2>
     <p style="font-size:.84rem;color:var(--gray);margin-bottom:1rem">D&eacute;posez un fichier CSV dans la section correspondante. Le nom du fichier n'a pas d'importance.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
 
       <!-- Achats -->
       <div class="import-section" id="sec-achats">
         <div class="import-section-header" style="background:#e3f2fd;color:#1565c0">
-          &#128722; Achats DDRS
+          Achats DDRS
         </div>
         <div class="upload-zone-small" id="zone-achats"
           ondragover="event.preventDefault();this.classList.add('drag')"
           ondragleave="this.classList.remove('drag')"
           ondrop="handleDropModule(event,'achats')">
           <input type="file" accept=".csv" onchange="handleFileModule(event,'achats')">
-          <div style="font-size:1.6rem">&#128196;</div>
+          <div style="font-size:1.6rem"></div>
           <p>Glisser ou cliquer</p>
         </div>
         <div id="status-achats" class="import-status"></div>
@@ -345,14 +450,14 @@
       <!-- Matériel IT -->
       <div class="import-section" id="sec-informatique">
         <div class="import-section-header" style="background:#e8f5e9;color:#2e7d32">
-          &#128187; Mat&eacute;riel IT
+          Mat&eacute;riel IT
         </div>
         <div class="upload-zone-small" id="zone-informatique"
           ondragover="event.preventDefault();this.classList.add('drag')"
           ondragleave="this.classList.remove('drag')"
           ondrop="handleDropModule(event,'informatique')">
           <input type="file" accept=".csv" onchange="handleFileModule(event,'informatique')">
-          <div style="font-size:1.6rem">&#128196;</div>
+          <div style="font-size:1.6rem"></div>
           <p>Glisser ou cliquer</p>
         </div>
         <div id="status-informatique" class="import-status"></div>
@@ -361,14 +466,14 @@
       <!-- Missions -->
       <div class="import-section" id="sec-missions">
         <div class="import-section-header" style="background:#fff3e0;color:#e65100">
-          &#9992;&#65039; Missions &amp; D&eacute;placements
+          Missions &amp; D&eacute;placements
         </div>
         <div class="upload-zone-small" id="zone-missions"
           ondragover="event.preventDefault();this.classList.add('drag')"
           ondragleave="this.classList.remove('drag')"
           ondrop="handleDropModule(event,'missions')">
           <input type="file" accept=".csv" onchange="handleFileModule(event,'missions')">
-          <div style="font-size:1.6rem">&#128196;</div>
+          <div style="font-size:1.6rem"></div>
           <p>Glisser ou cliquer</p>
         </div>
         <div id="status-missions" class="import-status"></div>
@@ -384,7 +489,7 @@
           ondragleave="this.classList.remove('drag')"
           ondrop="handleDropModule(event,'commandes')">
           <input type="file" accept=".csv" onchange="handleFileModule(event,'commandes')">
-          <div style="font-size:1.6rem">&#128196;</div>
+          <div style="font-size:1.6rem"></div>
           <p>Glisser ou cliquer</p>
         </div>
         <div id="status-commandes" class="import-status"></div>
@@ -393,14 +498,14 @@
       <!-- Domicile-travail -->
       <div class="import-section" id="sec-domicile">
         <div class="import-section-header" style="background:#e0f2f1;color:#004d40">
-          &#128652; Domicile &mdash; travail
+          Domicile &mdash; travail
         </div>
         <div class="upload-zone-small" id="zone-domicile"
           ondragover="event.preventDefault();this.classList.add('drag')"
           ondragleave="this.classList.remove('drag')"
           ondrop="handleDropModule(event,'domicile')">
           <input type="file" accept=".csv" onchange="handleFileModule(event,'domicile')">
-          <div style="font-size:1.6rem">&#128196;</div>
+          <div style="font-size:1.6rem"></div>
           <p>Glisser ou cliquer</p>
         </div>
         <p style="font-size:.75rem;color:#78909c;margin:.25rem .75rem .5rem;line-height:1.4">
@@ -420,7 +525,7 @@
           ondragleave="this.classList.remove('drag')"
           ondrop="handleDropModule(event,'batiment')">
           <input type="file" accept=".csv" onchange="handleFileModule(event,'batiment')">
-          <div style="font-size:1.6rem">&#128196;</div>
+          <div style="font-size:1.6rem"></div>
           <p>Glisser ou cliquer</p>
         </div>
         <p style="font-size:.75rem;color:#78909c;margin:.25rem .75rem .5rem;line-height:1.4">
@@ -435,17 +540,17 @@
   </div>
 
   <div class="module-tabs">
-    <button class="module-tab active" onclick="showMod('electricite',this)">&#9889; Electricit&eacute;</button>
-    <button class="module-tab" onclick="showMod('chauffage',this)">&#128293; Chauffage</button>
-    <button class="module-tab" onclick="showMod('deplacements',this)">&#9992;&#65039; Missions</button>
-    <button class="module-tab" onclick="showMod('domicile',this)">&#128652; Domicile</button>
-    <button class="module-tab" onclick="showMod('informatique',this)">&#128187; Informatique</button>
-    <button class="module-tab" onclick="showMod('achats',this)">&#128722; Achats</button>
-    <button class="module-tab" onclick="showMod('construction',this)">&#127963;&#65039; Construction</button>
+    <button class="module-tab active" onclick="showMod('electricite',this)"><svg class="ico"><use href="#i-zap"/></svg>Electricit&eacute;</button>
+    <button class="module-tab" onclick="showMod('chauffage',this)"><svg class="ico"><use href="#i-flame"/></svg>Chauffage</button>
+    <button class="module-tab" onclick="showMod('deplacements',this)"><svg class="ico"><use href="#i-plane"/></svg>Missions</button>
+    <button class="module-tab" onclick="showMod('domicile',this)"><svg class="ico"><use href="#i-car"/></svg>Domicile</button>
+    <button class="module-tab" onclick="showMod('informatique',this)"><svg class="ico"><use href="#i-laptop"/></svg>Informatique</button>
+    <button class="module-tab" onclick="showMod('achats',this)"><svg class="ico"><use href="#i-cart"/></svg>Achats</button>
+    <button class="module-tab" onclick="showMod('construction',this)"><svg class="ico"><use href="#i-building"/></svg>Construction</button>
   </div>
 
   <div class="card module-panel active" id="mod-electricite">
-    <h2>&#9889; Consommation &eacute;lectrique</h2>
+    <h2>Consommation &eacute;lectrique</h2>
     <div class="alert info">Facteur d'&eacute;mission France 2023 : <strong>0,0491 kgCO&#8322;/kWh</strong></div>
     <div class="tbl-wrap"><table id="tbl-electricite"><thead><tr><th>B&acirc;timent</th><th>kWh</th><th>Part labo</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
     <div class="form-row" style="margin-top:1rem">
@@ -455,12 +560,12 @@
     </div>
     <div class="btn-row">
       <button class="btn btn-green" onclick="addElec()">+ Ajouter</button>
-      <button class="btn btn-blue" onclick="prefElec()">&#128194; Charger donn&eacute;es ESYCOM</button>
+      <button class="btn btn-blue" onclick="prefElec()">Charger donn&eacute;es ESYCOM</button>
     </div>
   </div>
 
   <div class="card module-panel" id="mod-chauffage">
-    <h2>&#128293; Chauffage</h2>
+    <h2>Chauffage</h2>
     <div class="tbl-wrap"><table id="tbl-chauffage"><thead><tr><th>B&acirc;timent</th><th>Type</th><th>kWh</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
     <div class="form-row" style="margin-top:1rem">
       <div class="field"><label>B&acirc;timent</label><input id="c-bat" placeholder="ex: B&acirc;t. Copernic"></div>
@@ -477,12 +582,12 @@
     </div>
     <div class="btn-row">
       <button class="btn btn-green" onclick="addChauf()">+ Ajouter</button>
-      <button class="btn btn-blue" onclick="prefChauf()">&#128194; Charger donn&eacute;es ESYCOM</button>
+      <button class="btn btn-blue" onclick="prefChauf()">Charger donn&eacute;es ESYCOM</button>
     </div>
   </div>
 
   <div class="card module-panel" id="mod-deplacements">
-    <h2>&#9992;&#65039; D&eacute;placements professionnels (missions)</h2>
+    <h2>D&eacute;placements professionnels (missions)</h2>
     <div class="alert info">Import&eacute; depuis <strong>03_missions_deplacements.csv</strong></div>
     <div class="tbl-wrap"><table id="tbl-deplacements"><thead><tr><th>Destination</th><th>Mode</th><th>km</th><th>Nb pers.</th><th>A/R</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
     <div class="form-row" style="margin-top:1rem">
@@ -504,12 +609,12 @@
     </div>
     <div class="btn-row">
       <button class="btn btn-green" onclick="addDep()">+ Ajouter</button>
-      <button class="btn btn-blue" onclick="prefDep()">&#128194; Charger missions 2024</button>
+      <button class="btn btn-blue" onclick="prefDep()">Charger missions 2024</button>
     </div>
   </div>
 
   <div class="card module-panel" id="mod-domicile">
-    <h2>&#128652; Trajets domicile-travail</h2>
+    <h2>Trajets domicile-travail</h2>
     <div class="tbl-wrap"><table id="tbl-domicile"><thead><tr><th>Mode</th><th>Nb agents</th><th>km/jour A/R</th><th>Jours/an</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
     <div class="form-row" style="margin-top:1rem">
       <div class="field"><label>Mode</label>
@@ -528,12 +633,12 @@
     </div>
     <div class="btn-row">
       <button class="btn btn-green" onclick="addDom()">+ Ajouter</button>
-      <button class="btn btn-blue" onclick="prefDom()">&#128194; Charger donn&eacute;es ESYCOM</button>
+      <button class="btn btn-blue" onclick="prefDom()">Charger donn&eacute;es ESYCOM</button>
     </div>
   </div>
 
   <div class="card module-panel" id="mod-informatique">
-    <h2>&#128187; Mat&eacute;riel informatique (fabrication)</h2>
+    <h2>Mat&eacute;riel informatique (fabrication)</h2>
     <div class="alert info">Import&eacute; depuis <strong>GES INFORMATIQUE</strong> &mdash; fichier ESYCOM. Facteurs : <strong>Ecodiag EcoInfo CNRS 2024</strong> (fabrication + distribution + fin de vie).</div>
     <div class="tbl-wrap"><table id="tbl-informatique"><thead><tr><th>Type</th><th>Mod&egrave;le</th><th>Qt&eacute;</th><th>Amortissement</th><th>kgCO&#8322;/an</th><th></th></tr></thead><tbody></tbody></table></div>
     <div class="form-row" style="margin-top:1rem">
@@ -553,12 +658,12 @@
     </div>
     <div class="btn-row">
       <button class="btn btn-green" onclick="addIT()">+ Ajouter</button>
-      <button class="btn btn-blue" onclick="prefIT()">&#128194; Charger mat&eacute;riel 2024</button>
+      <button class="btn btn-blue" onclick="prefIT()">Charger mat&eacute;riel 2024</button>
     </div>
   </div>
 
   <div class="card module-panel" id="mod-achats">
-    <h2>&#128722; Achats &amp; commandes</h2>
+    <h2>Achats &amp; commandes</h2>
     <div class="alert info">Issues de <strong>01_achats_DDRS.csv</strong> + <strong>04_commandes_CNRS_GESLAB.csv</strong></div>
     <div class="tbl-wrap"><table id="tbl-achats"><thead><tr><th>Cat&eacute;gorie DDRS</th><th>Montant HT (&euro;)</th><th>Facteur (kgCO&#8322;/&euro;)</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
     <div class="form-row" style="margin-top:1rem">
@@ -577,13 +682,13 @@
     </div>
     <div class="btn-row">
       <button class="btn btn-green" onclick="addAch()">+ Ajouter</button>
-      <button class="btn btn-blue" onclick="prefAch()">&#128194; Charger achats 2024</button>
+      <button class="btn btn-blue" onclick="prefAch()">Charger achats 2024</button>
     </div>
   </div>
 
 
   <div class="card module-panel" id="mod-construction">
-    <h2>&#127963;&#65039; Construction du b&acirc;timent</h2>
+    <h2>Construction du b&acirc;timent</h2>
     <div class="alert info">M&eacute;thode GES-1point5 : surface &times; 1,3 &times; FE &divide; 50 ans. Source : ADEME base carbone.</div>
     <div class="tbl-wrap"><table id="tbl-construction"><thead><tr><th>B&acirc;timent</th><th>Surface (m&sup2;)</th><th>Structure</th><th>FE (kgCO&#8322;/m&sup2;)</th><th>kgCO&#8322;eq/an</th><th></th></tr></thead><tbody></tbody></table></div>
     <div class="form-row" style="margin-top:1rem">
@@ -603,70 +708,70 @@
 
   <div class="card">
     <div class="btn-row">
-      <button class="btn btn-green" onclick="calculateAll()">&#129518; Calculer le bilan &rarr; R&eacute;sultats</button>
+      <button class="btn btn-green" onclick="calculateAll()">Calculer le bilan &rarr; R&eacute;sultats</button>
     </div>
   </div>
 </div>
 
 <!-- RESULTATS -->
 <div id="page-resultats" class="page">
-  <div class="section-title">&#128200; R&eacute;sultats &mdash; Bilan Carbone ESYCOM 2024 <span id="res-source-badge" style="font-size:.72rem;font-weight:600;padding:.2rem .8rem;border-radius:20px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;margin-left:.5rem">&#128203; Donn&eacute;es officielles 2024</span></div>
-  <div class="alert success" id="res-alert">&#128202; Bilan officiel ESYCOM 2024 &mdash; <strong>385,5 tCO&#8322;eq</strong> (source&nbsp;: GES-1point5 / Labos 1point5)</div>
+  <div class="section-title">R&eacute;sultats &mdash; Bilan Carbone ESYCOM 2024 <span id="res-source-badge" style="font-size:.72rem;font-weight:600;padding:.2rem .8rem;border-radius:20px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;margin-left:.5rem">Donn&eacute;es officielles 2024</span></div>
+  <div class="alert success" id="res-alert">Bilan officiel ESYCOM 2024 &mdash; <strong>385,5 tCO&#8322;eq</strong> (source&nbsp;: GES-1point5 / Labos 1point5)</div>
   <div class="chart-grid">
-    <div class="chart-box" style="grid-column:span 2"><h3>&#127942; &Eacute;missions par poste (tCO&#8322;eq)</h3><canvas id="chartResults" style="max-height:350px"></canvas></div>
+    <div class="chart-box" style="grid-column:span 2"><h3>&Eacute;missions par poste (tCO&#8322;eq)</h3><canvas id="chartResults" style="max-height:350px"></canvas></div>
   </div>
   <div class="card" style="padding:1rem 1.5rem">
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
-    <h2 style="margin:0">&#128203; D&eacute;tail par module</h2>
+    <h2 style="margin:0">D&eacute;tail par module</h2>
     <button class="btn btn-outline" style="font-size:.8rem;padding:.4rem 1rem" onclick="userCalculated=false;initResultats2024()">&#8635; Afficher les donn&eacute;es officielles 2024</button>
   </div>
   <div id="res-bars" style="margin-top:1rem"></div>
 </div>
-  <div class="card"><h2>&#128161; Recommandations</h2><div id="res-recs"></div></div>
+  <div class="card"><h2>Recommandations</h2><div id="res-recs"></div></div>
 </div>
 
 <!-- COMPARAISON -->
 <div id="page-comparaison" class="page">
   <!-- COMPARAISONS CONCRÈTES -->
-  <div class="section-title" style="margin-top:2rem">&#127759; Le bilan ESYCOM 2024 en exemples concrets</div>
+  <div class="section-title" style="margin-top:2rem">Le bilan ESYCOM 2024 en exemples concrets</div>
   <div class="alert info">385,5 tCO&#8322;eq &mdash; ce que &ccedil;a repr&eacute;sente dans la vie r&eacute;elle. Source&nbsp;: ADEME Base Carbone, GES-1point5.</div>
 
   <!-- TOTAL -->
   <div class="card" style="border-top:4px solid #e65100">
-    <h2 style="color:#e65100">&#127758; Total 2024 &mdash; 385,5 tCO&#8322;eq</h2>
+    <h2 style="color:#e65100">Total 2024 &mdash; 385,5 tCO&#8322;eq</h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
       <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#128106;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#e65100">43</div>
         <div style="font-weight:700;font-size:.9rem">Fran&ccedil;ais &agrave; l&apos;&eacute;quivalent annuel</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">L&apos;empreinte moyenne d&apos;un Fran&ccedil;ais est de 9&nbsp;tCO&#8322;e/an. Le labo &eacute;met autant que 43 personnes dans toute leur vie quotidienne.</div>
       </div>
       <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#128652;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#e65100">1,77 M km</div>
         <div style="font-weight:700;font-size:.9rem">en voiture thermique</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">&Agrave; 0,218&nbsp;kgCO&#8322;/km &mdash; soit Paris-Vladivostok aller-retour <strong>22 fois</strong>.</div>
       </div>
       <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#127795;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#e65100">15&nbsp;400 arbres</div>
         <div style="font-weight:700;font-size:.9rem">&agrave; planter pendant 1 an</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">Un arbre absorbe ~25&nbsp;kg CO&#8322;/an. Il faudrait une for&ecirc;t de 12 terrains de football pour compenser.</div>
       </div>
       <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#128187;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#e65100">1&nbsp;350 laptops</div>
         <div style="font-weight:700;font-size:.9rem">MacBook Pro produits de z&eacute;ro</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">Fabriquer un laptop = 285&nbsp;kgCO&#8322;e. Le bilan total en &eacute;quivaut &agrave; 1&nbsp;350 ordinateurs d&apos;un coup.</div>
       </div>
       <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#9992;&#65039;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#e65100">3&nbsp;000 A/R</div>
         <div style="font-weight:700;font-size:.9rem">Paris &rarr; Lyon en avion</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">Un A/R Paris-Lyon en avion = ~130&nbsp;kgCO&#8322;e. Le bilan total en repr&eacute;sente 2&nbsp;970.</div>
       </div>
       <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#127758;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#e65100">1,06 tCO&#8322;e</div>
         <div style="font-weight:700;font-size:.9rem">par jour en moyenne</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">Chaque jour de 2024, ESYCOM a &eacute;mis autant qu&apos;un habitant du <strong>Bangladesh en 1 an</strong>.</div>
@@ -676,34 +781,34 @@
 
   <!-- ACHATS -->
   <div class="card" style="border-top:4px solid #66bb6a">
-    <h2 style="color:#2e7d32">&#128722; Achats &mdash; 235 tCO&#8322;eq (61%)</h2>
+    <h2 style="color:#2e7d32">Achats &mdash; 235 tCO&#8322;eq (61%)</h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
       <div style="background:#e8f5e9;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#128106;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#2e7d32">26 Fran&ccedil;ais</div>
         <div style="font-weight:700;font-size:.9rem">vie quotidienne annuelle</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">Le seul poste achats d&eacute;passe l&apos;empreinte compl&egrave;te de 26 personnes. Plus que tout le reste du labo r&eacute;uni.</div>
       </div>
       <div style="background:#e8f5e9;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#128187;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#2e7d32">391 laptops</div>
         <div style="font-weight:700;font-size:.9rem">IT seule (111,5 t)</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">La cat&eacute;gorie IT repr&eacute;sente 5,6 laptops neufs par personne du labo. Versus 1 reconditionn&eacute; tous les 7 ans en optimis&eacute;.</div>
       </div>
       <div style="background:#e8f5e9;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#128421;&#65039;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#2e7d32">62 serveurs</div>
         <div style="font-weight:700;font-size:.9rem">produits de z&eacute;ro</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">1 serveur neuf = 1&nbsp;800&nbsp;kgCO&#8322;e. Les achats IT = autant que produire 62 serveurs en une seule ann&eacute;e.</div>
       </div>
       <div style="background:#e8f5e9;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#128269;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#2e7d32">50 tCO&#8322;e perdus</div>
         <div style="font-weight:700;font-size:.9rem">codes NACRES non renseign&eacute;s</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">La cat&eacute;gorie &laquo;&nbsp;divers non classé&nbsp;&raquo; = 50&nbsp;t dont on ne conna&icirc;t pas l&apos;origine. Mieux coder permettrait de les piloter.</div>
       </div>
       <div style="background:#e8f5e9;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#9851;&#65039;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#2e7d32">&minus;47 tCO&#8322;e</div>
         <div style="font-weight:700;font-size:.9rem">si 50% IT en reconditionn&eacute;</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">Un laptop reconditionn&eacute; = ~140&nbsp;kgCO&#8322;e vs 285 neuf. Sans changer les habitudes de travail.</div>
@@ -713,34 +818,34 @@
 
   <!-- MISSIONS -->
   <div class="card" style="border-top:4px solid #ffa726">
-    <h2 style="color:#e65100">&#9992;&#65039; Missions &mdash; 85,2 tCO&#8322;eq (22%)</h2>
+    <h2 style="color:#e65100">Missions &mdash; 85,2 tCO&#8322;eq (22%)</h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
       <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#128100;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#e65100">9,5 Fran&ccedil;ais</div>
         <div style="font-weight:700;font-size:.9rem">75 missions en 2024</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">Les d&eacute;placements professionnels repr&eacute;sentent l&apos;empreinte compl&egrave;te de presque 10 personnes sur une ann&eacute;e.</div>
       </div>
       <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#128260;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#e65100">8 vols = 53 t</div>
         <div style="font-weight:700;font-size:.9rem">= 2 ans d&apos;&eacute;nergie des b&acirc;timents</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">Les 8 vols intercontinentaux g&eacute;n&egrave;rent 53&nbsp;tCO&#8322;e &mdash; soit <strong>2 ann&eacute;es enti&egrave;res</strong> d&apos;&eacute;nergie du laboratoire.</div>
       </div>
       <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#128649;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#e65100">65&times; moins</div>
         <div style="font-weight:700;font-size:.9rem">en train vs avion</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">30 missions en train = 0,03&nbsp;tCO&#8322;e seulement. C&apos;est 1&nbsp;770&times; moins que les 8 vols intercontinentaux.</div>
       </div>
       <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:2rem">&#127758;</div>
+        <div style="font-size:2rem"></div>
         <div style="font-size:1.6rem;font-weight:800;color:#e65100">Paris &rarr; Singapour</div>
         <div style="font-weight:700;font-size:.9rem">A/R = 8,5 tCO&#8322;e = 3 ans de chauffage</div>
         <div style="font-size:.78rem;color:#888;margin-top:.3rem">Un seul A/R Paris-Singapour = 3 ans de chauffage au gaz d&apos;un appartement. En train : 131&nbsp;kg seulement.</div>
       </div>
       <div style="background:#fff8e1;border-radius:12px;padding:1rem;border:1px solid #ffd54f">
-        <div style="font-size:1rem;font-weight:700;color:#e65100;margin-bottom:.5rem">&#128204; R&egrave;gle simple</div>
+        <div style="font-size:1rem;font-weight:700;color:#e65100;margin-bottom:.5rem">R&egrave;gle simple</div>
         <div style="font-size:.83rem;color:#555">Pour tout trajet &lt;&nbsp;6h en train (Paris-Madrid, Paris-Bruxelles, Paris-Amsterdam, Paris-Londres, Paris-Barcelone...) le train &eacute;met <strong>95 &agrave; 99% de CO&#8322; en moins</strong> que l&apos;avion.</div>
       </div>
     </div>
@@ -749,52 +854,52 @@
   <!-- ÉNERGIE + DOMICILE + IT (ligne compacte) -->
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
     <div class="card" style="border-top:4px solid #42a5f5;margin:0">
-      <h2 style="color:#1565c0;font-size:.9rem">&#9889; &Eacute;nergie &mdash; 26 tCO&#8322;eq</h2>
+      <h2 style="color:#1565c0;font-size:.9rem">&Eacute;nergie &mdash; 26 tCO&#8322;eq</h2>
       <div style="font-size:.82rem;color:#555;line-height:1.6">
-        <p style="margin-bottom:.5rem">&#127968; <strong>222 foyers</strong> en consommation &eacute;lectrique annuelle</p>
-        <p style="margin-bottom:.5rem">&#9992;&#65039; <strong>= 1,4 vol Paris-Tokyo</strong> &mdash; toute l&apos;&eacute;nergie annuelle des 3 b&acirc;timents &eacute;quivaut &agrave; 1,4 vol A/R</p>
-        <p style="margin-bottom:.5rem">&#9830;&#65039; <strong>600 t &eacute;vit&eacute;es</strong> gr&acirc;ce &agrave; la g&eacute;othermie &mdash; sans elle, l&apos;&eacute;nergie serait 24&times; plus &eacute;missive</p>
-        <p>&#127900; <strong>722&nbsp;000h streaming HD</strong> &eacute;quivalent &mdash; l&apos;&eacute;nergie num&eacute;rique reste bien en dessous des achats physiques</p>
+        <p style="margin-bottom:.5rem"><strong>222 foyers</strong> en consommation &eacute;lectrique annuelle</p>
+        <p style="margin-bottom:.5rem"><strong>= 1,4 vol Paris-Tokyo</strong> &mdash; toute l&apos;&eacute;nergie annuelle des 3 b&acirc;timents &eacute;quivaut &agrave; 1,4 vol A/R</p>
+        <p style="margin-bottom:.5rem"><strong>600 t &eacute;vit&eacute;es</strong> gr&acirc;ce &agrave; la g&eacute;othermie &mdash; sans elle, l&apos;&eacute;nergie serait 24&times; plus &eacute;missive</p>
+        <p><strong>722&nbsp;000h streaming HD</strong> &eacute;quivalent &mdash; l&apos;&eacute;nergie num&eacute;rique reste bien en dessous des achats physiques</p>
       </div>
     </div>
     <div class="card" style="border-top:4px solid #26c6da;margin:0">
-      <h2 style="color:#00838f;font-size:.9rem">&#128652; Domicile-travail &mdash; 12,8 tCO&#8322;eq</h2>
+      <h2 style="color:#00838f;font-size:.9rem">Domicile-travail &mdash; 12,8 tCO&#8322;eq</h2>
       <div style="font-size:.82rem;color:#555;line-height:1.6">
-        <p style="margin-bottom:.5rem">&#128663; <strong>78% en voiture solo</strong> = 10&nbsp;t sur 12,8&nbsp;t &mdash; mode majoritaire, le plus &eacute;metteur</p>
-        <p style="margin-bottom:.5rem">&#128683; <strong>45&nbsp;872 km</strong> en voiture = Paris-Tokyo × 4,7</p>
-        <p style="margin-bottom:.5rem">&#129309; <strong>&minus;5 tCO&#8322;e</strong> si tous en covoiturage &agrave; 2 (&minus;39% instantan&eacute;ment)</p>
-        <p>&#128650; RER + m&eacute;tro + v&eacute;lo = <strong>1,9 tCO&#8322;e seulement</strong> pour tous les non-voiture combin&eacute;s</p>
+        <p style="margin-bottom:.5rem"><strong>78% en voiture solo</strong> = 10&nbsp;t sur 12,8&nbsp;t &mdash; mode majoritaire, le plus &eacute;metteur</p>
+        <p style="margin-bottom:.5rem"><strong>45&nbsp;872 km</strong> en voiture = Paris-Tokyo × 4,7</p>
+        <p style="margin-bottom:.5rem"><strong>&minus;5 tCO&#8322;e</strong> si tous en covoiturage &agrave; 2 (&minus;39% instantan&eacute;ment)</p>
+        <p>RER + m&eacute;tro + v&eacute;lo = <strong>1,9 tCO&#8322;e seulement</strong> pour tous les non-voiture combin&eacute;s</p>
       </div>
     </div>
     <div class="card" style="border-top:4px solid #7e57c2;margin:0">
-      <h2 style="color:#4527a0;font-size:.9rem">&#128187; IT &amp; Construction &mdash; 26,5 tCO&#8322;eq</h2>
+      <h2 style="color:#4527a0;font-size:.9rem">IT &amp; Construction &mdash; 26,5 tCO&#8322;eq</h2>
       <div style="font-size:.82rem;color:#555;line-height:1.6">
-        <p style="margin-bottom:.5rem">&#128187; 1 laptop neuf = <strong>47&nbsp;500 km en TGV</strong> (285&nbsp;kgCO&#8322;e)</p>
-        <p style="margin-bottom:.5rem">&#9851;&#65039; Reconditionn&eacute; = <strong>&minus;50%</strong> d&apos;impact IT &mdash; laptop ~140 vs 285 neuf</p>
-        <p style="margin-bottom:.5rem">&#127963;&#65039; Construction = <strong>poste fixe</strong> &mdash; 1&nbsp;578 m&sup2; sur 3 b&acirc;timents, amorti 50 ans</p>
-        <p>&#127795; B&acirc;timents bois = &divide;2,5 l&apos;impact si construction neuve</p>
+        <p style="margin-bottom:.5rem">1 laptop neuf = <strong>47&nbsp;500 km en TGV</strong> (285&nbsp;kgCO&#8322;e)</p>
+        <p style="margin-bottom:.5rem">Reconditionn&eacute; = <strong>&minus;50%</strong> d&apos;impact IT &mdash; laptop ~140 vs 285 neuf</p>
+        <p style="margin-bottom:.5rem">Construction = <strong>poste fixe</strong> &mdash; 1&nbsp;578 m&sup2; sur 3 b&acirc;timents, amorti 50 ans</p>
+        <p>B&acirc;timents bois = &divide;2,5 l&apos;impact si construction neuve</p>
       </div>
     </div>
   </div>
 
   <!-- COMPARAISON FRAPPANTE : barre visuelle -->
   <div class="card" style="border-top:4px solid #c62828">
-    <h2 style="color:#c62828">&#128680; Les comparaisons les plus frappantes</h2>
+    <h2 style="color:#c62828">Les comparaisons les plus frappantes</h2>
     <div style="font-size:.87rem;color:#1a2a35;line-height:1.8">
       <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;padding:.5rem;background:#ffebee;border-radius:8px">
-        <span style="font-size:1.3rem">&#9992;&#65039;</span>
+        <span style="font-size:1.3rem"></span>
         <span><strong>8 vols intercontinentaux (53 tCO&#8322;e) &gt; toute l&apos;&eacute;nergie annuelle des 3 b&acirc;timents (26 t)</strong> &mdash; un seul d&eacute;placement professionnel &eacute;quivaut &agrave; 6 mois de chauffage et d&apos;&eacute;lectricit&eacute; du labo</span>
       </div>
       <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;padding:.5rem;background:#fff3e0;border-radius:8px">
-        <span style="font-size:1.3rem">&#128722;</span>
+        <span style="font-size:1.3rem"></span>
         <span><strong>Les achats (235 t) = 61% du bilan</strong> alors que l&apos;&eacute;nergie ne repr&eacute;sente que 7% &mdash; l&apos;impact r&eacute;el du labo est dans sa cha&icirc;ne d&apos;approvisionnement, pas dans ses factures</span>
       </div>
       <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;padding:.5rem;background:#e8f5e9;border-radius:8px">
-        <span style="font-size:1.3rem">&#127973;</span>
+        <span style="font-size:1.3rem"></span>
         <span><strong>1 vol Paris-Tokyo A/R (7,6 t) = 1 Fran&ccedil;ais entier pendant 10 mois</strong> &mdash; c&apos;est aussi 26 fois un A/R Paris-Lyon en TGV (285 kg/trajet)</span>
       </div>
       <div style="display:flex;align-items:center;gap:.7rem;padding:.5rem;background:#e3f2fd;border-radius:8px">
-        <span style="font-size:1.3rem">&#127919;</span>
+        <span style="font-size:1.3rem"></span>
         <span><strong>Objectif 2030 : &minus;243 tCO&#8322;e &agrave; r&eacute;duire</strong> &mdash; &eacute;quivaut &agrave; annuler 4&nbsp;600 vols domestiques, ou acheter 850 laptops reconditioinn&eacute;s plut&ocirc;t que neufs chaque ann&eacute;e</span>
       </div>
     </div>
@@ -803,7 +908,7 @@
 </div>
 
 <div id="page-prediction" class="page">
-  <div class="section-title">&#128202; Pr&#233;visions &amp; Projections 2025–2040</div>
+  <div class="section-title">Pr&#233;visions &amp; Projections 2025–2040</div>
 
 <div class="prev-wrap">
   <div class="prev-metrics" id="p-kpis"></div>
@@ -813,7 +918,7 @@
       <button class="prev-tab" onclick="pShowTab('projections',this)">Projections 2025–2040</button>
       <button class="prev-tab" onclick="pShowTab('mesures',this)">Simulation mesures</button>
       <button class="prev-tab" onclick="pShowTab('indicateurs',this)">Indicateurs normalisés</button>
-      <button class="prev-tab" onclick="pShowTab('multilabos',this)">🔬 Autres Labos</button>
+      <button class="prev-tab" onclick="pShowTab('multilabos',this)">Autres Labos</button>
     </div>
     <div id="p-tab-historique" class="prev-tab-panel active">
       <h2 style="font-size:15px;margin-bottom:1rem">Évolution des émissions 2022–2024 par poste</h2>
@@ -822,7 +927,7 @@
       <hr class="prev-hr">
       <table class="prev-dt" id="p-tableHisto"></table>
       <div class="prev-hl" style="margin-top:1rem">
-        ⚠️ Le pic 2023 (+45 %) est dû à des achats exceptionnels (équipements ANR) et à la reprise des conférences post-Covid.
+        Le pic 2023 (+45 %) est dû à des achats exceptionnels (équipements ANR) et à la reprise des conférences post-Covid.
         La baisse 2024 (−7 %) reflète une rationalisation des achats.
       </div>
     </div>
@@ -842,7 +947,7 @@
       </div>
       <div class="prev-chart-wrap"><canvas id="p-chartProj" role="img" aria-label="Projections carbone ESYCOM 2024 à 2040">Projections selon 4 scénarios</canvas></div>
       <div class="prev-hl" style="margin-top:1rem;font-size:12px">
-        🎯 <strong>Objectif CNRS 2030 :</strong> −50 % vs 2022 → cible <strong>143 tCO₂e</strong>.
+        <strong>Objectif CNRS 2030 :</strong> −50 % vs 2022 → cible <strong>143 tCO₂e</strong>.
         Seul le scénario optimiste (152,8 tCO₂e) l'approche. Le statu quo mènerait à 572,8 tCO₂e en 2030 — 4× la cible.
       </div>
       <hr class="prev-hr">
@@ -868,7 +973,7 @@
       <table class="prev-dt" id="p-tableIndic"></table>
       <div class="prev-chart-sm" style="margin-top:1.25rem"><canvas id="p-chartIndic" role="img" aria-label="Intensité carbone/ETP 2022-2024">4.38, 7.02, 5.51</canvas></div>
       <div class="prev-hl" style="margin-top:1rem">
-        🎯 Objectif CNRS 2030 : −50% → cible ≈ <strong>143 tCO₂e</strong> (vs 385,5 en 2024).
+        Objectif CNRS 2030 : −50% → cible ≈ <strong>143 tCO₂e</strong> (vs 385,5 en 2024).
         Cela nécessite une action structurelle sur les achats (premier poste d'émission).
       </div>
     </div>
@@ -876,7 +981,7 @@
     <div id="p-tab-multilabos" class="prev-tab-panel">
       <h2 style="font-size:15px;margin-bottom:1rem">Prédictions — Autres laboratoires CNRS</h2>
       <div class="ml-info-box">
-        📊 Données issues de l'outil GES-1point5 pour 3 laboratoires avec historique complet (LAAS, Pprime, LRP).
+        Données issues de l'outil GES-1point5 pour 3 laboratoires avec historique complet (LAAS, Pprime, LRP).
         Les projections utilisent le même algorithme que les prévisions ESYCOM (TCAC calculé sur les 2 dernières années hors COVID).
       </div>
 
@@ -910,6 +1015,35 @@
 <div id="total-live">Total: <span id="live-tot">385,5</span> tCO&#8322;eq</div>
 
 <script>
+if(window.Chart){
+  Chart.defaults.font.family="'IBM Plex Sans', system-ui, sans-serif";
+  Chart.defaults.font.size=11;
+  Chart.defaults.color="#6a665a";
+  Chart.defaults.borderColor="rgba(120,110,70,.12)";
+  // Legend — fine point-style markers
+  const lg=Chart.defaults.plugins.legend;
+  lg.labels.color="#3c423a";lg.labels.usePointStyle=true;lg.labels.pointStyle="circle";
+  lg.labels.boxWidth=7;lg.labels.boxHeight=7;lg.labels.padding=13;
+  lg.labels.font={family:"'IBM Plex Sans', sans-serif",size:11};
+  // Tooltip — editorial, mono figures
+  const tt=Chart.defaults.plugins.tooltip;
+  tt.backgroundColor="#1f3d2d";tt.titleColor="#f3ecd9";tt.bodyColor="#e7e9d6";
+  tt.borderColor="rgba(124,143,90,.4)";tt.borderWidth=1;tt.cornerRadius=4;
+  tt.padding=10;tt.boxPadding=5;tt.usePointStyle=true;
+  tt.titleFont={family:"'IBM Plex Mono', monospace",size:11,weight:'600'};
+  tt.bodyFont={family:"'IBM Plex Mono', monospace",size:11};
+  // Lighter grid — horizontal hairlines only, no axis borders
+  const sc=Chart.defaults.scale;
+  sc.grid.color="rgba(120,110,70,.09)";sc.grid.tickColor="transparent";sc.grid.drawTicks=false;
+  sc.border.display=false;sc.ticks.padding=8;
+  sc.ticks.font={family:"'IBM Plex Mono', monospace",size:10};
+  // Elements
+  Chart.defaults.elements.bar.borderRadius=3;
+  Chart.defaults.elements.line.tension=.35;Chart.defaults.elements.line.borderWidth=2;
+  Chart.defaults.elements.point.radius=3;Chart.defaults.elements.point.hoverRadius=6;
+  Chart.defaults.elements.point.borderWidth=0;
+  Chart.defaults.elements.arc.borderColor="#fffdf7";Chart.defaults.elements.arc.borderWidth=2;
+}
 const EF={
   elec:0.0491,
   chauf:{gaz:.227,fioul:.324,reseau:.117,elec:.0491,bois:.030},
@@ -920,7 +1054,7 @@ const EF={
   construction:{beton:600,acier:700,bois:200,mixte:500} // kgCO2/m² brut, amortissement 50 ans appliqué dans le calcul
 };
 const MODS={electricite:"Electricite",chauffage:"Chauffage",deplacements:"Missions",domicile:"Domicile-travail",informatique:"Materiel IT",achats:"Achats",construction:"Construction"};
-const COLS={electricite:"#42a5f5",chauffage:"#ef5350",deplacements:"#ffa726",domicile:"#26c6da",informatique:"#7e57c2",achats:"#66bb6a",construction:"#78909c"};
+const COLS={electricite:"#c98a2b",chauffage:"#bf5a36",deplacements:"#3a6b8a",domicile:"#4f8a7b",informatique:"#7d5a6e",achats:"#2f5d44",construction:"#9a8f6f"};
 const D={electricite:[],chauffage:[],deplacements:[],domicile:[],informatique:[],achats:[],construction:[]};
 
 function showPage(id,btn){
@@ -940,7 +1074,7 @@ function showMod(id,btn){
 }
 function rt(mod){
   const tb=document.querySelector("#tbl-"+mod+" tbody");
-  tb.innerHTML=D[mod].map((r,i)=>`<tr>${r.c.map(v=>`<td>${v}</td>`).join("")}<td><button onclick="D.${mod}.splice(${i},1);rt('${mod}')" style="background:none;border:none;cursor:pointer;color:#c62828">&#10005;</button></td></tr>`).join("");
+  tb.innerHTML=D[mod].map((r,i)=>`<tr>${r.c.map(v=>`<td>${v}</td>`).join("")}<td><button onclick="D.${mod}.splice(${i},1);rt('${mod}')" style="background:none;border:none;cursor:pointer;color:#a8392a;font-size:.85rem;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6">&#10005;</button></td></tr>`).join("");
   let t=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
   document.getElementById("live-tot").textContent=(t/1000).toFixed(2);
 }
@@ -971,8 +1105,7 @@ const DATA_2024_OFFICIAL = {
   electricite:7600, chauffage:18400, deplacements:85200, domicile:12800,
   informatique:6000, achats:235000, construction:20500
 };
-// 7600+18400+85200+12800+6000+235000+20500 = 385500 kg = 385,5 tCO₂eq ✓
-
+// 7600+18400+85200+12800+6000+235000+20500 = 385500 kg = 385,5 tCO₂eq 
 let userCalculated = false;  // true dès qu'un calcul personnalisé a été lancé
 
 function renderResultats(tots, grand, ETP, isDefault) {
@@ -980,11 +1113,11 @@ function renderResultats(tots, grand, ETP, isDefault) {
   const badge = document.getElementById('res-source-badge');
   if (badge) {
     if (isDefault) {
-      badge.innerHTML = '&#128203; Donn&eacute;es officielles 2024';
+      badge.innerHTML = 'Donn&eacute;es officielles 2024';
       badge.style.background = '#e8f5e9'; badge.style.color = '#2e7d32';
       badge.style.borderColor = '#a5d6a7';
     } else {
-      badge.innerHTML = '&#9999;&#65039; Vos donn&eacute;es saisies';
+      badge.innerHTML = 'Vos donn&eacute;es saisies';
       badge.style.background = '#e3f2fd'; badge.style.color = '#1565c0';
       badge.style.borderColor = '#90caf9';
     }
@@ -992,7 +1125,7 @@ function renderResultats(tots, grand, ETP, isDefault) {
   // Alerte
   const alertEl = document.getElementById('res-alert');
   if (isDefault) {
-    alertEl.innerHTML = '&#128202; Bilan officiel ESYCOM 2024 &mdash; <strong>385,5 tCO&#8322;eq</strong> (source&nbsp;: GES-1point5 / Labos 1point5)';
+    alertEl.innerHTML = 'Bilan officiel ESYCOM 2024 &mdash; <strong>385,5 tCO&#8322;eq</strong> (source&nbsp;: GES-1point5 / Labos 1point5)';
     alertEl.className = 'alert success';
   } else {
     alertEl.innerHTML = 'Bilan calcul&eacute; &mdash; Total&nbsp;: <strong>' + (grand/1000).toFixed(2) + ' tCO&#8322;eq</strong> &mdash; <em>Vos donn&eacute;es saisies</em>';
@@ -1006,7 +1139,7 @@ function renderResultats(tots, grand, ETP, isDefault) {
       <div class="rl">${MODS[m]}</div>
       <div class="bw"><div class="bf" style="width:${(v/mx*100).toFixed(1)}%;background:${COLS[m]}"></div></div>
       <div class="rv" style="color:${COLS[m]}">${(v/1000).toFixed(2)} t</div>
-      <div style="width:42px;text-align:right;font-size:.75rem;color:#90a4ae">${(v/grand*100).toFixed(0)}%</div>
+      <div style="width:42px;text-align:right;font-size:.75rem;color:#9a937f">${(v/grand*100).toFixed(0)}%</div>
     </div>`
   ).join("");
   // Graphique
@@ -1043,21 +1176,21 @@ function renderResultats(tots, grand, ETP, isDefault) {
   recs.push({cl:"success", t:`<strong>Bilan total : ${total_t.toFixed(1)} tCO₂eq</strong> &mdash; ${(total_t/ETP).toFixed(2)} tCO₂eq/ETP
     &mdash; Objectif CNRS 2030 : <strong>143 t (−50% vs 2022)</strong> &mdash; &Eacute;cart : <strong>${(total_t-143).toFixed(0)} t &agrave; r&eacute;duire</strong>`});
   if (achats_t > 50)
-    recs.push({cl:"warning", t:`<strong>🛒 Achats (${achats_t.toFixed(0)} t &mdash; ${(achats_t/total_t*100).toFixed(0)}%) :</strong>
+    recs.push({cl:"warning", t:`<strong>Achats (${achats_t.toFixed(0)} t &mdash; ${(achats_t/total_t*100).toFixed(0)}%) :</strong>
       Mutualiser les commandes inter-labos, privil&eacute;gier le reconditionn&eacute; (IT), regrouper les livraisons,
       mieux coder les achats (NACRES). <em>Potentiel : −60 &agrave; −100 t/an.</em>`});
   if (dep_t > 20)
-    recs.push({cl:"warning", t:`<strong>✈️ Missions (${dep_t.toFixed(0)} t &mdash; ${(dep_t/total_t*100).toFixed(0)}%) :</strong>
+    recs.push({cl:"warning", t:`<strong>Missions (${dep_t.toFixed(0)} t &mdash; ${(dep_t/total_t*100).toFixed(0)}%) :</strong>
       Imposer le train pour tout trajet &lt;6h, remplacer les conf&eacute;rences lointaines par vid&eacute;oconf&eacute;rence,
       instaurer un quota carbone/ETP (2 t/an). <em>Potentiel : −30 &agrave; −50 t/an.</em>`});
   if (elec_t > 3)
-    recs.push({cl:"info", t:`<strong>⚡ Énergie (${(elec_t+(tots.chauffage/1000)).toFixed(0)} t) :</strong>
+    recs.push({cl:"info", t:`<strong>Énergie (${(elec_t+(tots.chauffage/1000)).toFixed(0)} t) :</strong>
       Capteurs de pr&eacute;sence, LED, optimisation thermostat &agrave; 19°C, contrat &eacute;lectricit&eacute; verte.`});
   if (dom_t > 5)
-    recs.push({cl:"info", t:`<strong>🚗 Domicile-travail (${dom_t.toFixed(0)} t) :</strong>
+    recs.push({cl:"info", t:`<strong>Domicile-travail (${dom_t.toFixed(0)} t) :</strong>
       Remboursement pass Navigo 100%, forfait v&eacute;lo, plateforme covoiturage, t&eacute;l&eacute;travail 2j/sem.`});
   if (it_t > 2)
-    recs.push({cl:"info", t:`<strong>💻 Numérique (${it_t.toFixed(0)} t) :</strong>
+    recs.push({cl:"info", t:`<strong>Numérique (${it_t.toFixed(0)} t) :</strong>
       Allonger la dur&eacute;e de vie du mat&eacute;riel (&ge;7 ans), passer au reconditionn&eacute;, &eacute;teindre les serveurs inutilis&eacute;s.`});
 
   rv.innerHTML = recs.map(r => `<div class="alert ${r.cl}" style="margin-bottom:.7rem">${r.t}</div>`).join("");
@@ -1106,18 +1239,18 @@ function initDashboard(){
   new Chart(document.getElementById("chartPie").getContext("2d"),{
     type:"doughnut",
     data:{labels:Object.values(MODS),datasets:[{data:Object.keys(mock2024).map(m=>+(mock2024[m]/1000).toFixed(2)),backgroundColor:Object.values(COLS),borderWidth:2}]},
-    options:{plugins:{legend:{position:"right",labels:{font:{size:10}}},title:{display:true,text:"ESYCOM 2024 — 385,5 tCO₂eq (GES-1point5)",font:{size:9},color:"#90a4ae"},tooltip:{callbacks:{label:c=>`${c.label} : ${c.raw} t (${(c.raw/385.5*100).toFixed(1)}%)`}}},cutout:"55%"}
+    options:{plugins:{legend:{position:"right",labels:{font:{size:10}}},title:{display:true,text:"ESYCOM 2024 — 385,5 tCO₂eq (GES-1point5)",font:{size:9},color:"#9a937f"},tooltip:{callbacks:{label:c=>`${c.label} : ${c.raw} t (${(c.raw/385.5*100).toFixed(1)}%)`}}},cutout:"55%"}
   });
 
   // ── Évolution 2022 → 2023 → 2024 — top 5 postes ──
   new Chart(document.getElementById("chartBar").getContext("2d"),{
     type:"bar",
     data:{labels:["Achats","Chauffage","Missions","Domicile-travail","Construction"],datasets:[
-      {label:"2022 (285 t)",data:[94,69,32,38,28],backgroundColor:"rgba(66,165,245,.75)",borderRadius:4},
-      {label:"2023 (414 t)",data:[136,87,98,11,28],backgroundColor:"rgba(255,167,38,.75)",borderRadius:4},
-      {label:"2024 (386 t)",data:[235,18.4,85.2,12.8,20.5],backgroundColor:"rgba(102,187,106,.85)",borderRadius:4}
+      {label:"2022 (285 t)",data:[94,69,32,38,28],backgroundColor:"rgba(58,107,138,.78)",borderRadius:4},
+      {label:"2023 (414 t)",data:[136,87,98,11,28],backgroundColor:"rgba(201,138,43,.78)",borderRadius:4},
+      {label:"2024 (386 t)",data:[235,18.4,85.2,12.8,20.5],backgroundColor:"rgba(47,93,68,.88)",borderRadius:4}
     ]},
-    options:{plugins:{legend:{position:"top",labels:{font:{size:10}}},title:{display:true,text:"Source : GES-1point5 ESYCOM 2022–2024",font:{size:10},color:"#90a4ae"}},scales:{y:{title:{display:true,text:"tCO₂eq"},beginAtZero:true}}}
+    options:{plugins:{legend:{position:"top",labels:{font:{size:10}}},title:{display:true,text:"Source : GES-1point5 ESYCOM 2022–2024",font:{size:10},color:"#9a937f"}},scales:{y:{title:{display:true,text:"tCO₂eq"},beginAtZero:true}}}
   });
 
   // ── Déplacements & domicile-travail 2022 / 2023 / 2024 ──
@@ -1129,17 +1262,17 @@ function initDashboard(){
       backgroundColor:["#ef5350","#ffa726","#e53935","#fb8c00","#b71c1c","#e65100"],
       borderRadius:6
     }]},
-    options:{plugins:{legend:{display:false},title:{display:true,text:"Source : GES-1point5 ESYCOM",font:{size:10},color:"#90a4ae"},tooltip:{callbacks:{label:c=>`${c.raw} tCO₂eq`}}},scales:{y:{title:{display:true,text:"tCO₂eq"},beginAtZero:true}}}
+    options:{plugins:{legend:{display:false},title:{display:true,text:"Source : GES-1point5 ESYCOM",font:{size:10},color:"#9a937f"},tooltip:{callbacks:{label:c=>`${c.raw} tCO₂eq`}}},scales:{y:{title:{display:true,text:"tCO₂eq"},beginAtZero:true}}}
   });
 
   // ── Achats — catégories DDRS 2023 vs 2024 (tCO₂eq) ──
   new Chart(document.getElementById("chartPurchases").getContext("2d"),{
     type:"bar",
     data:{labels:["Chimie / Bio","Mat. IT","Services","Mécanique","Bureau","Autre"],datasets:[
-      {label:"2023 (136 t)",data:[54,35,27,16,3,1],backgroundColor:"rgba(255,167,38,.75)",borderRadius:4},
-      {label:"2024 (235 t)",data:[89,66,33,24,14,9],backgroundColor:"rgba(102,187,106,.85)",borderRadius:4}
+      {label:"2023 (136 t)",data:[54,35,27,16,3,1],backgroundColor:"rgba(201,138,43,.78)",borderRadius:4},
+      {label:"2024 (235 t)",data:[89,66,33,24,14,9],backgroundColor:"rgba(47,93,68,.88)",borderRadius:4}
     ]},
-    options:{plugins:{legend:{position:"top",labels:{font:{size:10}}},title:{display:true,text:"Achats ESYCOM 2023 vs 2024 — catégories DDRS (tCO₂eq)",font:{size:9},color:"#90a4ae"},tooltip:{callbacks:{label:c=>`${c.dataset.label} — ${c.label} : ${c.raw} t`}}},scales:{y:{title:{display:true,text:"tCO₂eq"},beginAtZero:true}}}
+    options:{plugins:{legend:{position:"top",labels:{font:{size:10}}},title:{display:true,text:"Achats ESYCOM 2023 vs 2024 — catégories DDRS (tCO₂eq)",font:{size:9},color:"#9a937f"},tooltip:{callbacks:{label:c=>`${c.dataset.label} — ${c.label} : ${c.raw} t`}}},scales:{y:{title:{display:true,text:"tCO₂eq"},beginAtZero:true}}}
   });
 }
 
@@ -1148,11 +1281,11 @@ let cmpInit=false;
 function initCmp(){
   if(cmpInit)return;cmpInit=true;
   // Chart 1 : benchmark réel tCO2/personne (horizontal bar)
-  new Chart(document.getElementById("chartCmp1").getContext("2d"),{type:"bar",data:{labels:["Objectif Paris 2030","Moy. nationale (~200 labos)","LRP 2023 (46 pers.)","Pprime 2023 (564 pers.)","ESYCOM 2024 (70 ETP)","LAAS 2023 (456 pers.)"],datasets:[{label:"tCO\u2082eq / personne",data:[0.8,2.1,4.61,4.85,5.51,7.0],backgroundColor:["#66bb6a","#90a4ae","#f7d34f","#f7a84f","#4f8ef7","#3ecf8e"],borderRadius:6}]},options:{indexAxis:"y",plugins:{legend:{display:false},title:{display:true,text:"Sources : GES-1point5 LAAS 2019\u20132023, BGES Pprime 2024, BGES LRP 2022, ESYCOM 2024",font:{size:10},color:"#90a4ae"}},scales:{x:{title:{display:true,text:"tCO\u2082eq / personne"},grid:{color:"rgba(255,255,255,.06)"}},y:{ticks:{font:{size:10}}}}}});
+  new Chart(document.getElementById("chartCmp1").getContext("2d"),{type:"bar",data:{labels:["Objectif Paris 2030","Moy. nationale (~200 labos)","LRP 2023 (46 pers.)","Pprime 2023 (564 pers.)","ESYCOM 2024 (70 ETP)","LAAS 2023 (456 pers.)"],datasets:[{label:"tCO\u2082eq / personne",data:[0.8,2.1,4.61,4.85,5.51,7.0],backgroundColor:["#66bb6a","#9a937f","#f7d34f","#f7a84f","#4f8ef7","#3ecf8e"],borderRadius:6}]},options:{indexAxis:"y",plugins:{legend:{display:false},title:{display:true,text:"Sources : GES-1point5 LAAS 2019\u20132023, BGES Pprime 2024, BGES LRP 2022, ESYCOM 2024",font:{size:10},color:"#9a937f"}},scales:{x:{title:{display:true,text:"tCO\u2082eq / personne"},grid:{color:"rgba(255,255,255,.06)"}},y:{ticks:{font:{size:10}}}}}});
   // Chart 2 : répartition postes % — stacked bar inter-labos
-  new Chart(document.getElementById("chartCmp2").getContext("2d"),{type:"bar",data:{labels:["ESYCOM 2024","LAAS 2023","Pprime 2023","LRP 2023"],datasets:[{label:"Achats",data:[61,57.5,50,50.5],backgroundColor:"#66bb6a"},{label:"Missions",data:[22,16,20,14.2],backgroundColor:"#ffa726"},{label:"\u00c9nergie",data:[7,13,15,31],backgroundColor:"#42a5f5"},{label:"Domicile",data:[3,7,10,17.9],backgroundColor:"#26c6da"},{label:"IT",data:[2,3,5,0],backgroundColor:"#7e57c2"},{label:"Construction/Autres",data:[5,3.5,0,6.4],backgroundColor:"#78909c"}]},options:{plugins:{legend:{position:"bottom",labels:{font:{size:10},padding:8}},title:{display:true,text:"R\u00e9partition des postes (% du total) \u2014 donn\u00e9es GES-1point5",font:{size:10},color:"#90a4ae"}},scales:{x:{stacked:true},y:{stacked:true,title:{display:true,text:"% du total"},max:100,grid:{color:"rgba(255,255,255,.06)"}}}}});
+  new Chart(document.getElementById("chartCmp2").getContext("2d"),{type:"bar",data:{labels:["ESYCOM 2024","LAAS 2023","Pprime 2023","LRP 2023"],datasets:[{label:"Achats",data:[61,57.5,50,50.5],backgroundColor:"#66bb6a"},{label:"Missions",data:[22,16,20,14.2],backgroundColor:"#ffa726"},{label:"\u00c9nergie",data:[7,13,15,31],backgroundColor:"#42a5f5"},{label:"Domicile",data:[3,7,10,17.9],backgroundColor:"#26c6da"},{label:"IT",data:[2,3,5,0],backgroundColor:"#7e57c2"},{label:"Construction/Autres",data:[5,3.5,0,6.4],backgroundColor:"#78909c"}]},options:{plugins:{legend:{position:"bottom",labels:{font:{size:10},padding:8}},title:{display:true,text:"R\u00e9partition des postes (% du total) \u2014 donn\u00e9es GES-1point5",font:{size:10},color:"#9a937f"}},scales:{x:{stacked:true},y:{stacked:true,title:{display:true,text:"% du total"},max:100,grid:{color:"rgba(255,255,255,.06)"}}}}});
   // Source : GES-1point5 ESYCOM 2022 & 2023 (2024 = données CSV à importer)
-  new Chart(document.getElementById("chartEvol").getContext("2d"),{type:"line",data:{labels:["2022","2023"],datasets:[{label:"Total tCO2eq",data:[285.24,414.22],borderColor:"#ffa726",backgroundColor:"rgba(255,167,38,.12)",fill:true,tension:.4,pointRadius:6},{label:"Missions prof.",data:[31.92,98.45],borderColor:"#ef5350",tension:.4,pointRadius:5},{label:"Achats",data:[94.01,135.90],borderColor:"#66bb6a",tension:.4,pointRadius:5},{label:"Energie (élec+chauf)",data:[89.02,105.76],borderColor:"#42a5f5",tension:.4,pointRadius:5}]},options:{plugins:{title:{display:true,text:"Source : GES-1point5 ESYCOM",font:{size:10},color:"#90a4ae"}},scales:{y:{title:{display:true,text:"tCO2eq"}}}}});
+  new Chart(document.getElementById("chartEvol").getContext("2d"),{type:"line",data:{labels:["2022","2023"],datasets:[{label:"Total tCO2eq",data:[285.24,414.22],borderColor:"#c98a2b",backgroundColor:"rgba(201,138,43,.14)",fill:true,tension:.4,pointRadius:6},{label:"Missions prof.",data:[31.92,98.45],borderColor:"#bf5a36",tension:.4,pointRadius:5},{label:"Achats",data:[94.01,135.90],borderColor:"#2f5d44",tension:.4,pointRadius:5},{label:"Energie (élec+chauf)",data:[89.02,105.76],borderColor:"#3a6b8a",tension:.4,pointRadius:5}]},options:{plugins:{title:{display:true,text:"Source : GES-1point5 ESYCOM",font:{size:10},color:"#9a937f"}},scales:{y:{title:{display:true,text:"tCO2eq"}}}}});
 }
 
 window.addEventListener("DOMContentLoaded",()=>{initDashboard();initResultats2024();});
@@ -1165,7 +1298,7 @@ function handleDropModule(e, moduleType){
   document.getElementById(zoneId).classList.remove('drag');
   const files = [...e.dataTransfer.files].filter(f => /\.csv$/i.test(f.name));
   if(!files.length){
-    setModuleStatus(moduleType, '❌ Seuls les fichiers CSV sont acceptés.', 'err');
+    setModuleStatus(moduleType, 'Seuls les fichiers CSV sont acceptés.', 'err');
     return;
   }
   parseCSVClient(files[0], moduleType);
@@ -1195,8 +1328,8 @@ async function parseCSVClient(file, forcedType=null){
   const delim=text.includes(';')?';':',';
   const lines=text.split('\n').filter(l=>l.trim());
   if(lines.length<2){
-    if(forcedType) setModuleStatus(forcedType,'❌ Fichier CSV vide','err');
-    else msg.innerHTML='<div class="up-msg up-err">❌ Fichier CSV vide</div>';
+    if(forcedType) setModuleStatus(forcedType,'Fichier CSV vide','err');
+    else msg.innerHTML='<div class="up-msg up-err">Fichier CSV vide</div>';
     return;
   }
   const headers=lines[0].split(delim).map(h=>h.replace(/"/g,'').trim());
@@ -1217,12 +1350,12 @@ async function parseCSVClient(file, forcedType=null){
   }
 
   if(!type){
-    const errMsg=`❌ CSV non reconnu. En-têtes : ${headers.slice(0,5).join(', ')}`;
+    const errMsg=`CSV non reconnu. En-têtes : ${headers.slice(0,5).join(', ')}`;
     msg.innerHTML=`<div class="up-msg up-err">${errMsg}</div>`;
     return;
   }
 
-  if(forcedType) setModuleStatus(forcedType,'⏳ Traitement en cours...');
+  if(forcedType) setModuleStatus(forcedType,'Traitement en cours...');
 
   const modules={};
   if(type==='achats'){
@@ -1285,7 +1418,7 @@ async function parseCSVClient(file, forcedType=null){
         imported++;
       }
     });
-    if(forcedType) setModuleStatus(forcedType,`✅ ${file.name} — ${imported} mode${imported>1?'s':''} importé${imported>1?'s':''}  (${(D.domicile.reduce((s,r)=>s+r.co2,0)/1000).toFixed(3)} tCO₂e)`,'ok');
+    if(forcedType) setModuleStatus(forcedType,`${file.name} — ${imported} mode${imported>1?'s':''} importé${imported>1?'s':''}  (${(D.domicile.reduce((s,r)=>s+r.co2,0)/1000).toFixed(3)} tCO₂e)`,'ok');
     const grand=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
     const ETP3=parseInt(document.getElementById('etp-val')?.value)||65;
     if(grand>0){
@@ -1359,7 +1492,7 @@ async function parseCSVClient(file, forcedType=null){
 
   if(type==='batiment'){
     // Injection directe dans D — pas besoin de applyModuleData
-    if(forcedType) setModuleStatus(forcedType,`✅ ${file.name} — données réparties dans Électricité, Chauffage`, 'ok');
+    if(forcedType) setModuleStatus(forcedType,`${file.name} — données réparties dans Électricité, Chauffage`, 'ok');
     const grand=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
     const ETP2=parseInt(document.getElementById('etp-val')?.value)||65;
     if(grand>0){
@@ -1374,7 +1507,7 @@ async function parseCSVClient(file, forcedType=null){
   // Mise à jour du statut de la zone
   if(forcedType){
     const nbRows=rows.length;
-    setModuleStatus(forcedType,`✅ ${file.name} — ${nbRows} ligne${nbRows>1?'s':''} importée${nbRows>1?'s':''}`, 'ok');
+    setModuleStatus(forcedType,`${file.name} — ${nbRows} ligne${nbRows>1?'s':''} importée${nbRows>1?'s':''}`, 'ok');
   }
 }
 
@@ -1513,8 +1646,8 @@ function applyModuleData(data, filename){
 
   const n=data.stats?.rows||0;
   msg.innerHTML=loaded.length
-    ? `<div class="up-msg up-ok">✅ <strong>${filename}</strong> — ${loaded.join(', ')} mis à jour${n?' ('+n+' lignes)':''}</div>`
-    : `<div class="up-msg up-info">ℹ️ Aucun module reconnu dans ${filename}</div>`;
+    ? `<div class="up-msg up-ok"><strong>${filename}</strong> — ${loaded.join(', ')} mis à jour${n?' ('+n+' lignes)':''}</div>`
+    : `<div class="up-msg up-info">ℹAucun module reconnu dans ${filename}</div>`;
 
   // Mettre à jour les KPIs du dashboard aussi
   const grand=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
@@ -1527,7 +1660,7 @@ function applyModuleData(data, filename){
 /* ══ MODULE PRÉVISIONS ESYCOM ══ */
 const P_POSTES = ['achats','missions','energie','construction','domicile','it'];
 const P_LABELS = { achats:'Achats & commandes', missions:'Missions pro.', energie:'Bâtiment & énergie', construction:'Construction bâtiment', domicile:'Domicile-travail', it:'Matériel informatique' };
-const P_COLORS = { achats:'#1a6f44', missions:'#d97706', energie:'#2563eb', construction:'#7c3aed', domicile:'#db2777', it:'#0891b2' };
+const P_COLORS = { achats:'#2f5d44', missions:'#c98a2b', energie:'#3a6b8a', construction:'#7d5a6e', domicile:'#db2777', it:'#0891b2' };
 const P_DATA = {
   2022:{ achats:97.0, missions:82.0, energie:46.0, construction:20.5, domicile:25.0, it:14.5, total:285.0, etp:65, publis:46 },
   2023:{ achats:210.0, missions:105.0, energie:35.0, construction:20.5, domicile:28.0, it:15.5, total:414.0, etp:59, publis:52 },
@@ -1602,7 +1735,7 @@ function pRenderHistorique(){
 }
 
 let pSelSc='stabilisation';
-const pScColors={tendance:'#d97706',stabilisation:'#2563eb',optimiste:'#1a6f44',pessimiste:'#b83232'};
+const pScColors={tendance:'#c98a2b',stabilisation:'#3a6b8a',optimiste:'#2f5d44',pessimiste:'#a8392a'};
 const pDashes={tendance:[],stabilisation:[6,3],optimiste:[8,4],pessimiste:[3,3]};
 
 function pRenderScCards(){
@@ -1620,8 +1753,8 @@ function pRenderChartProj(){
   const yrs=pGetYears(h); const labs=pGetLabels(h);
   if(pChartProj) pChartProj.destroy();
   const datasets=Object.entries(P_SCENARIOS).map(([k,sc])=>({label:sc.nom,data:yrs.map(y=>pProj(k,y).total),borderColor:pScColors[k],backgroundColor:'transparent',borderWidth:k===pSelSc?3:1.5,borderDash:pDashes[k],pointRadius:h>2030?3:4,tension:.3}));
-  if(h>=2030) datasets.push({label:'Cible CNRS 2030',data:yrs.map(y=>y>=2030?143:null),borderColor:'#dc2626',borderDash:[4,2],borderWidth:1.5,pointRadius:0,tension:0,backgroundColor:'transparent'});
-  document.getElementById('p-legend-proj').innerHTML=Object.entries(P_SCENARIOS).map(([k,sc])=>`<span class="prev-legend-item"><span class="prev-legend-dot" style="background:${pScColors[k]}"></span>${sc.nom}</span>`).join('')+(h>=2030?`<span class="prev-legend-item"><span class="prev-legend-dot" style="background:#dc2626;height:3px;border-radius:0"></span>Cible CNRS 2030</span>`:'');
+  if(h>=2030) datasets.push({label:'Cible CNRS 2030',data:yrs.map(y=>y>=2030?143:null),borderColor:'#a8392a',borderDash:[4,2],borderWidth:1.5,pointRadius:0,tension:0,backgroundColor:'transparent'});
+  document.getElementById('p-legend-proj').innerHTML=Object.entries(P_SCENARIOS).map(([k,sc])=>`<span class="prev-legend-item"><span class="prev-legend-dot" style="background:${pScColors[k]}"></span>${sc.nom}</span>`).join('')+(h>=2030?`<span class="prev-legend-item"><span class="prev-legend-dot" style="background:#a8392a;height:3px;border-radius:0"></span>Cible CNRS 2030</span>`:'');
   pChartProj=new Chart(document.getElementById('p-chartProj').getContext('2d'),{type:'line',data:{labels:labs,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw===null?null:` ${c.dataset.label}: ${c.raw.toFixed(1)} tCO₂e`}}},scales:{x:{grid:{display:false}},y:{min:60,ticks:{callback:v=>v+' t'},grid:{color:'rgba(0,0,0,0.05)'}}}}});
 }
 
@@ -1634,7 +1767,7 @@ function pRenderTableProj(){
   const bodyRows=P_POSTES.map(p=>{const b=P_DATA[2024][p];const vals=sc_keys.map(k=>pProj(k,yr)[p]);return `<tr><td>${P_LABELS[p]} <span style="color:#aaa;font-size:11px">(${b.toFixed(1)} en 2024)</span></td>${vals.map(v=>`<td>${v.toFixed(1)}</td>`).join('')}</tr>`;});
   const totals=sc_keys.map(k=>pProj(k,yr).total);
   bodyRows.push(`<tr class="total"><td>TOTAL ${yr}</td>${totals.map(v=>`<td>${v.toFixed(1)}</td>`).join('')}</tr>`);
-  if(yr>=2030) bodyRows.push(`<tr><td style="color:#dc2626;font-size:12px">🎯 Cible CNRS 2030</td>${sc_keys.map(()=>`<td style="color:#dc2626;font-weight:600">143,0</td>`).join('')}</tr>`);
+  if(yr>=2030) bodyRows.push(`<tr><td style="color:#a8392a;font-size:12px">Cible CNRS 2030</td>${sc_keys.map(()=>`<td style="color:#a8392a;font-weight:600">143,0</td>`).join('')}</tr>`);
   document.getElementById('p-tableProj').innerHTML=header+'<tbody>'+bodyRows.join('')+'</tbody>';
 }
 
@@ -1654,8 +1787,8 @@ function pUpdateResultM(){
   P_POSTES.forEach(p=>{ apres[p]=Math.max(0,+(base[p]-reds[p]).toFixed(1)); tot+=apres[p]; });
   tot=+tot.toFixed(1); const sav=+(385.5-tot).toFixed(1); const savPct=+((sav/385.5)*100).toFixed(1);
   if(!pSelMesures.size){ document.getElementById('p-mesureResult').innerHTML='<p class="prev-note">Sélectionnez une ou plusieurs mesures ci-dessus.</p>'; return; }
-  const rows=P_POSTES.map(p=>`<div class="prev-result-row"><span>${P_LABELS[p]}</span><span style="display:flex;gap:16px;align-items:center"><span style="color:#888;font-size:12px">${base[p].toFixed(1)} t</span>${reds[p]>0?`<span style="color:#1a6f44;font-size:12px">−${reds[p].toFixed(1)} t</span>`:''}<strong>${apres[p].toFixed(1)} tCO₂e</strong></span></div>`).join('');
-  document.getElementById('p-mesureResult').innerHTML=`<div class="prev-result-box"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem"><span style="font-size:13px;font-weight:600">Résultat simulation — impact sur 2025</span><span class="prev-badge prev-badge-green">−${sav} tCO₂e (−${savPct}%)</span></div>${rows}<div class="prev-result-row"><span>TOTAL</span><span style="display:flex;gap:16px;align-items:center"><span style="color:#888;font-size:12px">385,5 t</span><span style="color:#1a6f44;font-size:12px">−${sav} t</span><strong>${tot.toFixed(1)} tCO₂e</strong></span></div><div style="margin-top:.75rem;font-size:12px;color:#666">Coût total : <strong>${cout.toLocaleString('fr-FR')} €/an</strong>${cout>0?' · Efficacité : <strong>'+((sav/(cout/1000)).toFixed(1))+'</strong> tCO₂e / k€':''}</div></div>`;
+  const rows=P_POSTES.map(p=>`<div class="prev-result-row"><span>${P_LABELS[p]}</span><span style="display:flex;gap:16px;align-items:center"><span style="color:#888;font-size:12px">${base[p].toFixed(1)} t</span>${reds[p]>0?`<span style="color:#2f5d44;font-size:12px">−${reds[p].toFixed(1)} t</span>`:''}<strong>${apres[p].toFixed(1)} tCO₂e</strong></span></div>`).join('');
+  document.getElementById('p-mesureResult').innerHTML=`<div class="prev-result-box"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem"><span style="font-size:13px;font-weight:600">Résultat simulation — impact sur 2025</span><span class="prev-badge prev-badge-green">−${sav} tCO₂e (−${savPct}%)</span></div>${rows}<div class="prev-result-row"><span>TOTAL</span><span style="display:flex;gap:16px;align-items:center"><span style="color:#888;font-size:12px">385,5 t</span><span style="color:#2f5d44;font-size:12px">−${sav} t</span><strong>${tot.toFixed(1)} tCO₂e</strong></span></div><div style="margin-top:.75rem;font-size:12px;color:#666">Coût total : <strong>${cout.toLocaleString('fr-FR')} €/an</strong>${cout>0?' · Efficacité : <strong>'+((sav/(cout/1000)).toFixed(1))+'</strong> tCO₂e / k€':''}</div></div>`;
 }
 
 function pRenderIndicateurs(){
@@ -1665,7 +1798,7 @@ function pRenderIndicateurs(){
   const rows=names.map(n=>{ const vs=yrs.map((_,i)=>inds[i][n]); const tr=pPct(+vs[0],+vs[2]); const isIPEC=n.includes('IPEC'); return `<tr><td>${n}</td>${vs.map(v=>`<td>${v}</td>`).join('')}<td>${pBadge(tr,isIPEC)}</td></tr>`; });
   rows.push(`<tr class="total"><td>Émissions totales</td>${yrs.map(y=>`<td>${P_DATA[y].total.toFixed(1)}</td>`).join('')}<td>${pBadge(pPct(285,385.5))}</td></tr>`);
   document.getElementById('p-tableIndic').innerHTML=`<thead><tr><th>Indicateur</th><th>2022</th><th>2023</th><th>2024</th><th>Évolution</th></tr></thead><tbody>${rows.join('')}</tbody>`;
-  pChartIndic=new Chart(document.getElementById('p-chartIndic').getContext('2d'),{type:'bar',data:{labels:['2022','2023','2024'],datasets:[{label:'tCO₂e/ETP',data:[4.38,7.02,5.51],backgroundColor:['#1a6f44','#b83232','#d97706']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.raw} tCO₂e/ETP`}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{callback:v=>v+' t/ETP'}}}}});
+  pChartIndic=new Chart(document.getElementById('p-chartIndic').getContext('2d'),{type:'bar',data:{labels:['2022','2023','2024'],datasets:[{label:'tCO₂e/ETP',data:[4.38,7.02,5.51],backgroundColor:['#2f5d44','#a8392a','#c98a2b']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.raw} tCO₂e/ETP`}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{callback:v=>v+' t/ETP'}}}}});
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1773,38 +1906,38 @@ function mlRenderLab(id) {
         <div class="ml-kpi-v" style="color:${lab.color}">${lastVal.toFixed(0)} t</div>
         <div class="ml-kpi-s">${(lastVal/lab.effectif).toFixed(1)} t/${lab.unite.includes('ETP')?'ETP':'pers.'}</div>
       </div>
-      <div class="ml-kpi" style="border-color:#1a6f44">
+      <div class="ml-kpi" style="border-color:#2f5d44">
         <div class="ml-kpi-l">Objectif 2030 (${lab.targetPct}%)</div>
-        <div class="ml-kpi-v" style="color:#1a6f44">${lab.target2030} t</div>
+        <div class="ml-kpi-v" style="color:#2f5d44">${lab.target2030} t</div>
         <div class="ml-kpi-s">ref. ${lab.targetRef} : ${refVal.toFixed(0)} t</div>
       </div>
-      <div class="ml-kpi" style="border-color:${parseFloat(pctVsRef)<0?'#1a6f44':'#c62828'}">
+      <div class="ml-kpi" style="border-color:${parseFloat(pctVsRef)<0?'#2f5d44':'#c62828'}">
         <div class="ml-kpi-l">vs référence ${lab.targetRef}</div>
-        <div class="ml-kpi-v" style="color:${parseFloat(pctVsRef)<0?'#1a6f44':'#c62828'}">${parseFloat(pctVsRef)>0?'+':''}${pctVsRef}%</div>
+        <div class="ml-kpi-v" style="color:${parseFloat(pctVsRef)<0?'#2f5d44':'#c62828'}">${parseFloat(pctVsRef)>0?'+':''}${pctVsRef}%</div>
         <div class="ml-kpi-s">Tendance TCAC : ${(cagr*100).toFixed(1)}%/an</div>
       </div>
-      <div class="ml-kpi" style="border-color:#d97706">
+      <div class="ml-kpi" style="border-color:#c98a2b">
         <div class="ml-kpi-l">Statu quo 2030</div>
-        <div class="ml-kpi-v" style="color:#d97706">${tend[2030].toFixed(0)} t</div>
+        <div class="ml-kpi-v" style="color:#c98a2b">${tend[2030].toFixed(0)} t</div>
         <div class="ml-kpi-s">Écart cible : +${(tend[2030]-lab.target2030).toFixed(0)} t</div>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;margin-bottom:1rem">
       <div class="chart-box" style="padding:1.25rem">
         <h3 style="font-size:.85rem;font-weight:700;color:#546e7a;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid #eceff1">
-          📈 Projections 2025–2030 — ${lab.name}
+          Projections 2025–2030 — ${lab.name}
         </h3>
         <div class="prev-legend" id="ml-legend-${id}" style="margin-bottom:.75rem;font-size:11px"></div>
         <div style="position:relative;height:240px"><canvas id="${chartId}"></canvas></div>
       </div>
       <div class="chart-box" style="padding:1.25rem">
         <h3 style="font-size:.85rem;font-weight:700;color:#546e7a;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid #eceff1">
-          🥧 Postes d'émission (${lastYear})
+          Postes d'émission (${lastYear})
         </h3>
         <div style="position:relative;height:240px"><canvas id="${postesChartId}"></canvas></div>
       </div>
     </div>
-    <div class="prev-hl">ℹ️ ${lab.note} · Sources : ${lab.sources.join(' · ')}</div>
+    <div class="prev-hl">ℹ${lab.note} · Sources : ${lab.sources.join(' · ')}</div>
     <hr class="prev-hr">
     <table class="prev-dt" style="margin-top:.5rem">
       <thead><tr><th>Année</th><th>Historique</th><th>Statu quo</th><th>Stabilisation</th><th>Optimiste −7%</th><th>Trajectoire cible</th></tr></thead>
@@ -1815,15 +1948,15 @@ function mlRenderLab(id) {
           return `<tr style="${isProj?'color:#999':''}">
             <td><strong>${y}</strong></td>
             <td>${h!=null ? h.toFixed(0)+' t' : '—'}</td>
-            <td style="color:#d97706">${tend[y]!=null ? tend[y].toFixed(0)+' t' : '—'}</td>
-            <td style="color:#2563eb">${stab[y]!=null ? stab[y].toFixed(0)+' t' : '—'}</td>
-            <td style="color:#1a6f44">${opti[y]!=null ? opti[y].toFixed(0)+' t' : '—'}</td>
-            <td style="color:#7c3aed">${(y>=lastYear&&y<=2030&&cible[y]!=null) ? cible[y].toFixed(0)+' t' : '—'}</td>
+            <td style="color:#c98a2b">${tend[y]!=null ? tend[y].toFixed(0)+' t' : '—'}</td>
+            <td style="color:#3a6b8a">${stab[y]!=null ? stab[y].toFixed(0)+' t' : '—'}</td>
+            <td style="color:#2f5d44">${opti[y]!=null ? opti[y].toFixed(0)+' t' : '—'}</td>
+            <td style="color:#7d5a6e">${(y>=lastYear&&y<=2030&&cible[y]!=null) ? cible[y].toFixed(0)+' t' : '—'}</td>
           </tr>`;
         }).join('')}
         <tr style="background:#f0faf5;font-weight:700">
-          <td>🎯 Cible 2030</td>
-          <td colspan="5" style="color:#1a6f44">${lab.target2030} tCO₂e (${lab.targetPct}% vs ${lab.targetRef})</td>
+          <td>Cible 2030</td>
+          <td colspan="5" style="color:#2f5d44">${lab.target2030} tCO₂e (${lab.targetPct}% vs ${lab.targetRef})</td>
         </tr>
       </tbody>
     </table>
@@ -1832,7 +1965,7 @@ function mlRenderLab(id) {
   // Legend
   const legendEl = document.getElementById('ml-legend-'+id);
   if (legendEl) legendEl.innerHTML = [
-    ['#d97706','Statu quo'],['#2563eb','Stabilisation'],['#1a6f44','Optimiste −7%/an'],['#7c3aed','Traj. cible'],['#dc2626','Cible 2030']
+    ['#c98a2b','Statu quo'],['#3a6b8a','Stabilisation'],['#2f5d44','Optimiste −7%/an'],['#7d5a6e','Traj. cible'],['#a8392a','Cible 2030']
   ].map(([c,l])=>`<span class="prev-legend-item"><span class="prev-legend-dot" style="background:${c}"></span>${l}</span>`).join('');
 
   // Chart projections
@@ -1849,11 +1982,11 @@ function mlRenderLab(id) {
       type: 'line',
       data: { labels: allYrs, datasets: [
         { label:'Historique', data:hist_ds, borderColor:lab.color, backgroundColor:lab.color+'33', borderWidth:3, pointRadius:5, tension:.3, fill:false },
-        { label:'Statu quo', data:tend_ds, borderColor:'#d97706', borderWidth:2, borderDash:[6,3], pointRadius:2, tension:.3, fill:false },
-        { label:'Stabilisation', data:stab_ds, borderColor:'#2563eb', borderWidth:1.5, borderDash:[4,4], pointRadius:2, tension:.3, fill:false },
-        { label:'Optimiste', data:opti_ds, borderColor:'#1a6f44', borderWidth:2, borderDash:[8,3], pointRadius:2, tension:.3, fill:false },
-        { label:'Traj. cible', data:cible_ds, borderColor:'#7c3aed', borderWidth:2, borderDash:[2,2], pointRadius:2, tension:.3, fill:false },
-        { label:'Objectif 2030', data:target_ds, borderColor:'#dc2626', borderWidth:1.5, borderDash:[10,5], pointRadius:0, fill:false }
+        { label:'Statu quo', data:tend_ds, borderColor:'#c98a2b', borderWidth:2, borderDash:[6,3], pointRadius:2, tension:.3, fill:false },
+        { label:'Stabilisation', data:stab_ds, borderColor:'#3a6b8a', borderWidth:1.5, borderDash:[4,4], pointRadius:2, tension:.3, fill:false },
+        { label:'Optimiste', data:opti_ds, borderColor:'#2f5d44', borderWidth:2, borderDash:[8,3], pointRadius:2, tension:.3, fill:false },
+        { label:'Traj. cible', data:cible_ds, borderColor:'#7d5a6e', borderWidth:2, borderDash:[2,2], pointRadius:2, tension:.3, fill:false },
+        { label:'Objectif 2030', data:target_ds, borderColor:'#a8392a', borderWidth:1.5, borderDash:[10,5], pointRadius:0, fill:false }
       ]},
       options: { responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
         plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.raw===null?null:` ${c.dataset.label}: ${c.raw.toFixed(0)} t`}} },
@@ -1868,7 +2001,7 @@ function mlRenderLab(id) {
   if (pCtx && lab.postes) {
     const pLabels = Object.keys(lab.postes);
     const pVals = Object.values(lab.postes);
-    const pColors = ['#1a6f44','#d97706','#2563eb','#dc2626','#7c3aed','#0891b2','#db2777','#78909c'];
+    const pColors = ['#2f5d44','#c98a2b','#3a6b8a','#a8392a','#7d5a6e','#0891b2','#db2777','#78909c'];
     mlCharts[postesChartId] = new Chart(pCtx, {
       type: 'doughnut',
       data: { labels: pLabels, datasets:[{ data:pVals, backgroundColor:pColors.slice(0,pLabels.length), borderColor:'#f4f3ee', borderWidth:3 }] },
@@ -1899,7 +2032,7 @@ function mlRenderComparaison() {
           <div class="tot" style="color:${lab.color}">${lastV.toFixed(0)} t</div>
           <div class="pp">${(lastV/lab.eff).toFixed(1)} t/pers. · ${last}</div>
           <div style="margin-top:.75rem;font-size:12px;display:flex;justify-content:space-between">
-            <span>vs ${lab.tRef} : <strong style="color:${parseFloat(pctRef)<0?'#1a6f44':'#c62828'}">${parseFloat(pctRef)>0?'+':''}${pctRef}%</strong></span>
+            <span>vs ${lab.tRef} : <strong style="color:${parseFloat(pctRef)<0?'#2f5d44':'#c62828'}">${parseFloat(pctRef)>0?'+':''}${pctRef}%</strong></span>
             <span>Cible : <strong>${lab.target} t</strong></span>
           </div>
           <div style="margin-top:6px;height:6px;background:#eceff1;border-radius:20px;overflow:hidden">
@@ -1913,13 +2046,13 @@ function mlRenderComparaison() {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem">
       <div class="chart-box" style="padding:1.25rem">
         <h3 style="font-size:.85rem;font-weight:700;color:#546e7a;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid #eceff1">
-          📈 Émissions historiques — tous labos
+          Émissions historiques — tous labos
         </h3>
         <div style="position:relative;height:260px"><canvas id="ml-chart-histoComp"></canvas></div>
       </div>
       <div class="chart-box" style="padding:1.25rem">
         <h3 style="font-size:.85rem;font-weight:700;color:#546e7a;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid #eceff1">
-          ⚡ Intensité carbone (tCO₂e/pers.)
+          Intensité carbone (tCO₂e/pers.)
         </h3>
         <div style="position:relative;height:260px"><canvas id="ml-chart-intensity"></canvas></div>
       </div>
@@ -1927,7 +2060,7 @@ function mlRenderComparaison() {
 
     <div class="chart-box" style="padding:1.25rem;margin-bottom:1rem">
       <h3 style="font-size:.85rem;font-weight:700;color:#546e7a;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid #eceff1">
-        🎯 Projections scénario optimiste (−7%/an) vs cible 2030
+        Projections scénario optimiste (−7%/an) vs cible 2030
       </h3>
       <div style="position:relative;height:260px"><canvas id="ml-chart-projComp"></canvas></div>
     </div>
@@ -1974,7 +2107,7 @@ function mlRenderComparaison() {
       type: 'bar',
       data: { labels: intensityData.map(d=>d.id), datasets: [
         { label:'tCO₂e/pers.', data:intensityData.map(d=>d.val), backgroundColor:intensityData.map(d=>d.color), borderRadius:6 },
-        { type:'line', label:'Moy. CNRS (~6.3 t)', data:intensityData.map(()=>6.3), borderColor:'#dc2626', borderDash:[6,3], borderWidth:2, pointRadius:0, fill:false }
+        { type:'line', label:'Moy. CNRS (~6.3 t)', data:intensityData.map(()=>6.3), borderColor:'#a8392a', borderDash:[6,3], borderWidth:2, pointRadius:0, fill:false }
       ]},
       options: { responsive:true, maintainAspectRatio:false,
         plugins:{ legend:{labels:{font:{size:11},color:'#444'}}, tooltip:{callbacks:{label:c=>` ${c.parsed.y.toFixed(2)} tCO₂/pers.`}} },
@@ -2006,7 +2139,7 @@ function mlRenderComparaison() {
       });
       return { label:`${l.id} (${lastV.toFixed(0)}t)`, data, borderColor:l.color, backgroundColor:'transparent', borderWidth:2, pointRadius:3, tension:.3, fill:false };
     });
-    datasets.push({ label:'Objectif −50% (cible min)', data:projYrsComp.map(()=>50), borderColor:'#dc2626', borderDash:[5,3], borderWidth:1.5, pointRadius:0, fill:false });
+    datasets.push({ label:'Objectif −50% (cible min)', data:projYrsComp.map(()=>50), borderColor:'#a8392a', borderDash:[5,3], borderWidth:1.5, pointRadius:0, fill:false });
     mlCharts['ml-chart-projComp'] = new Chart(pCtxC, {
       type: 'line',
       data: { labels: projYrsComp, datasets },
