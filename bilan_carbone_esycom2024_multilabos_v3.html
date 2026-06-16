@@ -350,10 +350,84 @@
 .ml-info-box{background:var(--green-pale);border:1px solid var(--green-acc);border-radius:var(--radius-sm);padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:var(--green)}
 .ml-partial-box{background:var(--orange-pale);border:1px solid rgba(191,90,54,.3);border-radius:var(--radius-sm);padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:#7a3415}
 
+/* ── ACCESSIBILITÉ ── */
+.skip-link{
+  position:fixed;top:-60px;left:1rem;z-index:1000;
+  background:var(--green);color:#f3ecd9;padding:.6rem 1rem;border-radius:0 0 4px 4px;
+  font-family:var(--font-body);font-size:.85rem;font-weight:600;text-decoration:none;
+  transition:top .18s;box-shadow:0 4px 14px -4px rgba(20,40,25,.6);
+}
+.skip-link:focus{top:0;outline:2px solid var(--orange);outline-offset:2px}
+:focus-visible{outline:2px solid var(--green-mid);outline-offset:2px;border-radius:2px}
+header :focus-visible{outline-color:var(--orange)}
+.module-tab:focus-visible,.btn:focus-visible,.ml-lab-btn:focus-visible{outline:2px solid var(--green-mid);outline-offset:2px}
+.row-del:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+.field input:focus-visible,.field select:focus-visible{outline:none}
+.field input.field-error{border-color:var(--red);box-shadow:0 0 0 3px rgba(168,57,42,.14)}
+.field input.field-error + .field-err-msg,.field-err-msg{display:none}
+.field:has(input.field-error)::after{content:"Valeur invalide — saisir un nombre > 0";color:var(--red);font-size:.7rem;font-family:var(--font-mono);margin-top:.1rem}
+
+/* ── DELETE BUTTON + EMPTY STATE ── */
+.row-actions{white-space:nowrap;display:flex;gap:.15rem;justify-content:flex-end}
+.row-del,.row-edit{background:none;border:none;cursor:pointer;font-size:.85rem;opacity:.55;line-height:1;padding:.15rem .35rem;border-radius:3px;transition:opacity .15s,background .15s}
+.row-del{color:#a8392a}.row-del:hover{opacity:1;background:var(--red-pale)}
+.row-edit{color:var(--green-mid)}.row-edit:hover{opacity:1;background:var(--green-pale)}
+.tbl-empty td{text-align:center;color:var(--gray);font-style:italic;padding:1.4rem 1rem;font-size:.82rem}
+
+/* ── SPINNER / LOADING ── */
+.import-status.loading{background:var(--blue-pale);color:#234c63;display:flex;align-items:center;gap:.5rem}
+.spinner{width:13px;height:13px;border:2px solid rgba(58,107,138,.3);border-top-color:var(--blue);border-radius:50%;display:inline-block;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:760px){
+  main{padding:1.5rem 1rem 3rem}
+  .report-cover{padding:1.5rem 1.4rem;gap:1rem}
+  .rc-title{font-size:2.1rem}
+  .rc-num{font-size:2.7rem}
+  .rc-right{text-align:left}.rc-fig{justify-content:flex-start}
+  .report-cover::after{display:none}
+  .section-title{font-size:1.55rem}
+  header{padding:0 1rem}
+  header h1{font-size:1.02rem;margin-right:1rem}
+  .card,.chart-box{padding:1.15rem}
+}
+@media(max-width:480px){
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:.7rem}
+  .kpi .val{font-size:1.8rem}
+  .rc-title{font-size:1.8rem}
+  #total-live{bottom:1rem;right:1rem;font-size:.78rem;padding:.5rem .9rem}
+}
+
+/* ── IMPRESSION / PDF ── */
+@media print{
+  @page{margin:14mm}
+  body{background:#fff!important;background-image:none!important;color:#000}
+  header,#total-live,.skip-link,.module-tabs,.no-print,.btn,.btn-row,
+  .import-section,.upload-grid,#up-msg,nav{display:none!important}
+  main{max-width:none;padding:0}
+  .page{display:none!important}
+  .page.active{display:block!important;animation:none}
+  .card,.chart-box,.kpi,.report-cover,.labo-card{
+    box-shadow:none!important;border:1px solid #ccc!important;break-inside:avoid;page-break-inside:avoid;
+  }
+  .report-cover::after{display:none}
+  canvas{max-height:320px}
+  a[href]::after{content:""}
+}
+
+/* ── REDUCED MOTION ── */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .page.active{animation:none}
+  .result-item .bf{transition:none}
+}
+
 
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link">Aller au contenu</a>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <symbol id="i-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
   <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
@@ -370,15 +444,15 @@
 </defs></svg>
 <header>
   <h1>Bilan Carbone ESYCOM <span class="badge">2024</span></h1>
-  <nav>
-    <button class="active" onclick="showPage('dashboard',this)"><svg class="ico"><use href="#i-dashboard"/></svg>Dashboard</button>
-    <button onclick="showPage('saisie',this)"><svg class="ico"><use href="#i-edit"/></svg>Saisie</button>
-    <button onclick="showPage('resultats',this)"><svg class="ico"><use href="#i-results"/></svg>R&eacute;sultats</button>
-    <button onclick="showPage('comparaison',this)"><svg class="ico"><use href="#i-compare"/></svg>Comparaison</button>
-  <button onclick="showPage('prediction',this)"><svg class="ico"><use href="#i-trend"/></svg>Pr&#233;visions</button>
+  <nav aria-label="Navigation principale">
+    <button class="active" aria-current="page" onclick="showPage('dashboard',this)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-dashboard"/></svg>Dashboard</button>
+    <button onclick="showPage('saisie',this)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-edit"/></svg>Saisie</button>
+    <button onclick="showPage('resultats',this)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-results"/></svg>R&eacute;sultats</button>
+    <button onclick="showPage('comparaison',this)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-compare"/></svg>Comparaison</button>
+  <button onclick="showPage('prediction',this)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-trend"/></svg>Pr&#233;visions</button>
   </nav>
 </header>
-<main>
+<main id="main">
 
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
@@ -421,7 +495,7 @@
   <!-- PARAMÈTRE ETP -->
   <div class="card" style="display:flex;align-items:center;gap:1.5rem;padding:.9rem 1.2rem;margin-bottom:1rem;flex-wrap:wrap">
     <label style="font-weight:600;font-size:.9rem">Effectif labo (ETP 2024) :</label>
-    <input id="etp-val" type="number" min="1" max="500" value="65" style="width:90px;padding:.4rem .6rem;border:1.5px solid #cfd8dc;border-radius:8px;font-size:1rem;font-weight:700;color:var(--green-mid)">
+    <input id="etp-val" type="number" min="1" max="500" value="59" style="width:90px;padding:.4rem .6rem;border:1.5px solid #cfd8dc;border-radius:8px;font-size:1rem;font-weight:700;color:var(--green-mid)">
     <span style="font-size:.8rem;color:var(--gray)">Utilis&eacute; pour le calcul tCO&#8322;/ETP &mdash; r&eacute;f. 65 ETP (2022) / 59 ETP (2023)</span>
   </div>
 
@@ -539,14 +613,14 @@
     <div id="up-msg" style="margin-top:.75rem"></div>
   </div>
 
-  <div class="module-tabs">
-    <button class="module-tab active" onclick="showMod('electricite',this)"><svg class="ico"><use href="#i-zap"/></svg>Electricit&eacute;</button>
-    <button class="module-tab" onclick="showMod('chauffage',this)"><svg class="ico"><use href="#i-flame"/></svg>Chauffage</button>
-    <button class="module-tab" onclick="showMod('deplacements',this)"><svg class="ico"><use href="#i-plane"/></svg>Missions</button>
-    <button class="module-tab" onclick="showMod('domicile',this)"><svg class="ico"><use href="#i-car"/></svg>Domicile</button>
-    <button class="module-tab" onclick="showMod('informatique',this)"><svg class="ico"><use href="#i-laptop"/></svg>Informatique</button>
-    <button class="module-tab" onclick="showMod('achats',this)"><svg class="ico"><use href="#i-cart"/></svg>Achats</button>
-    <button class="module-tab" onclick="showMod('construction',this)"><svg class="ico"><use href="#i-building"/></svg>Construction</button>
+  <div class="module-tabs" role="tablist" aria-label="Postes d&rsquo;&eacute;mission">
+    <button class="module-tab active" role="tab" aria-selected="true" onclick="showMod('electricite',this)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-zap"/></svg>Electricit&eacute;</button>
+    <button class="module-tab" role="tab" aria-selected="false" onclick="showMod('chauffage',this)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-flame"/></svg>Chauffage</button>
+    <button class="module-tab" role="tab" aria-selected="false" onclick="showMod('deplacements',this)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-plane"/></svg>Missions</button>
+    <button class="module-tab" role="tab" aria-selected="false" onclick="showMod('domicile',this)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-car"/></svg>Domicile</button>
+    <button class="module-tab" role="tab" aria-selected="false" onclick="showMod('informatique',this)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-laptop"/></svg>Informatique</button>
+    <button class="module-tab" role="tab" aria-selected="false" onclick="showMod('achats',this)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-cart"/></svg>Achats</button>
+    <button class="module-tab" role="tab" aria-selected="false" onclick="showMod('construction',this)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-building"/></svg>Construction</button>
   </div>
 
   <div class="card module-panel active" id="mod-electricite">
@@ -709,7 +783,10 @@
   <div class="card">
     <div class="btn-row">
       <button class="btn btn-green" onclick="calculateAll()">Calculer le bilan &rarr; R&eacute;sultats</button>
+      <button class="btn btn-outline" onclick="exportCSV()">Exporter CSV</button>
+      <button class="btn btn-outline" onclick="resetState()">R&eacute;initialiser</button>
     </div>
+    <p style="font-size:.78rem;color:var(--gray);margin-top:.7rem">Vos saisies sont enregistr&eacute;es automatiquement dans ce navigateur.</p>
   </div>
 </div>
 
@@ -723,7 +800,11 @@
   <div class="card" style="padding:1rem 1.5rem">
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
     <h2 style="margin:0">D&eacute;tail par module</h2>
-    <button class="btn btn-outline" style="font-size:.8rem;padding:.4rem 1rem" onclick="userCalculated=false;initResultats2024()">&#8635; Afficher les donn&eacute;es officielles 2024</button>
+    <div class="btn-row" style="margin-top:0">
+      <button class="btn btn-outline no-print" style="font-size:.8rem;padding:.4rem 1rem" onclick="userCalculated=false;initResultats2024()">&#8635; Donn&eacute;es officielles 2024</button>
+      <button class="btn btn-outline no-print" style="font-size:.8rem;padding:.4rem 1rem" onclick="exportCSV()">Exporter CSV</button>
+      <button class="btn btn-green no-print" style="font-size:.8rem;padding:.4rem 1rem" onclick="exportPDF()">Imprimer / PDF</button>
+    </div>
   </div>
   <div id="res-bars" style="margin-top:1rem"></div>
 </div>
@@ -1043,6 +1124,86 @@ if(window.Chart){
   Chart.defaults.elements.point.radius=3;Chart.defaults.elements.point.hoverRadius=6;
   Chart.defaults.elements.point.borderWidth=0;
   Chart.defaults.elements.arc.borderColor="#fffdf7";Chart.defaults.elements.arc.borderWidth=2;
+  // Custom plugin — total au centre des donuts (touche "rapport")
+  Chart.register({
+    id:'doughnutCenter',
+    afterDatasetsDraw(chart){
+      if(chart.config.type!=='doughnut') return;
+      const ds=chart.data.datasets[0]; if(!ds) return;
+      const tot=ds.data.reduce((s,v)=>s+(+v||0),0);
+      const meta=chart.getDatasetMeta(0).data[0]; if(!meta) return;
+      const {x,y}=meta; const ctx=chart.ctx;
+      ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillStyle='#1e3a2b';
+      ctx.font="600 26px 'Fraunces', Georgia, serif";
+      ctx.fillText(tot.toLocaleString('fr-FR',{maximumFractionDigits:1}),x,y-6);
+      ctx.fillStyle='#6a665a';
+      ctx.font="500 10px 'IBM Plex Mono', monospace";
+      ctx.fillText('tCO₂eq',x,y+14);
+      ctx.restore();
+    }
+  });
+}
+// Formatage français des nombres (virgule décimale, espace fine de milliers)
+function fr(n,d){return Number(n).toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d});}
+
+// ── Nombre d'agents de référence (ETP) — source unique de vérité ──
+const ETP_2024 = 59;
+
+// ── PERSISTANCE (localStorage) ──
+const STORE_KEY='esycom_bilan_v3';
+function saveState(){
+  try{
+    const etp=document.getElementById('etp-val')?.value;
+    localStorage.setItem(STORE_KEY,JSON.stringify({D,etp,userCalculated}));
+  }catch(e){/* quota / mode privé : on ignore */}
+}
+function loadState(){
+  let s; try{s=JSON.parse(localStorage.getItem(STORE_KEY)||'null');}catch(e){return false;}
+  if(!s||!s.D) return false;
+  Object.keys(D).forEach(m=>{ D[m]=Array.isArray(s.D[m])?s.D[m]:[]; });
+  if(s.etp){const el=document.getElementById('etp-val'); if(el) el.value=s.etp;}
+  Object.keys(D).forEach(rt);
+  if(s.userCalculated){ userCalculated=false; calculateAll(); showPage('dashboard',document.querySelector('nav button')); }
+  return true;
+}
+function resetState(){
+  if(!confirm('Réinitialiser toutes les données saisies ? Les chiffres officiels 2024 seront restaurés.')) return;
+  try{localStorage.removeItem(STORE_KEY);}catch(e){}
+  location.reload();
+}
+
+// ── EXPORT CSV ──
+function exportCSV(){
+  const rows=[['Module','Détail','Quantité','kgCO2eq']];
+  let any=false;
+  Object.keys(D).forEach(m=>{
+    D[m].forEach(r=>{
+      any=true;
+      const c=r.c||[];
+      rows.push([MODS[m]||m, String(c[0]??''), String(c[c.length-2]??''), String((r.co2||0).toFixed(1))]);
+    });
+  });
+  if(!any){alert('Aucune donnée saisie à exporter. Importez un CSV ou ajoutez des lignes.');return;}
+  const grand=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
+  rows.push([]); rows.push(['TOTAL','','',(grand).toFixed(1)]);
+  const csv=rows.map(r=>r.map(v=>/[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v).join(';')).join('\r\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='bilan_carbone_esycom_2024.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},0);
+}
+function exportPDF(){ window.print(); }
+
+// ── VALIDATION DES SAISIES ──
+function numField(id,{min=0,allowZero=false}={}){
+  const el=document.getElementById(id); if(!el) return null;
+  const raw=(el.value??'').toString().trim();
+  const v=parseFloat(raw.replace(',','.'));
+  const ok=raw!==''&&!isNaN(v)&&v>=min&&(allowZero||v>0);
+  el.classList.toggle('field-error',!ok);
+  return ok?v:null;
 }
 const EF={
   elec:0.0491,
@@ -1061,30 +1222,47 @@ function showPage(id,btn){
   if(id==="prediction") setTimeout(initPrevision,120);
   if(id==="resultats") setTimeout(initResultats2024,50);
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll("nav button").forEach(b=>{b.classList.remove("active");b.removeAttribute("aria-current")});
   document.getElementById("page-"+id).classList.add("active");
-  if(btn)btn.classList.add("active");
+  if(btn){btn.classList.add("active");btn.setAttribute("aria-current","page")}
   if(id==="comparaison")initCmp();
 }
 function showMod(id,btn){
   document.querySelectorAll(".module-panel").forEach(p=>p.classList.remove("active"));
-  document.querySelectorAll(".module-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".module-tab").forEach(t=>{t.classList.remove("active");t.setAttribute("aria-selected","false")});
   document.getElementById("mod-"+id).classList.add("active");
-  if(btn)btn.classList.add("active");
+  if(btn){btn.classList.add("active");btn.setAttribute("aria-selected","true")}
 }
 function rt(mod){
   const tb=document.querySelector("#tbl-"+mod+" tbody");
-  tb.innerHTML=D[mod].map((r,i)=>`<tr>${r.c.map(v=>`<td>${v}</td>`).join("")}<td><button onclick="D.${mod}.splice(${i},1);rt('${mod}')" style="background:none;border:none;cursor:pointer;color:#a8392a;font-size:.85rem;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6">&#10005;</button></td></tr>`).join("");
+  const cols=(tb.closest("table").querySelectorAll("thead th").length)||4;
+  if(!D[mod].length){
+    tb.innerHTML=`<tr class="tbl-empty"><td colspan="${cols}">Aucune donn&eacute;e &mdash; importez un CSV ou ajoutez une ligne ci-dessous.</td></tr>`;
+  } else {
+    tb.innerHTML=D[mod].map((r,i)=>`<tr>${r.c.map(v=>`<td>${v}</td>`).join("")}<td class="row-actions">${r.raw?`<button class="row-edit" aria-label="Modifier cette ligne" title="Modifier" onclick="editRow('${mod}',${i})">&#9998;</button>`:""}<button class="row-del" aria-label="Supprimer cette ligne" title="Supprimer" onclick="D.${mod}.splice(${i},1);rt('${mod}')">&#10005;</button></td></tr>`).join("");
+  }
   let t=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
-  document.getElementById("live-tot").textContent=(t/1000).toFixed(2);
+  document.getElementById("live-tot").textContent=fr(t/1000,2);
+  saveState();
 }
-function addElec(){const b=document.getElementById("e-bat").value||"Batiment",k=+document.getElementById("e-kwh").value||0,p=+document.getElementById("e-part").value/100,co2=k*p*EF.elec;D.electricite.push({co2,c:[b,k,(p*100)+"%",co2.toFixed(1)+" kg"]});rt("electricite")}
-function addChauf(){const b=document.getElementById("c-bat").value||"Batiment",t=document.getElementById("c-type").value,k=+document.getElementById("c-kwh").value||0,co2=k*EF.chauf[t];D.chauffage.push({co2,c:[b,t,k,co2.toFixed(1)+" kg"]});rt("chauffage")}
-function addDep(){const dest=document.getElementById("d-dest").value||"Mission",m=document.getElementById("d-mode").value,dist=+document.getElementById("d-dist").value||0,nb=+document.getElementById("d-nb").value||1,ar=+document.getElementById("d-ar").value,co2=dist*ar*nb*EF.transp[m];D.deplacements.push({co2,c:[dest,m,dist,nb,ar===2?"Oui":"Non",co2.toFixed(1)+" kg"]});rt("deplacements")}
-function addDom(){const m=document.getElementById("dom-mode").value,nb=+document.getElementById("dom-nb").value||1,dist=+document.getElementById("dom-dist").value||0,j=+document.getElementById("dom-jours").value||220,co2=dist*j*nb*EF.dom[m];D.domicile.push({co2,c:[m,nb,dist,j,co2.toFixed(1)+" kg"]});rt("domicile")}
-function addIT(){const t=document.getElementById("it-type").value,mod=document.getElementById("it-mod").value||"-",qty=+document.getElementById("it-qty").value||1,am=+document.getElementById("it-amort").value||5,co2=(EF.it[t]*qty)/am;D.informatique.push({co2,c:[t,mod,qty,am+"ans",co2.toFixed(1)+" kg/an"]});rt("informatique")}
-function addAch(){const cat=document.getElementById("ach-cat").value,mt=+document.getElementById("ach-montant").value||0,co2=mt*EF.ach[cat];D.achats.push({co2,c:[cat,mt+"e",EF.ach[cat],co2.toFixed(1)+" kg"]});rt("achats")}
-function addConst(){const b=document.getElementById("con-bat").value||"Batiment",s=+document.getElementById("con-surf").value||0,t=document.getElementById("con-type").value,fe=EF.construction[t],co2=s*1.3*fe/50;D.construction.push({co2,c:[b,s,t,fe,co2.toFixed(1)+" kg/an"]});rt("construction")}
+function editRow(mod,i){
+  const r=D[mod][i]; if(!r||!r.raw){alert("Édition indisponible pour cette ligne (importée). Supprimez-la puis ressaisissez.");return;}
+  // recharge les valeurs dans le formulaire du module
+  Object.entries(r.raw).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
+  // retire la ligne (sera ré-ajoutée corrigée) et affiche le bon onglet
+  D[mod].splice(i,1); rt(mod);
+  const tab=document.querySelector(`.module-tab[onclick*="'${mod}'"]`);
+  showMod(mod,tab||null);
+  const panel=document.getElementById("mod-"+mod);
+  if(panel){panel.scrollIntoView({behavior:"smooth",block:"center"});const f=panel.querySelector("input,select");if(f)f.focus();}
+}
+function addElec(){const k=numField("e-kwh"); if(k===null)return; const b=document.getElementById("e-bat").value||"Batiment",p=(+document.getElementById("e-part").value||100)/100,co2=k*p*EF.elec;D.electricite.push({raw:{"e-bat":b,"e-kwh":k,"e-part":p*100},co2,c:[b,k,(p*100)+"%",co2.toFixed(1)+" kg"]});rt("electricite")}
+function addChauf(){const k=numField("c-kwh"); if(k===null)return; const b=document.getElementById("c-bat").value||"Batiment",t=document.getElementById("c-type").value,co2=k*EF.chauf[t];D.chauffage.push({raw:{"c-bat":b,"c-type":t,"c-kwh":k},co2,c:[b,t,k,co2.toFixed(1)+" kg"]});rt("chauffage")}
+function addDep(){const dist=numField("d-dist"); if(dist===null)return; const dest=document.getElementById("d-dest").value||"Mission",m=document.getElementById("d-mode").value,nb=+document.getElementById("d-nb").value||1,ar=+document.getElementById("d-ar").value,co2=dist*ar*nb*EF.transp[m];D.deplacements.push({raw:{"d-dest":dest,"d-mode":m,"d-dist":dist,"d-nb":nb,"d-ar":ar},co2,c:[dest,m,dist,nb,ar===2?"Oui":"Non",co2.toFixed(1)+" kg"]});rt("deplacements")}
+function addDom(){const dist=numField("dom-dist"); if(dist===null)return; const m=document.getElementById("dom-mode").value,nb=+document.getElementById("dom-nb").value||1,j=+document.getElementById("dom-jours").value||220,co2=dist*j*nb*EF.dom[m];D.domicile.push({raw:{"dom-mode":m,"dom-nb":nb,"dom-dist":dist,"dom-jours":j},co2,c:[m,nb,dist,j,co2.toFixed(1)+" kg"]});rt("domicile")}
+function addIT(){const qty=numField("it-qty",{min:1}); if(qty===null)return; const t=document.getElementById("it-type").value,mod=document.getElementById("it-mod").value||"-",am=+document.getElementById("it-amort").value||5,co2=(EF.it[t]*qty)/am;D.informatique.push({raw:{"it-type":t,"it-mod":mod,"it-qty":qty,"it-amort":am},co2,c:[t,mod,qty,am+"ans",co2.toFixed(1)+" kg/an"]});rt("informatique")}
+function addAch(){const mt=numField("ach-montant"); if(mt===null)return; const cat=document.getElementById("ach-cat").value,co2=mt*EF.ach[cat];D.achats.push({raw:{"ach-cat":cat,"ach-montant":mt},co2,c:[cat,mt+"e",EF.ach[cat],co2.toFixed(1)+" kg"]});rt("achats")}
+function addConst(){const s=numField("con-surf"); if(s===null)return; const b=document.getElementById("con-bat").value||"Batiment",t=document.getElementById("con-type").value,fe=EF.construction[t],co2=s*1.3*fe/50;D.construction.push({raw:{"con-bat":b,"con-surf":s,"con-type":t},co2,c:[b,s,t,fe,co2.toFixed(1)+" kg/an"]});rt("construction")}
 
 function prefElec(){D.electricite=[];[["Bat. Copernic",145000,60],["Bat. Bois Baudry",89000,100],["Site UGE Marne",67000,35]].forEach(([b,k,p])=>{const co2=k*(p/100)*EF.elec;D.electricite.push({co2,c:[b,k,p+"%",co2.toFixed(1)+" kg"]})});rt("electricite")}
 function prefChauf(){D.chauffage=[];[["Bat. Copernic","gaz",380000],["Bat. Bois Baudry","reseau",210000]].forEach(([b,t,k])=>{const co2=k*EF.chauf[t];D.chauffage.push({co2,c:[b,t,k,co2.toFixed(1)+" kg"]})});rt("chauffage")}
@@ -1200,19 +1378,20 @@ function initResultats2024() {
   if (userCalculated) return; // ne pas écraser si l'utilisateur a calculé ses données
   const tots = {...DATA_2024_OFFICIAL};
   const grand = Object.values(tots).reduce((s,v) => s+v, 0);
-  const ETP = 59;
+  const ETP = ETP_2024;
   renderResultats(tots, grand, ETP, true);
 }
 
 function calculateAll(){
   const tots={};let grand=0;
   Object.keys(D).forEach(m=>{tots[m]=D[m].reduce((s,r)=>s+(r.co2||0),0);grand+=tots[m]});
-  const ETP=parseInt(document.getElementById("etp-val")?.value)||65;
-  document.getElementById("kpi-total").textContent=(grand/1000).toFixed(1);
+  if(grand===0){alert("Aucune donnée saisie. Importez un CSV ou ajoutez des lignes dans les modules avant de calculer.");return;}
+  const ETP=parseInt(document.getElementById("etp-val")?.value)||ETP_2024;
+  document.getElementById("kpi-total").textContent=fr(grand/1000,1);
   document.getElementById("kpi-total").closest(".kpi").querySelector("label").textContent="Total GES 2024";
   document.getElementById("kpi-pp").closest(".kpi").querySelector("label").textContent="Par personne 2024";
   document.getElementById("kpi-evol").closest(".kpi").querySelector("label").textContent="2024 vs 2023";
-  document.getElementById("kpi-pp").textContent=(grand/1000/ETP).toFixed(2);
+  document.getElementById("kpi-pp").textContent=fr(grand/1000/ETP,2);
   const prev=414220,evol=((grand-prev)/prev*100);
   document.getElementById("kpi-evol").textContent=(evol>0?"+":"")+evol.toFixed(1)+"%";
   const topM=Object.entries(tots).sort((a,b)=>b[1]-a[1])[0][0];
@@ -1220,8 +1399,8 @@ function calculateAll(){
   // ← rendu délégué à renderResultats()
   userCalculated = true;
   renderResultats(tots, grand, ETP, false);
-  document.getElementById("cmp-tot").textContent=(grand/1000).toFixed(1)+" tCO2eq";
-  document.getElementById("cmp-pp").textContent=(grand/1000/ETP).toFixed(2)+" tCO2/ETP";
+  document.getElementById("cmp-tot").textContent=fr(grand/1000,1)+" tCO2eq";
+  document.getElementById("cmp-pp").textContent=fr(grand/1000/ETP,2)+" tCO2/ETP";
   // go to results
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
@@ -1234,8 +1413,15 @@ let dInit=false;
 function initDashboard(){
   if(dInit)return;dInit=true;
 
-  // ── Répartition par module 2024 (source GES-1point5) ──
-  const mock2024={electricite:7600,chauffage:18400,deplacements:85200,domicile:12800,informatique:6000,achats:235000,construction:20500};
+  // KPI officiels calculés depuis la source unique (cohérence ETP)
+  const offTot=Object.values(DATA_2024_OFFICIAL).reduce((s,v)=>s+v,0);
+  if(!userCalculated){
+    document.getElementById('kpi-total').textContent=fr(offTot/1000,1);
+    document.getElementById('kpi-pp').textContent=fr(offTot/1000/ETP_2024,2);
+  }
+
+  // ── Répartition par module 2024 (source unique de vérité : DATA_2024_OFFICIAL) ──
+  const mock2024=DATA_2024_OFFICIAL;
   new Chart(document.getElementById("chartPie").getContext("2d"),{
     type:"doughnut",
     data:{labels:Object.values(MODS),datasets:[{data:Object.keys(mock2024).map(m=>+(mock2024[m]/1000).toFixed(2)),backgroundColor:Object.values(COLS),borderWidth:2}]},
@@ -1288,7 +1474,11 @@ function initCmp(){
   new Chart(document.getElementById("chartEvol").getContext("2d"),{type:"line",data:{labels:["2022","2023"],datasets:[{label:"Total tCO2eq",data:[285.24,414.22],borderColor:"#c98a2b",backgroundColor:"rgba(201,138,43,.14)",fill:true,tension:.4,pointRadius:6},{label:"Missions prof.",data:[31.92,98.45],borderColor:"#bf5a36",tension:.4,pointRadius:5},{label:"Achats",data:[94.01,135.90],borderColor:"#2f5d44",tension:.4,pointRadius:5},{label:"Energie (élec+chauf)",data:[89.02,105.76],borderColor:"#3a6b8a",tension:.4,pointRadius:5}]},options:{plugins:{title:{display:true,text:"Source : GES-1point5 ESYCOM",font:{size:10},color:"#9a937f"}},scales:{y:{title:{display:true,text:"tCO2eq"}}}}});
 }
 
-window.addEventListener("DOMContentLoaded",()=>{initDashboard();initResultats2024();});
+window.addEventListener("DOMContentLoaded",()=>{
+  initDashboard();initResultats2024();
+  const restored=loadState();
+  if(!restored) Object.keys(D).forEach(rt); // affiche les états vides des tableaux
+});
 
 // ── UPLOAD CSV PAR SECTION ────────────────────────────────────────────────────
 
@@ -1307,13 +1497,16 @@ function handleDropModule(e, moduleType){
 function handleFileModule(e, moduleType){
   const files = [...e.target.files];
   e.target.value = '';
-  if(files.length) parseCSVClient(files[0], moduleType);
+  if(!files.length) return;
+  setModuleStatus(moduleType, 'Lecture du fichier en cours…', 'loading');
+  // laisser l'UI peindre le spinner avant le parsing (potentiellement lourd)
+  requestAnimationFrame(()=>requestAnimationFrame(()=>parseCSVClient(files[0], moduleType)));
 }
 
 function setModuleStatus(moduleType, msg, cls=''){
   const el = document.getElementById('status-' + moduleType);
   if(!el) return;
-  el.textContent = msg;
+  el.innerHTML = (cls==='loading' ? '<span class="spinner" aria-hidden="true"></span>' : '') + msg;
   el.className = 'import-status' + (cls ? ' ' + cls : '');
 }
 
@@ -1420,10 +1613,10 @@ async function parseCSVClient(file, forcedType=null){
     });
     if(forcedType) setModuleStatus(forcedType,`${file.name} — ${imported} mode${imported>1?'s':''} importé${imported>1?'s':''}  (${(D.domicile.reduce((s,r)=>s+r.co2,0)/1000).toFixed(3)} tCO₂e)`,'ok');
     const grand=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
-    const ETP3=parseInt(document.getElementById('etp-val')?.value)||65;
+    const ETP3=parseInt(document.getElementById('etp-val')?.value)||ETP_2024;
     if(grand>0){
-      document.getElementById('kpi-total').textContent=(grand/1000).toFixed(1);
-      document.getElementById('kpi-pp').textContent=(grand/1000/ETP3).toFixed(2);
+      document.getElementById('kpi-total').textContent=fr(grand/1000,1);
+      document.getElementById('kpi-pp').textContent=fr(grand/1000/ETP3,2);
     }
     return;
   }
@@ -1494,10 +1687,10 @@ async function parseCSVClient(file, forcedType=null){
     // Injection directe dans D — pas besoin de applyModuleData
     if(forcedType) setModuleStatus(forcedType,`${file.name} — données réparties dans Électricité, Chauffage`, 'ok');
     const grand=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
-    const ETP2=parseInt(document.getElementById('etp-val')?.value)||65;
+    const ETP2=parseInt(document.getElementById('etp-val')?.value)||ETP_2024;
     if(grand>0){
-      document.getElementById('kpi-total').textContent=(grand/1000).toFixed(1);
-      document.getElementById('kpi-pp').textContent=(grand/1000/ETP2).toFixed(2);
+      document.getElementById('kpi-total').textContent=fr(grand/1000,1);
+      document.getElementById('kpi-pp').textContent=fr(grand/1000/ETP2,2);
     }
     return;
   }
@@ -1652,8 +1845,8 @@ function applyModuleData(data, filename){
   // Mettre à jour les KPIs du dashboard aussi
   const grand=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
   if(grand>0){
-    document.getElementById('kpi-total').textContent=(grand/1000).toFixed(1);
-    document.getElementById('kpi-pp').textContent=(grand/1000/80).toFixed(2);
+    document.getElementById('kpi-total').textContent=fr(grand/1000,1);
+    document.getElementById('kpi-pp').textContent=fr(grand/1000/80,2);
   }
 }
 
