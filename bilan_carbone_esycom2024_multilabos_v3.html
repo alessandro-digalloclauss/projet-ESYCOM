@@ -495,7 +495,7 @@ header :focus-visible{outline-color:var(--orange)}
   <!-- PARAMÈTRE ETP -->
   <div class="card" style="display:flex;align-items:center;gap:1.5rem;padding:.9rem 1.2rem;margin-bottom:1rem;flex-wrap:wrap">
     <label style="font-weight:600;font-size:.9rem">Effectif labo (ETP 2024) :</label>
-    <input id="etp-val" type="number" min="1" max="500" value="59" style="width:90px;padding:.4rem .6rem;border:1.5px solid #cfd8dc;border-radius:8px;font-size:1rem;font-weight:700;color:var(--green-mid)">
+    <input id="etp-val" type="number" min="1" max="500" value="51.5" style="width:90px;padding:.4rem .6rem;border:1.5px solid #cfd8dc;border-radius:8px;font-size:1rem;font-weight:700;color:var(--green-mid)">
     <span style="font-size:.8rem;color:var(--gray)">Utilis&eacute; pour le calcul tCO&#8322;/ETP &mdash; r&eacute;f. 65 ETP (2022) / 59 ETP (2023)</span>
   </div>
 
@@ -1052,7 +1052,7 @@ header :focus-visible{outline-color:var(--orange)}
     <div id="p-tab-indicateurs" class="prev-tab-panel">
       <h2 style="font-size:15px;margin-bottom:1rem">Indicateurs normalisés (GES-1point5)</h2>
       <table class="prev-dt" id="p-tableIndic"></table>
-      <div class="prev-chart-sm" style="margin-top:1.25rem"><canvas id="p-chartIndic" role="img" aria-label="Intensité carbone/ETP 2022-2024">4.38, 7.02, 5.51</canvas></div>
+      <div class="prev-chart-sm" style="margin-top:1.25rem"><canvas id="p-chartIndic" role="img" aria-label="Intensité carbone/ETP 2022-2024">4.38, 7.02, 7.49</canvas></div>
       <div class="prev-hl" style="margin-top:1rem">
         Objectif CNRS 2030 : −50% → cible ≈ <strong>143 tCO₂e</strong> (vs 385,5 en 2024).
         Cela nécessite une action structurelle sur les achats (premier poste d'émission).
@@ -1148,7 +1148,7 @@ if(window.Chart){
 function fr(n,d){return Number(n).toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d});}
 
 // ── Nombre d'agents de référence (ETP) — source unique de vérité ──
-const ETP_2024 = 59;
+const ETP_2024 = 51.5;
 
 // ── PERSISTANCE (localStorage) ──
 const STORE_KEY='esycom_bilan_v3';
@@ -1467,7 +1467,7 @@ let cmpInit=false;
 function initCmp(){
   if(cmpInit)return;cmpInit=true;
   // Chart 1 : benchmark réel tCO2/personne (horizontal bar)
-  new Chart(document.getElementById("chartCmp1").getContext("2d"),{type:"bar",data:{labels:["Objectif Paris 2030","Moy. nationale (~200 labos)","LRP 2023 (46 pers.)","Pprime 2023 (564 pers.)","ESYCOM 2024 (70 ETP)","LAAS 2023 (456 pers.)"],datasets:[{label:"tCO\u2082eq / personne",data:[0.8,2.1,4.61,4.85,5.51,7.0],backgroundColor:["#66bb6a","#9a937f","#f7d34f","#f7a84f","#4f8ef7","#3ecf8e"],borderRadius:6}]},options:{indexAxis:"y",plugins:{legend:{display:false},title:{display:true,text:"Sources : GES-1point5 LAAS 2019\u20132023, BGES Pprime 2024, BGES LRP 2022, ESYCOM 2024",font:{size:10},color:"#9a937f"}},scales:{x:{title:{display:true,text:"tCO\u2082eq / personne"},grid:{color:"rgba(255,255,255,.06)"}},y:{ticks:{font:{size:10}}}}}});
+  new Chart(document.getElementById("chartCmp1").getContext("2d"),{type:"bar",data:{labels:["Objectif Paris 2030","Moy. nationale (~200 labos)","LRP 2023 (46 pers.)","Pprime 2023 (564 pers.)","LAAS 2023 (456 pers.)","ESYCOM 2024 (51,5 ETP)"],datasets:[{label:"tCO\u2082eq / personne",data:[0.8,2.1,4.61,4.85,7.0,7.49],backgroundColor:["#66bb6a","#9a937f","#f7d34f","#f7a84f","#3ecf8e","#4f8ef7"],borderRadius:6}]},options:{indexAxis:"y",plugins:{legend:{display:false},title:{display:true,text:"Sources : GES-1point5 LAAS 2019\u20132023, BGES Pprime 2024, BGES LRP 2022, ESYCOM 2024",font:{size:10},color:"#9a937f"}},scales:{x:{title:{display:true,text:"tCO\u2082eq / personne"},grid:{color:"rgba(255,255,255,.06)"}},y:{ticks:{font:{size:10}}}}}});
   // Chart 2 : répartition postes % — stacked bar inter-labos
   new Chart(document.getElementById("chartCmp2").getContext("2d"),{type:"bar",data:{labels:["ESYCOM 2024","LAAS 2023","Pprime 2023","LRP 2023"],datasets:[{label:"Achats",data:[61,57.5,50,50.5],backgroundColor:"#66bb6a"},{label:"Missions",data:[22,16,20,14.2],backgroundColor:"#ffa726"},{label:"\u00c9nergie",data:[7,13,15,31],backgroundColor:"#42a5f5"},{label:"Domicile",data:[3,7,10,17.9],backgroundColor:"#26c6da"},{label:"IT",data:[2,3,5,0],backgroundColor:"#7e57c2"},{label:"Construction/Autres",data:[5,3.5,0,6.4],backgroundColor:"#78909c"}]},options:{plugins:{legend:{position:"bottom",labels:{font:{size:10},padding:8}},title:{display:true,text:"R\u00e9partition des postes (% du total) \u2014 donn\u00e9es GES-1point5",font:{size:10},color:"#9a937f"}},scales:{x:{stacked:true},y:{stacked:true,title:{display:true,text:"% du total"},max:100,grid:{color:"rgba(255,255,255,.06)"}}}}});
   // Source : GES-1point5 ESYCOM 2022 & 2023 (2024 = données CSV à importer)
@@ -1857,7 +1857,7 @@ const P_COLORS = { achats:'#2f5d44', missions:'#c98a2b', energie:'#3a6b8a', cons
 const P_DATA = {
   2022:{ achats:97.0, missions:82.0, energie:46.0, construction:20.5, domicile:25.0, it:14.5, total:285.0, etp:65, publis:46 },
   2023:{ achats:210.0, missions:105.0, energie:35.0, construction:20.5, domicile:28.0, it:15.5, total:414.0, etp:59, publis:52 },
-  2024:{ achats:235.0, missions:85.2, energie:26.0, construction:20.5, domicile:12.8, it:6.0, total:385.5, etp:70, publis:55 },
+  2024:{ achats:235.0, missions:85.2, energie:26.0, construction:20.5, domicile:12.8, it:6.0, total:385.5, etp:51.5, publis:55 },
 };
 const P_PLANCHERS = { achats:40, missions:8, energie:12, construction:20.5, domicile:4, it:1.5 };
 const P_PLAFONDS  = { achats:500, missions:200, energie:60, construction:20.5, domicile:35, it:25 };
@@ -1991,7 +1991,7 @@ function pRenderIndicateurs(){
   const rows=names.map(n=>{ const vs=yrs.map((_,i)=>inds[i][n]); const tr=pPct(+vs[0],+vs[2]); const isIPEC=n.includes('IPEC'); return `<tr><td>${n}</td>${vs.map(v=>`<td>${v}</td>`).join('')}<td>${pBadge(tr,isIPEC)}</td></tr>`; });
   rows.push(`<tr class="total"><td>Émissions totales</td>${yrs.map(y=>`<td>${P_DATA[y].total.toFixed(1)}</td>`).join('')}<td>${pBadge(pPct(285,385.5))}</td></tr>`);
   document.getElementById('p-tableIndic').innerHTML=`<thead><tr><th>Indicateur</th><th>2022</th><th>2023</th><th>2024</th><th>Évolution</th></tr></thead><tbody>${rows.join('')}</tbody>`;
-  pChartIndic=new Chart(document.getElementById('p-chartIndic').getContext('2d'),{type:'bar',data:{labels:['2022','2023','2024'],datasets:[{label:'tCO₂e/ETP',data:[4.38,7.02,5.51],backgroundColor:['#2f5d44','#a8392a','#c98a2b']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.raw} tCO₂e/ETP`}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{callback:v=>v+' t/ETP'}}}}});
+  pChartIndic=new Chart(document.getElementById('p-chartIndic').getContext('2d'),{type:'bar',data:{labels:['2022','2023','2024'],datasets:[{label:'tCO₂e/ETP',data:[4.38,7.02,7.49],backgroundColor:['#2f5d44','#a8392a','#c98a2b']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.raw} tCO₂e/ETP`}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{callback:v=>v+' t/ETP'}}}}});
 }
 
 // ═══════════════════════════════════════════════════════════════
