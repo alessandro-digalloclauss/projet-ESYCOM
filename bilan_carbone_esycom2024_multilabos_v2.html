@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bilan Carbone ESYCOM 2024</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:#1b5e20;--green-mid:#2e7d32;--green-light:#43a047;--green-pale:#e8f5e9;--green-acc:#66bb6a;
+    --blue:#1565c0;--blue-light:#42a5f5;--blue-pale:#e3f2fd;
+    --orange:#e65100;--orange-pale:#fff3e0;
+    --red:#c62828;--red-pale:#ffebee;
+    --gray:#546e7a;--gray-light:#eceff1;--gray-bg:#f0f4f8;
+    --white:#fff;
+    --shadow:0 2px 16px rgba(0,0,0,.08);
+    --shadow-md:0 4px 24px rgba(0,0,0,.12);
+    --radius:14px;--radius-sm:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--gray-bg);color:#1a2a35;line-height:1.5}
+
+  /* ── HEADER ── */
+  header{
+    background:linear-gradient(135deg,var(--green) 0%,var(--green-mid) 60%,#388e3c 100%);
+    color:#fff;padding:0 1.5rem;display:flex;align-items:stretch;
+    box-shadow:0 3px 12px rgba(0,0,0,.22);position:sticky;top:0;z-index:200;
+  }
+  header h1{font-size:1rem;font-weight:800;padding:.85rem 0;white-space:nowrap;letter-spacing:-.3px;display:flex;align-items:center;gap:.5rem;margin-right:1rem}
+  header .badge{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:.15rem .65rem;font-size:.72rem;font-weight:700;letter-spacing:.5px}
+  nav{display:flex;flex-wrap:nowrap;overflow-x:auto}
+  nav button{
+    background:transparent;color:rgba(255,255,255,.75);border:none;
+    padding:.85rem 1rem;cursor:pointer;font-size:.82rem;font-family:inherit;font-weight:500;
+    border-bottom:3px solid transparent;transition:all .18s;white-space:nowrap;
+  }
+  nav button:hover{color:#fff;background:rgba(255,255,255,.08)}
+  nav button.active{color:#fff;border-bottom-color:#a5d6a7;font-weight:700}
+
+  /* ── LAYOUT ── */
+  main{max-width:1320px;margin:0 auto;padding:2rem 1.5rem}
+  .page{display:none}.page.active{display:block}
+
+  /* ── SECTION TITLE ── */
+  .section-title{
+    font-size:1.35rem;font-weight:800;margin-bottom:1.5rem;color:#1a2a35;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .section-title::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,var(--green-pale),transparent);margin-left:.5rem}
+
+  /* ── CARDS ── */
+  .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1.5rem}
+  .card h2{font-size:.97rem;font-weight:700;color:var(--gray);margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
+
+  /* ── KPI ── */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin-bottom:1.5rem}
+  .kpi{
+    background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:1.3rem 1.5rem;position:relative;overflow:hidden;
+    border-top:4px solid var(--green-light);transition:box-shadow .2s,transform .2s;
+  }
+  .kpi:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+  .kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--green),var(--green-acc))}
+  .kpi.blue::before{background:linear-gradient(90deg,var(--blue),var(--blue-light))}
+  .kpi.orange::before{background:linear-gradient(90deg,var(--orange),#ffb300)}
+  .kpi.red::before{background:linear-gradient(90deg,var(--red),#e57373)}
+  .kpi label{font-size:.72rem;text-transform:uppercase;letter-spacing:.7px;color:var(--gray);font-weight:600;display:block;margin-bottom:.4rem}
+  .kpi .val{font-size:2rem;font-weight:800;color:var(--green-mid);line-height:1.1}
+  .kpi.blue .val{color:var(--blue)}.kpi.orange .val{color:var(--orange)}.kpi.red .val{color:var(--red)}
+  .kpi small{font-size:.72rem;color:#90a4ae;margin-top:.25rem;display:block}
+  /* retire l'ancienne border-left */
+  .kpi{border-left:none}
+
+  /* ── CHART GRID ── */
+  .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+  @media(max-width:800px){.chart-grid{grid-template-columns:1fr}}
+  .chart-box{
+    background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:1.5rem;overflow:hidden;
+  }
+  .chart-box h3{
+    font-size:.88rem;font-weight:700;color:var(--gray);margin-bottom:1rem;
+    padding-bottom:.6rem;border-bottom:1px solid var(--gray-light);
+    display:flex;align-items:center;gap:.4rem;
+  }
+  canvas{max-height:280px}
+
+  /* ── ALERTS ── */
+  .alert{padding:.8rem 1.15rem;border-radius:var(--radius-sm);font-size:.86rem;margin-bottom:1.2rem;border:none;display:flex;align-items:flex-start;gap:.6rem}
+  .alert::before{flex-shrink:0;margin-top:.05em;font-size:1.1rem}
+  .alert.info{background:var(--blue-pale);color:#0d47a1;border-left:4px solid var(--blue-light)}
+  .alert.info::before{content:"ℹ️"}
+  .alert.success{background:var(--green-pale);color:var(--green-mid);border-left:4px solid var(--green-acc)}
+  .alert.success::before{content:"✅"}
+  .alert.warning{background:var(--orange-pale);color:var(--orange);border-left:4px solid #ffb300}
+  .alert.warning::before{content:"⚠️"}
+
+  /* ── MODULE TABS ── */
+  .module-tabs{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.5rem}
+  .module-tab{
+    padding:.38rem 1rem;border-radius:20px;
+    border:1.5px solid #cfd8dc;background:var(--white);cursor:pointer;
+    font-size:.8rem;font-family:inherit;font-weight:500;color:var(--gray);
+    transition:all .15s;
+  }
+  .module-tab:hover{border-color:var(--green-light);color:var(--green-mid);background:var(--green-pale)}
+  .module-tab.active{background:var(--green-mid);color:#fff;border-color:var(--green-mid);font-weight:700;box-shadow:0 2px 8px rgba(46,125,50,.3)}
+  .module-panel{display:none}.module-panel.active{display:block}
+
+  /* ── FORMS ── */
+  .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1rem}
+  .field{display:flex;flex-direction:column;gap:.3rem}
+  .field label{font-size:.78rem;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+  .field input,.field select{
+    padding:.55rem .9rem;border:1.5px solid #cfd8dc;border-radius:var(--radius-sm);
+    font-size:.9rem;font-family:inherit;background:var(--white);transition:border-color .15s;
+  }
+  .field input:focus,.field select:focus{outline:none;border-color:var(--green-light);box-shadow:0 0 0 3px rgba(67,160,71,.12)}
+
+  /* ── BUTTONS ── */
+  .btn{
+    padding:.6rem 1.4rem;border-radius:var(--radius-sm);border:none;cursor:pointer;
+    font-size:.9rem;font-family:inherit;font-weight:700;transition:all .18s;letter-spacing:.2px;
+  }
+  .btn-green{
+    background:linear-gradient(135deg,var(--green-light),var(--green-mid));
+    color:#fff;box-shadow:0 2px 10px rgba(46,125,50,.3);
+  }
+  .btn-green:hover{background:linear-gradient(135deg,#4caf50,var(--green-light));box-shadow:0 4px 16px rgba(46,125,50,.4);transform:translateY(-1px)}
+  .btn-blue{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(21,101,192,.25)}
+  .btn-blue:hover{background:var(--blue-light)}
+  .btn-outline{
+    background:var(--white);color:var(--green-mid);
+    border:2px solid var(--green-light);
+  }
+  .btn-outline:hover{background:var(--green-pale)}
+  .btn-row{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem}
+
+  /* ── TABLES ── */
+  .tbl-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid #eceff1}
+  table{width:100%;border-collapse:collapse;font-size:.86rem}
+  th{background:var(--gray-light);text-align:left;padding:.6rem 1rem;color:var(--gray);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  td{padding:.5rem 1rem;border-bottom:1px solid #f1f5f9}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#f8fafc}
+
+  /* ── RESULT BARS ── */
+  .result-item{display:flex;align-items:center;gap:1rem;margin-bottom:.7rem;padding:.2rem 0}
+  .result-item .rl{width:180px;font-size:.84rem;color:var(--gray);flex-shrink:0;font-weight:500}
+  .result-item .bw{flex:1;height:18px;background:#eceff1;border-radius:20px;overflow:hidden}
+  .result-item .bf{height:100%;border-radius:20px;transition:width 1.2s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--green-acc),var(--green-mid))}
+  .result-item .rv{width:110px;text-align:right;font-weight:700;font-size:.9rem;flex-shrink:0}
+
+  /* ── IMPORT / UPLOAD ── */
+  .import-section{border:1px solid #e0e7ef;border-radius:var(--radius);overflow:hidden;background:var(--white);box-shadow:0 1px 6px rgba(0,0,0,.05);transition:box-shadow .2s}
+  .import-section:hover{box-shadow:var(--shadow)}
+  .import-section-header{padding:.65rem 1rem;font-weight:700;font-size:.86rem;letter-spacing:.02em}
+  .upload-zone-small{
+    border:2px dashed #b0bec5;margin:.6rem;border-radius:var(--radius-sm);
+    padding:1.2rem .5rem;text-align:center;cursor:pointer;position:relative;
+    transition:all .18s;background:#fafbfc;display:flex;flex-direction:column;align-items:center;gap:.35rem;
+  }
+  .upload-zone-small:hover,.upload-zone-small.drag{border-color:var(--green-light);background:var(--green-pale);border-style:solid}
+  .upload-zone-small input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .upload-zone-small p{font-size:.78rem;color:#90a4ae;margin:0;font-weight:500}
+  .import-status{margin:.25rem .6rem .6rem;font-size:.8rem;min-height:1.2rem;border-radius:6px;padding:.3rem .7rem}
+  .import-status.ok{background:var(--green-pale);color:var(--green-mid);font-weight:700}
+  .import-status.err{background:var(--red-pale);color:var(--red)}
+  .srv-badge{display:none}
+  .up-msg{border-radius:var(--radius-sm);padding:.7rem 1rem;margin-top:.75rem;font-size:.86rem}
+  .up-ok{background:var(--green-pale);color:var(--green-mid)}.up-err{background:var(--red-pale);color:var(--red)}.up-info{background:var(--blue-pale);color:var(--blue)}
+  .chip{display:inline-flex;align-items:center;gap:.3rem;background:var(--green-pale);color:var(--green-mid);border-radius:20px;padding:.2rem .75rem;font-size:.78rem;margin:.15rem;font-weight:700}
+  .upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}@media(max-width:700px){.upload-grid{grid-template-columns:1fr}}
+
+  /* ── COMPARISON LABO CARDS ── */
+  .compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-bottom:1.5rem}
+  .labo-card{
+    background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:1.3rem;border-top:4px solid var(--green-acc);transition:box-shadow .2s,transform .2s;
+  }
+  .labo-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+  .labo-card.hi{
+    background:linear-gradient(135deg,#fff8e1 0%,#fff3cd 100%);
+    border-top-color:#f59e0b;box-shadow:0 4px 20px rgba(245,158,11,.2);
+  }
+  .labo-card h4{font-size:.92rem;font-weight:700;margin-bottom:.25rem;color:#1a2a35}
+  .labo-card .sub{font-size:.73rem;color:#90a4ae;margin-bottom:.75rem;line-height:1.4}
+  .labo-card .tot{font-size:1.45rem;font-weight:800;color:var(--green-mid)}
+  .labo-card.hi .tot{color:#b45309}
+  .labo-card .pp{font-size:.8rem;color:var(--gray);margin-top:.2rem;font-weight:500}
+
+  /* ── LIVE COUNTER ── */
+  #total-live{
+    position:fixed;bottom:1.5rem;right:1.5rem;
+    background:linear-gradient(135deg,var(--green-mid),var(--green));
+    color:#fff;border-radius:40px;padding:.65rem 1.4rem;
+    box-shadow:0 6px 24px rgba(27,94,32,.45);
+    font-weight:800;font-size:.92rem;z-index:100;
+    display:flex;align-items:center;gap:.4rem;
+    transition:transform .2s;cursor:default;
+  }
+  #total-live:hover{transform:scale(1.03)}
+
+/* PRÉVISIONS */
+
+#page-prediction *{box-sizing:border-box;margin:0;padding:0}
+#page-prediction .prev-wrap{padding:0}
+#page-prediction .prev-tabs{display:flex;gap:0;border-bottom:1px solid #e0ddd5;margin-bottom:1.5rem;flex-wrap:wrap}
+#page-prediction .prev-tab{padding:.6rem 1.2rem;font-size:13px;font-weight:500;color:#666;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;border-top:none;border-left:none;border-right:none;transition:color .15s,border-color .15s}
+#page-prediction .prev-tab.active{color:#1a6f44;border-bottom-color:#1a6f44}
+#page-prediction .prev-tab-panel{display:none}
+#page-prediction .prev-tab-panel.active{display:block}
+#page-prediction .prev-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
+#page-prediction .prev-metric{background:#f4f3ee;border-radius:8px;padding:.9rem 1rem}
+#page-prediction .prev-metric-label{font-size:11px;color:#666;margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em}
+#page-prediction .prev-metric-val{font-size:22px;font-weight:600;color:#1a1a1a}
+#page-prediction .prev-metric-sub{font-size:11px;color:#888;margin-top:2px}
+#page-prediction .prev-metric.green .prev-metric-val{color:#1a6f44}
+#page-prediction .prev-metric.red .prev-metric-val{color:#b83232}
+#page-prediction .prev-metric.amber .prev-metric-val{color:#d97706}
+#page-prediction .prev-chart-wrap{position:relative;width:100%;height:280px}
+#page-prediction .prev-chart-sm{position:relative;width:100%;height:200px}
+#page-prediction .prev-sc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:1.5rem}
+#page-prediction .prev-sc-card{border:1.5px solid #e0ddd5;border-radius:10px;padding:1rem;cursor:pointer;transition:border-color .15s,background .15s}
+#page-prediction .prev-sc-card:hover{border-color:#aaa}
+#page-prediction .prev-sc-card.selected{border-color:#1a6f44;background:#f0faf5}
+#page-prediction .prev-sc-card .sc-name{font-size:13px;font-weight:600;margin-bottom:4px}
+#page-prediction .prev-sc-card .sc-desc{font-size:11px;color:#666;margin-bottom:8px}
+#page-prediction .prev-sc-card .sc-val{font-size:20px;font-weight:700}
+#page-prediction .prev-sc-card.tendance .sc-val{color:#d97706}
+#page-prediction .prev-sc-card.stabilisation .sc-val{color:#2563eb}
+#page-prediction .prev-sc-card.optimiste .sc-val{color:#1a6f44}
+#page-prediction .prev-sc-card.pessimiste .sc-val{color:#b83232}
+#page-prediction .prev-measures-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:1.25rem}
+#page-prediction .prev-measure-item{border:1.5px solid #e0ddd5;border-radius:8px;padding:.85rem 1rem;cursor:pointer;transition:border-color .15s,background .15s}
+#page-prediction .prev-measure-item.selected{border-color:#1a6f44;background:#f0faf5}
+#page-prediction .prev-measure-item .m-name{font-size:13px;font-weight:600;margin-bottom:2px}
+#page-prediction .prev-measure-item .m-meta{font-size:11px;color:#666}
+#page-prediction .prev-result-box{background:#f0faf5;border:1px solid #9fdfc0;border-radius:8px;padding:1rem 1.25rem;margin-top:1rem}
+#page-prediction .prev-result-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;border-bottom:.5px solid #d0edd8}
+#page-prediction .prev-result-row:last-child{border-bottom:none;font-weight:600;font-size:14px}
+#page-prediction .prev-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500}
+#page-prediction .prev-badge-green{background:#d1fae5;color:#065f46}
+#page-prediction .prev-badge-red{background:#fee2e2;color:#991b1b}
+#page-prediction .prev-dt{width:100%;border-collapse:collapse;font-size:13px}
+#page-prediction .prev-dt th{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:#666;padding:6px 8px;border-bottom:1px solid #e0ddd5;text-align:right}
+#page-prediction .prev-dt th:first-child{text-align:left}
+#page-prediction .prev-dt td{padding:7px 8px;border-bottom:.5px solid #f0ede5;text-align:right}
+#page-prediction .prev-dt td:first-child{text-align:left;color:#444}
+#page-prediction .prev-dt tr.total td{font-weight:600;color:#1a1a1a;background:#fafaf8;border-top:1px solid #e0ddd5}
+#page-prediction .prev-legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;font-size:12px;color:#555}
+#page-prediction .prev-legend-item{display:flex;align-items:center;gap:5px}
+#page-prediction .prev-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+#page-prediction .prev-note{font-size:12px;color:#888;margin-top:.75rem}
+#page-prediction .prev-hr{border:none;border-top:.5px solid #e0ddd5;margin:1.25rem 0}
+#page-prediction .prev-hl{background:#fffbeb;border:.5px solid #fcd34d;border-radius:8px;padding:.85rem 1rem;margin:.75rem 0;font-size:13px}
+#page-prediction select{font-size:13px;padding:6px 10px;border:.5px solid #ccc;border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer}
+
+/* ── MULTI-LABOS STYLES ── */
+.ml-lab-nav{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.25rem}
+.ml-lab-btn{padding:.38rem 1rem;border-radius:20px;border:1.5px solid #cfd8dc;background:#fff;cursor:pointer;font-size:.8rem;font-family:inherit;font-weight:600;color:#546e7a;transition:all .15s;display:flex;align-items:center;gap:.4rem}
+.ml-lab-btn:hover{border-color:#43a047;color:#2e7d32;background:#e8f5e9}
+.ml-lab-btn.active{background:#2e7d32;color:#fff;border-color:#2e7d32;box-shadow:0 2px 8px rgba(46,125,50,.3)}
+.ml-lab-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.ml-lab-panel{display:none}.ml-lab-panel.active{display:block}
+.ml-comp-chart-wrap{position:relative;width:100%;height:320px}
+.ml-kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.25rem}
+.ml-kpi{background:#f4f3ee;border-radius:8px;padding:.9rem 1rem;border-left:4px solid #ccc}
+.ml-kpi .ml-kpi-l{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
+.ml-kpi .ml-kpi-v{font-size:20px;font-weight:700;color:#1a2a35}
+.ml-kpi .ml-kpi-s{font-size:11px;color:#888;margin-top:2px}
+.ml-info-box{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:#1b5e20}
+.ml-partial-box{background:#fff8e1;border:1px solid #ffd54f;border-radius:8px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:#e65100}
+
+
+</style>
+</head>
+<body>
+<header>
+  <h1>&#127807; Bilan Carbone ESYCOM <span class="badge">2024</span></h1>
+  <nav>
+    <button class="active" onclick="showPage('dashboard',this)">&#128202; Dashboard</button>
+    <button onclick="showPage('saisie',this)">&#9999;&#65039; Saisie</button>
+    <button onclick="showPage('resultats',this)">&#128200; R&eacute;sultats</button>
+    <button onclick="showPage('comparaison',this)">&#9878;&#65039; Comparaison</button>
+  <button onclick="showPage('prediction',this)">&#128200; Pr&#233;visions</button>
+  </nav>
+</header>
+<main>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="section-title">&#128202; Tableau de bord &mdash; Bilan Carbone ESYCOM</div>
+  <div class="alert info">Donn&eacute;es issues des fichiers CSV g&eacute;n&eacute;r&eacute;s depuis les Excel 2024. Allez dans <strong>Saisie</strong> pour importer vos CSV et recalculer.</div>
+  <div class="kpi-grid">
+    <div class="kpi"><label>Total GES 2024</label><div class="val" id="kpi-total">385,6</div><small>tCO&#8322;eq</small></div>
+    <div class="kpi blue"><label>Par personne 2024</label><div class="val" id="kpi-pp">6,50</div><small>tCO&#8322;eq / ETP</small></div>
+    <div class="kpi orange"><label>2024 vs 2023</label><div class="val" id="kpi-evol">−6,9%</div><small>variation annuelle</small></div>
+    <div class="kpi red"><label>Poste dominant</label><div class="val" id="kpi-top">Achats</div><small>module le plus &eacute;metteur</small></div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-box"><h3>&#128205; R&eacute;partition par module (tCO&#8322;eq)</h3><canvas id="chartPie"></canvas></div>
+    <div class="chart-box"><h3>&#128197; &Eacute;volution 2022 &rarr; 2023 &rarr; 2024</h3><canvas id="chartBar"></canvas></div>
+    <div class="chart-box"><h3>&#9992;&#65039; D&eacute;placements &mdash; modes de transport</h3><canvas id="chartTravel"></canvas></div>
+    <div class="chart-box"><h3>&#128722; Achats &mdash; cat&eacute;gories DDRS</h3><canvas id="chartPurchases"></canvas></div>
+  </div>
+</div>
+
+<!-- SAISIE -->
+<div id="page-saisie" class="page">
+  <div class="section-title">&#9999;&#65039; Saisie des donn&eacute;es &mdash; 13 modules GES</div>
+
+  <!-- PARAMÈTRE ETP -->
+  <div class="card" style="display:flex;align-items:center;gap:1.5rem;padding:.9rem 1.2rem;margin-bottom:1rem;flex-wrap:wrap">
+    <label style="font-weight:600;font-size:.9rem">&#128100; Effectif labo (ETP 2024) :</label>
+    <input id="etp-val" type="number" min="1" max="500" value="65" style="width:90px;padding:.4rem .6rem;border:1.5px solid #cfd8dc;border-radius:8px;font-size:1rem;font-weight:700;color:var(--green-mid)">
+    <span style="font-size:.8rem;color:var(--gray)">Utilis&eacute; pour le calcul tCO&#8322;/ETP &mdash; r&eacute;f. 65 ETP (2022) / 59 ETP (2023)</span>
+  </div>
+
+  <!-- ZONE IMPORT FICHIERS -->
+  <div class="card">
+    <h2>&#128193; Importer les donn&eacute;es CSV</h2>
+    <p style="font-size:.84rem;color:var(--gray);margin-bottom:1rem">D&eacute;posez un fichier CSV dans la section correspondante. Le nom du fichier n'a pas d'importance.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
+
+      <!-- Achats -->
+      <div class="import-section" id="sec-achats">
+        <div class="import-section-header" style="background:#e3f2fd;color:#1565c0">
+          &#128722; Achats DDRS
+        </div>
+        <div class="upload-zone-small" id="zone-achats"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="handleDropModule(event,'achats')">
+          <input type="file" accept=".csv" onchange="handleFileModule(event,'achats')">
+          <div style="font-size:1.6rem">&#128196;</div>
+          <p>Glisser ou cliquer</p>
+        </div>
+        <div id="status-achats" class="import-status"></div>
+      </div>
+
+      <!-- Matériel IT -->
+      <div class="import-section" id="sec-informatique">
+        <div class="import-section-header" style="background:#e8f5e9;color:#2e7d32">
+          &#128187; Mat&eacute;riel IT
+        </div>
+        <div class="upload-zone-small" id="zone-informatique"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="handleDropModule(event,'informatique')">
+          <input type="file" accept=".csv" onchange="handleFileModule(event,'informatique')">
+          <div style="font-size:1.6rem">&#128196;</div>
+          <p>Glisser ou cliquer</p>
+        </div>
+        <div id="status-informatique" class="import-status"></div>
+      </div>
+
+      <!-- Missions -->
+      <div class="import-section" id="sec-missions">
+        <div class="import-section-header" style="background:#fff3e0;color:#e65100">
+          &#9992;&#65039; Missions &amp; D&eacute;placements
+        </div>
+        <div class="upload-zone-small" id="zone-missions"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="handleDropModule(event,'missions')">
+          <input type="file" accept=".csv" onchange="handleFileModule(event,'missions')">
+          <div style="font-size:1.6rem">&#128196;</div>
+          <p>Glisser ou cliquer</p>
+        </div>
+        <div id="status-missions" class="import-status"></div>
+      </div>
+
+      <!-- Commandes CNRS/GESLAB -->
+      <div class="import-section" id="sec-commandes">
+        <div class="import-section-header" style="background:#f3e5f5;color:#6a1b9a">
+          Commandes CNRS/GESLAB
+        </div>
+        <div class="upload-zone-small" id="zone-commandes"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="handleDropModule(event,'commandes')">
+          <input type="file" accept=".csv" onchange="handleFileModule(event,'commandes')">
+          <div style="font-size:1.6rem">&#128196;</div>
+          <p>Glisser ou cliquer</p>
+        </div>
+        <div id="status-commandes" class="import-status"></div>
+      </div>
+
+      <!-- Domicile-travail -->
+      <div class="import-section" id="sec-domicile">
+        <div class="import-section-header" style="background:#e0f2f1;color:#004d40">
+          &#128652; Domicile &mdash; travail
+        </div>
+        <div class="upload-zone-small" id="zone-domicile"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="handleDropModule(event,'domicile')">
+          <input type="file" accept=".csv" onchange="handleFileModule(event,'domicile')">
+          <div style="font-size:1.6rem">&#128196;</div>
+          <p>Glisser ou cliquer</p>
+        </div>
+        <p style="font-size:.75rem;color:#78909c;margin:.25rem .75rem .5rem;line-height:1.4">
+          Colonnes attendues :<br>
+          <code>Mode ; Total kgCO&#8322;eq</code>
+        </p>
+        <div id="status-domicile" class="import-status"></div>
+      </div>
+
+      <!-- Bâtiment -->
+      <div class="import-section" id="sec-batiment">
+        <div class="import-section-header" style="background:#e0f7fa;color:#00695c">
+          B&acirc;timent &mdash; &eacute;nergie &amp; eau
+        </div>
+        <div class="upload-zone-small" id="zone-batiment"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="handleDropModule(event,'batiment')">
+          <input type="file" accept=".csv" onchange="handleFileModule(event,'batiment')">
+          <div style="font-size:1.6rem">&#128196;</div>
+          <p>Glisser ou cliquer</p>
+        </div>
+        <p style="font-size:.75rem;color:#78909c;margin:.25rem .75rem .5rem;line-height:1.4">
+          Colonnes attendues :<br>
+          <code>B&acirc;timent ; Eau (m&sup3;) ; &Eacute;lectricit&eacute; (kWh) ; RCU/G&eacute;othermie (MWh) ; Gaz (kWh) ; Plaquettes foresti&egrave;res (kg) ; Gaz r&eacute;frig&eacute;rant R134a (kg) ; Part labo (%)</code>
+        </p>
+        <div id="status-batiment" class="import-status"></div>
+      </div>
+
+    </div>
+    <div id="up-msg" style="margin-top:.75rem"></div>
+  </div>
+
+  <div class="module-tabs">
+    <button class="module-tab active" onclick="showMod('electricite',this)">&#9889; Electricit&eacute;</button>
+    <button class="module-tab" onclick="showMod('chauffage',this)">&#128293; Chauffage</button>
+    <button class="module-tab" onclick="showMod('deplacements',this)">&#9992;&#65039; Missions</button>
+    <button class="module-tab" onclick="showMod('domicile',this)">&#128652; Domicile</button>
+    <button class="module-tab" onclick="showMod('informatique',this)">&#128187; Informatique</button>
+    <button class="module-tab" onclick="showMod('achats',this)">&#128722; Achats</button>
+    <button class="module-tab" onclick="showMod('dechets',this)">&#128465;&#65039; D&eacute;chets</button>
+    <button class="module-tab" onclick="showMod('refrigerants',this)">&#10052;&#65039; R&eacute;frig&eacute;rants</button>
+    <button class="module-tab" onclick="showMod('eau',this)">&#128167; Eau</button>
+    <button class="module-tab" onclick="showMod('alimentation',this)">&#127374; Alimentation</button>
+    <button class="module-tab" onclick="showMod('construction',this)">&#127963;&#65039; Construction</button>
+  </div>
+
+  <div class="card module-panel active" id="mod-electricite">
+    <h2>&#9889; Consommation &eacute;lectrique</h2>
+    <div class="alert info">Facteur d'&eacute;mission France 2023 : <strong>0,0491 kgCO&#8322;/kWh</strong></div>
+    <div class="tbl-wrap"><table id="tbl-electricite"><thead><tr><th>B&acirc;timent</th><th>kWh</th><th>Part labo</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="form-row" style="margin-top:1rem">
+      <div class="field"><label>B&acirc;timent</label><input id="e-bat" placeholder="ex: B&acirc;t. Copernic"></div>
+      <div class="field"><label>Consommation (kWh)</label><input id="e-kwh" type="number" placeholder="0"></div>
+      <div class="field"><label>Part labo (%)</label><input id="e-part" type="number" value="100"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="addElec()">+ Ajouter</button>
+      <button class="btn btn-blue" onclick="prefElec()">&#128194; Charger donn&eacute;es ESYCOM</button>
+    </div>
+  </div>
+
+  <div class="card module-panel" id="mod-chauffage">
+    <h2>&#128293; Chauffage</h2>
+    <div class="tbl-wrap"><table id="tbl-chauffage"><thead><tr><th>B&acirc;timent</th><th>Type</th><th>kWh</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="form-row" style="margin-top:1rem">
+      <div class="field"><label>B&acirc;timent</label><input id="c-bat" placeholder="ex: B&acirc;t. Copernic"></div>
+      <div class="field"><label>Type d'&eacute;nergie</label>
+        <select id="c-type">
+          <option value="gaz">Gaz naturel &mdash; 0,227 kgCO&#8322;/kWh</option>
+          <option value="fioul">Fioul &mdash; 0,324 kgCO&#8322;/kWh</option>
+          <option value="reseau">R&eacute;seau chaleur &mdash; 0,117 kgCO&#8322;/kWh</option>
+          <option value="elec">Electricit&eacute; &mdash; 0,049 kgCO&#8322;/kWh</option>
+          <option value="bois">Bois &mdash; 0,030 kgCO&#8322;/kWh</option>
+        </select>
+      </div>
+      <div class="field"><label>Consommation (kWh)</label><input id="c-kwh" type="number" placeholder="0"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="addChauf()">+ Ajouter</button>
+      <button class="btn btn-blue" onclick="prefChauf()">&#128194; Charger donn&eacute;es ESYCOM</button>
+    </div>
+  </div>
+
+  <div class="card module-panel" id="mod-deplacements">
+    <h2>&#9992;&#65039; D&eacute;placements professionnels (missions)</h2>
+    <div class="alert info">Import&eacute; depuis <strong>03_missions_deplacements.csv</strong></div>
+    <div class="tbl-wrap"><table id="tbl-deplacements"><thead><tr><th>Destination</th><th>Mode</th><th>km</th><th>Nb pers.</th><th>A/R</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="form-row" style="margin-top:1rem">
+      <div class="field"><label>Destination</label><input id="d-dest" placeholder="ex: Berlin"></div>
+      <div class="field"><label>Mode</label>
+        <select id="d-mode">
+          <option value="avion_long">Avion long-courrier (&gt;3h) &mdash; 0,195</option>
+          <option value="avion_court">Avion court-courrier (&le;3h) &mdash; 0,258</option>
+          <option value="tgv">TGV &mdash; 0,002 kgCO&#8322;/km</option>
+          <option value="train">Train intercit&eacute;s &mdash; 0,006</option>
+          <option value="voiture">Voiture &mdash; 0,218 kgCO&#8322;/km</option>
+          <option value="covoiturage">Covoiturage (2p) &mdash; 0,109</option>
+          <option value="car">Car &mdash; 0,030 kgCO&#8322;/km</option>
+        </select>
+      </div>
+      <div class="field"><label>Distance (km, 1 sens)</label><input id="d-dist" type="number" placeholder="0"></div>
+      <div class="field"><label>Nb personnes</label><input id="d-nb" type="number" value="1"></div>
+      <div class="field"><label>Aller-retour</label><select id="d-ar"><option value="2">Oui</option><option value="1">Non</option></select></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="addDep()">+ Ajouter</button>
+      <button class="btn btn-blue" onclick="prefDep()">&#128194; Charger missions 2024</button>
+    </div>
+  </div>
+
+  <div class="card module-panel" id="mod-domicile">
+    <h2>&#128652; Trajets domicile-travail</h2>
+    <div class="tbl-wrap"><table id="tbl-domicile"><thead><tr><th>Mode</th><th>Nb agents</th><th>km/jour A/R</th><th>Jours/an</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="form-row" style="margin-top:1rem">
+      <div class="field"><label>Mode</label>
+        <select id="dom-mode">
+          <option value="voiture_seul">Voiture seul &mdash; 0,218 kgCO&#8322;/km</option>
+          <option value="covoiturage">Covoiturage (2p) &mdash; 0,109</option>
+          <option value="velo">V&eacute;lo / marche &mdash; 0</option>
+          <option value="rer_metro">RER/M&eacute;tro &mdash; 0,006</option>
+          <option value="bus">Bus &mdash; 0,113</option>
+          <option value="transilien">Transilien &mdash; 0,004</option>
+        </select>
+      </div>
+      <div class="field"><label>Nb agents</label><input id="dom-nb" type="number" value="1"></div>
+      <div class="field"><label>km A/R par jour</label><input id="dom-dist" type="number" placeholder="ex: 30"></div>
+      <div class="field"><label>Jours trav./an</label><input id="dom-jours" type="number" value="220"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="addDom()">+ Ajouter</button>
+      <button class="btn btn-blue" onclick="prefDom()">&#128194; Charger donn&eacute;es ESYCOM</button>
+    </div>
+  </div>
+
+  <div class="card module-panel" id="mod-informatique">
+    <h2>&#128187; Mat&eacute;riel informatique (fabrication)</h2>
+    <div class="alert info">Import&eacute; depuis <strong>GES INFORMATIQUE</strong> &mdash; fichier ESYCOM. Facteurs : <strong>Ecodiag EcoInfo CNRS 2024</strong> (fabrication + distribution + fin de vie).</div>
+    <div class="tbl-wrap"><table id="tbl-informatique"><thead><tr><th>Type</th><th>Mod&egrave;le</th><th>Qt&eacute;</th><th>Amortissement</th><th>kgCO&#8322;/an</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="form-row" style="margin-top:1rem">
+      <div class="field"><label>Type</label>
+        <select id="it-type">
+          <option value="laptop">Laptop &mdash; 285 kgCO&#8322; (Ecodiag 2024)</option>
+          <option value="desktop">PC fixe &mdash; 320 kgCO&#8322;</option>
+          <option value="ecran">Ecran &mdash; 290 kgCO&#8322;</option>
+          <option value="serveur">Serveur &mdash; 1800 kgCO&#8322;</option>
+          <option value="smartphone">Smartphone &mdash; 55 kgCO&#8322;</option>
+          <option value="imprimante">Imprimante &mdash; 95 kgCO&#8322;</option>
+        </select>
+      </div>
+      <div class="field"><label>Mod&egrave;le</label><input id="it-mod" placeholder="optionnel"></div>
+      <div class="field"><label>Quantit&eacute;</label><input id="it-qty" type="number" value="1"></div>
+      <div class="field"><label>Amortissement (ans)</label><input id="it-amort" type="number" value="5"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="addIT()">+ Ajouter</button>
+      <button class="btn btn-blue" onclick="prefIT()">&#128194; Charger mat&eacute;riel 2024</button>
+    </div>
+  </div>
+
+  <div class="card module-panel" id="mod-achats">
+    <h2>&#128722; Achats &amp; commandes</h2>
+    <div class="alert info">Issues de <strong>01_achats_DDRS.csv</strong> + <strong>04_commandes_CNRS_GESLAB.csv</strong></div>
+    <div class="tbl-wrap"><table id="tbl-achats"><thead><tr><th>Cat&eacute;gorie DDRS</th><th>Montant HT (&euro;)</th><th>Facteur (kgCO&#8322;/&euro;)</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="form-row" style="margin-top:1rem">
+      <div class="field"><label>Cat&eacute;gorie</label>
+        <select id="ach-cat">
+          <option value="chimie">Produits chimiques &mdash; 0,90</option>
+          <option value="bio">Biologie/instrum. &mdash; 0,75</option>
+          <option value="mecanique">M&eacute;canique/composants &mdash; 0,60</option>
+          <option value="it_mat">Mat&eacute;riel IT &mdash; 0,50</option>
+          <option value="bureau">Fournitures bureau &mdash; 0,40</option>
+          <option value="services">Services &mdash; 0,20</option>
+          <option value="autre">Autre &mdash; 0,35</option>
+        </select>
+      </div>
+      <div class="field"><label>Montant HT (&euro;)</label><input id="ach-montant" type="number" placeholder="0"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="addAch()">+ Ajouter</button>
+      <button class="btn btn-blue" onclick="prefAch()">&#128194; Charger achats 2024</button>
+    </div>
+  </div>
+
+  <div class="card module-panel" id="mod-dechets">
+    <h2>&#128465;&#65039; D&eacute;chets</h2>
+    <div class="tbl-wrap"><table id="tbl-dechets"><thead><tr><th>Type</th><th>Valorisation</th><th>Quantit&eacute; (kg)</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="form-row" style="margin-top:1rem">
+      <div class="field"><label>Type</label>
+        <select id="dec-type">
+          <option value="dib">DIB</option><option value="chimique">D&eacute;chets chimiques</option>
+          <option value="deee">DEEE (&eacute;lectronique)</option><option value="papier">Papier/carton</option>
+          <option value="plastique">Plastique</option><option value="verre">Verre</option>
+        </select>
+      </div>
+      <div class="field"><label>Valorisation</label>
+        <select id="dec-valo"><option value="incineration">Incin&eacute;ration</option><option value="enf">Enfouissement</option><option value="recyclage">Recyclage</option></select>
+      </div>
+      <div class="field"><label>Quantit&eacute; (kg)</label><input id="dec-qty" type="number" placeholder="0"></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-green" onclick="addDec()">+ Ajouter</button></div>
+  </div>
+
+  <div class="card module-panel" id="mod-refrigerants">
+    <h2>&#10052;&#65039; Gaz r&eacute;frig&eacute;rants</h2>
+    <div class="tbl-wrap"><table id="tbl-refrigerants"><thead><tr><th>Gaz</th><th>Fuite (kg)</th><th>PRG</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="form-row" style="margin-top:1rem">
+      <div class="field"><label>Type de gaz</label>
+        <select id="ref-type"><option value="R410A">R410A &mdash; PRG 2088</option><option value="R134a">R134a &mdash; PRG 1430</option><option value="R32">R32 &mdash; PRG 675</option></select>
+      </div>
+      <div class="field"><label>Quantit&eacute; fuite (kg)</label><input id="ref-qty" type="number" step="0.1" placeholder="0"></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-green" onclick="addRef()">+ Ajouter</button></div>
+  </div>
+
+  <div class="card module-panel" id="mod-eau">
+    <h2>&#128167; Consommation d'eau</h2>
+    <div class="tbl-wrap"><table id="tbl-eau"><thead><tr><th>B&acirc;timent</th><th>m&#179;</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="form-row" style="margin-top:1rem">
+      <div class="field"><label>B&acirc;timent</label><input id="eau-bat" placeholder="ex: B&acirc;t. Copernic"></div>
+      <div class="field"><label>Consommation (m&#179;)</label><input id="eau-m3" type="number" placeholder="0"></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-green" onclick="addEau()">+ Ajouter</button></div>
+  </div>
+
+  <div class="card module-panel" id="mod-alimentation">
+    <h2>&#127374; Alimentation (restauration collective)</h2>
+    <div class="tbl-wrap"><table id="tbl-alimentation"><thead><tr><th>Type repas</th><th>Nb repas/an</th><th>kgCO&#8322;/repas</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="form-row" style="margin-top:1rem">
+      <div class="field"><label>Type</label>
+        <select id="ali-type">
+          <option value="viande">Avec viande &mdash; 4,0 kgCO&#8322;</option>
+          <option value="poisson">Poisson &mdash; 1,5 kgCO&#8322;</option>
+          <option value="vegeta">V&eacute;g&eacute;tarien &mdash; 0,5 kgCO&#8322;</option>
+        </select>
+      </div>
+      <div class="field"><label>Nb repas / an</label><input id="ali-nb" type="number" placeholder="0"></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-green" onclick="addAli()">+ Ajouter</button></div>
+  </div>
+
+  <div class="card module-panel" id="mod-construction">
+    <h2>&#127963;&#65039; Construction du b&acirc;timent</h2>
+    <div class="alert info">M&eacute;thode GES-1point5 : surface &times; 1,3 &times; FE &divide; 50 ans. Source : ADEME base carbone.</div>
+    <div class="tbl-wrap"><table id="tbl-construction"><thead><tr><th>B&acirc;timent</th><th>Surface (m&sup2;)</th><th>Structure</th><th>FE (kgCO&#8322;/m&sup2;)</th><th>kgCO&#8322;eq/an</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="form-row" style="margin-top:1rem">
+      <div class="field"><label>B&acirc;timent</label><input id="con-bat" placeholder="ex: B&acirc;t. Copernic"></div>
+      <div class="field"><label>Surface occup&eacute;e (m&sup2;)</label><input id="con-surf" type="number" placeholder="ex: 800"></div>
+      <div class="field"><label>Type de structure</label>
+        <select id="con-type">
+          <option value="beton">B&eacute;ton &mdash; 600 kgCO&#8322;/m&sup2;</option>
+          <option value="acier">Acier/m&eacute;tal &mdash; 700 kgCO&#8322;/m&sup2;</option>
+          <option value="mixte">Mixte (b&eacute;ton+acier) &mdash; 500 kgCO&#8322;/m&sup2;</option>
+          <option value="bois">Ossature bois &mdash; 200 kgCO&#8322;/m&sup2;</option>
+        </select>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn btn-green" onclick="addConst()">+ Ajouter</button></div>
+  </div>
+
+  <div class="card">
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="calculateAll()">&#129518; Calculer le bilan &rarr; R&eacute;sultats</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTATS -->
+<div id="page-resultats" class="page">
+  <div class="section-title">&#128200; R&eacute;sultats &mdash; Bilan Carbone ESYCOM 2024 <span id="res-source-badge" style="font-size:.72rem;font-weight:600;padding:.2rem .8rem;border-radius:20px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;margin-left:.5rem">&#128203; Donn&eacute;es officielles 2024</span></div>
+  <div class="alert success" id="res-alert">&#128202; Bilan officiel ESYCOM 2024 &mdash; <strong>385,6 tCO&#8322;eq</strong> (source&nbsp;: GES-1point5 / Labos 1point5)</div>
+  <div class="chart-grid">
+    <div class="chart-box" style="grid-column:span 2"><h3>&#127942; &Eacute;missions par poste (tCO&#8322;eq)</h3><canvas id="chartResults" style="max-height:350px"></canvas></div>
+  </div>
+  <div class="card" style="padding:1rem 1.5rem">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
+    <h2 style="margin:0">&#128203; D&eacute;tail par module</h2>
+    <button class="btn btn-outline" style="font-size:.8rem;padding:.4rem 1rem" onclick="userCalculated=false;initResultats2024()">&#8635; Afficher les donn&eacute;es officielles 2024</button>
+  </div>
+  <div id="res-bars" style="margin-top:1rem"></div>
+</div>
+  <div class="card"><h2>&#128161; Recommandations</h2><div id="res-recs"></div></div>
+</div>
+
+<!-- COMPARAISON -->
+<div id="page-comparaison" class="page">
+  <!-- COMPARAISONS CONCRÈTES -->
+  <div class="section-title" style="margin-top:2rem">&#127759; Le bilan ESYCOM 2024 en exemples concrets</div>
+  <div class="alert info">385,6 tCO&#8322;eq &mdash; ce que &ccedil;a repr&eacute;sente dans la vie r&eacute;elle. Source&nbsp;: ADEME Base Carbone, GES-1point5.</div>
+
+  <!-- TOTAL -->
+  <div class="card" style="border-top:4px solid #e65100">
+    <h2 style="color:#e65100">&#127758; Total 2024 &mdash; 385,6 tCO&#8322;eq</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
+      <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#128106;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#e65100">43</div>
+        <div style="font-weight:700;font-size:.9rem">Fran&ccedil;ais &agrave; l&apos;&eacute;quivalent annuel</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">L&apos;empreinte moyenne d&apos;un Fran&ccedil;ais est de 9&nbsp;tCO&#8322;e/an. Le labo &eacute;met autant que 43 personnes dans toute leur vie quotidienne.</div>
+      </div>
+      <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#128652;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#e65100">1,77 M km</div>
+        <div style="font-weight:700;font-size:.9rem">en voiture thermique</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">&Agrave; 0,218&nbsp;kgCO&#8322;/km &mdash; soit Paris-Vladivostok aller-retour <strong>22 fois</strong>.</div>
+      </div>
+      <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#127795;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#e65100">15&nbsp;400 arbres</div>
+        <div style="font-weight:700;font-size:.9rem">&agrave; planter pendant 1 an</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">Un arbre absorbe ~25&nbsp;kg CO&#8322;/an. Il faudrait une for&ecirc;t de 12 terrains de football pour compenser.</div>
+      </div>
+      <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#128187;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#e65100">1&nbsp;350 laptops</div>
+        <div style="font-weight:700;font-size:.9rem">MacBook Pro produits de z&eacute;ro</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">Fabriquer un laptop = 285&nbsp;kgCO&#8322;e. Le bilan total en &eacute;quivaut &agrave; 1&nbsp;350 ordinateurs d&apos;un coup.</div>
+      </div>
+      <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#9992;&#65039;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#e65100">3&nbsp;000 A/R</div>
+        <div style="font-weight:700;font-size:.9rem">Paris &rarr; Lyon en avion</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">Un A/R Paris-Lyon en avion = ~130&nbsp;kgCO&#8322;e. Le bilan total en repr&eacute;sente 2&nbsp;970.</div>
+      </div>
+      <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#127758;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#e65100">1,06 tCO&#8322;e</div>
+        <div style="font-weight:700;font-size:.9rem">par jour en moyenne</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">Chaque jour de 2024, ESYCOM a &eacute;mis autant qu&apos;un habitant du <strong>Bangladesh en 1 an</strong>.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACHATS -->
+  <div class="card" style="border-top:4px solid #66bb6a">
+    <h2 style="color:#2e7d32">&#128722; Achats &mdash; 235 tCO&#8322;eq (61%)</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
+      <div style="background:#e8f5e9;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#128106;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#2e7d32">26 Fran&ccedil;ais</div>
+        <div style="font-weight:700;font-size:.9rem">vie quotidienne annuelle</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">Le seul poste achats d&eacute;passe l&apos;empreinte compl&egrave;te de 26 personnes. Plus que tout le reste du labo r&eacute;uni.</div>
+      </div>
+      <div style="background:#e8f5e9;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#128187;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#2e7d32">391 laptops</div>
+        <div style="font-weight:700;font-size:.9rem">IT seule (111,5 t)</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">La cat&eacute;gorie IT repr&eacute;sente 5,6 laptops neufs par personne du labo. Versus 1 reconditionn&eacute; tous les 7 ans en optimis&eacute;.</div>
+      </div>
+      <div style="background:#e8f5e9;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#128421;&#65039;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#2e7d32">62 serveurs</div>
+        <div style="font-weight:700;font-size:.9rem">produits de z&eacute;ro</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">1 serveur neuf = 1&nbsp;800&nbsp;kgCO&#8322;e. Les achats IT = autant que produire 62 serveurs en une seule ann&eacute;e.</div>
+      </div>
+      <div style="background:#e8f5e9;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#128269;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#2e7d32">50 tCO&#8322;e perdus</div>
+        <div style="font-weight:700;font-size:.9rem">codes NACRES non renseign&eacute;s</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">La cat&eacute;gorie &laquo;&nbsp;divers non classé&nbsp;&raquo; = 50&nbsp;t dont on ne conna&icirc;t pas l&apos;origine. Mieux coder permettrait de les piloter.</div>
+      </div>
+      <div style="background:#e8f5e9;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#9851;&#65039;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#2e7d32">&minus;47 tCO&#8322;e</div>
+        <div style="font-weight:700;font-size:.9rem">si 50% IT en reconditionn&eacute;</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">Un laptop reconditionn&eacute; = ~140&nbsp;kgCO&#8322;e vs 285 neuf. Sans changer les habitudes de travail.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MISSIONS -->
+  <div class="card" style="border-top:4px solid #ffa726">
+    <h2 style="color:#e65100">&#9992;&#65039; Missions &mdash; 85,2 tCO&#8322;eq (22%)</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
+      <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#128100;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#e65100">9,5 Fran&ccedil;ais</div>
+        <div style="font-weight:700;font-size:.9rem">75 missions en 2024</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">Les d&eacute;placements professionnels repr&eacute;sentent l&apos;empreinte compl&egrave;te de presque 10 personnes sur une ann&eacute;e.</div>
+      </div>
+      <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#128260;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#e65100">8 vols = 53 t</div>
+        <div style="font-weight:700;font-size:.9rem">= 2 ans d&apos;&eacute;nergie des b&acirc;timents</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">Les 8 vols intercontinentaux g&eacute;n&egrave;rent 53&nbsp;tCO&#8322;e &mdash; soit <strong>2 ann&eacute;es enti&egrave;res</strong> d&apos;&eacute;nergie du laboratoire.</div>
+      </div>
+      <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#128649;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#e65100">65&times; moins</div>
+        <div style="font-weight:700;font-size:.9rem">en train vs avion</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">30 missions en train = 0,03&nbsp;tCO&#8322;e seulement. C&apos;est 1&nbsp;770&times; moins que les 8 vols intercontinentaux.</div>
+      </div>
+      <div style="background:#fff3e0;border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:2rem">&#127758;</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#e65100">Paris &rarr; Singapour</div>
+        <div style="font-weight:700;font-size:.9rem">A/R = 8,5 tCO&#8322;e = 3 ans de chauffage</div>
+        <div style="font-size:.78rem;color:#888;margin-top:.3rem">Un seul A/R Paris-Singapour = 3 ans de chauffage au gaz d&apos;un appartement. En train : 131&nbsp;kg seulement.</div>
+      </div>
+      <div style="background:#fff8e1;border-radius:12px;padding:1rem;border:1px solid #ffd54f">
+        <div style="font-size:1rem;font-weight:700;color:#e65100;margin-bottom:.5rem">&#128204; R&egrave;gle simple</div>
+        <div style="font-size:.83rem;color:#555">Pour tout trajet &lt;&nbsp;6h en train (Paris-Madrid, Paris-Bruxelles, Paris-Amsterdam, Paris-Londres, Paris-Barcelone...) le train &eacute;met <strong>95 &agrave; 99% de CO&#8322; en moins</strong> que l&apos;avion.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÉNERGIE + DOMICILE + IT (ligne compacte) -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+    <div class="card" style="border-top:4px solid #42a5f5;margin:0">
+      <h2 style="color:#1565c0;font-size:.9rem">&#9889; &Eacute;nergie &mdash; 26 tCO&#8322;eq</h2>
+      <div style="font-size:.82rem;color:#555;line-height:1.6">
+        <p style="margin-bottom:.5rem">&#127968; <strong>222 foyers</strong> en consommation &eacute;lectrique annuelle</p>
+        <p style="margin-bottom:.5rem">&#9992;&#65039; <strong>= 1,4 vol Paris-Tokyo</strong> &mdash; toute l&apos;&eacute;nergie annuelle des 3 b&acirc;timents &eacute;quivaut &agrave; 1,4 vol A/R</p>
+        <p style="margin-bottom:.5rem">&#9830;&#65039; <strong>600 t &eacute;vit&eacute;es</strong> gr&acirc;ce &agrave; la g&eacute;othermie &mdash; sans elle, l&apos;&eacute;nergie serait 24&times; plus &eacute;missive</p>
+        <p>&#127900; <strong>722&nbsp;000h streaming HD</strong> &eacute;quivalent &mdash; l&apos;&eacute;nergie num&eacute;rique reste bien en dessous des achats physiques</p>
+      </div>
+    </div>
+    <div class="card" style="border-top:4px solid #26c6da;margin:0">
+      <h2 style="color:#00838f;font-size:.9rem">&#128652; Domicile-travail &mdash; 12,8 tCO&#8322;eq</h2>
+      <div style="font-size:.82rem;color:#555;line-height:1.6">
+        <p style="margin-bottom:.5rem">&#128663; <strong>78% en voiture solo</strong> = 10&nbsp;t sur 12,8&nbsp;t &mdash; mode majoritaire, le plus &eacute;metteur</p>
+        <p style="margin-bottom:.5rem">&#128683; <strong>45&nbsp;872 km</strong> en voiture = Paris-Tokyo × 4,7</p>
+        <p style="margin-bottom:.5rem">&#129309; <strong>&minus;5 tCO&#8322;e</strong> si tous en covoiturage &agrave; 2 (&minus;39% instantan&eacute;ment)</p>
+        <p>&#128650; RER + m&eacute;tro + v&eacute;lo = <strong>1,9 tCO&#8322;e seulement</strong> pour tous les non-voiture combin&eacute;s</p>
+      </div>
+    </div>
+    <div class="card" style="border-top:4px solid #7e57c2;margin:0">
+      <h2 style="color:#4527a0;font-size:.9rem">&#128187; IT &amp; Construction &mdash; 26,5 tCO&#8322;eq</h2>
+      <div style="font-size:.82rem;color:#555;line-height:1.6">
+        <p style="margin-bottom:.5rem">&#128187; 1 laptop neuf = <strong>47&nbsp;500 km en TGV</strong> (285&nbsp;kgCO&#8322;e)</p>
+        <p style="margin-bottom:.5rem">&#9851;&#65039; Reconditionn&eacute; = <strong>&minus;50%</strong> d&apos;impact IT &mdash; laptop ~140 vs 285 neuf</p>
+        <p style="margin-bottom:.5rem">&#127963;&#65039; Construction = <strong>poste fixe</strong> &mdash; 1&nbsp;578 m&sup2; sur 3 b&acirc;timents, amorti 50 ans</p>
+        <p>&#127795; B&acirc;timents bois = &divide;2,5 l&apos;impact si construction neuve</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARAISON FRAPPANTE : barre visuelle -->
+  <div class="card" style="border-top:4px solid #c62828">
+    <h2 style="color:#c62828">&#128680; Les comparaisons les plus frappantes</h2>
+    <div style="font-size:.87rem;color:#1a2a35;line-height:1.8">
+      <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;padding:.5rem;background:#ffebee;border-radius:8px">
+        <span style="font-size:1.3rem">&#9992;&#65039;</span>
+        <span><strong>8 vols intercontinentaux (53 tCO&#8322;e) &gt; toute l&apos;&eacute;nergie annuelle des 3 b&acirc;timents (26 t)</strong> &mdash; un seul d&eacute;placement professionnel &eacute;quivaut &agrave; 6 mois de chauffage et d&apos;&eacute;lectricit&eacute; du labo</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;padding:.5rem;background:#fff3e0;border-radius:8px">
+        <span style="font-size:1.3rem">&#128722;</span>
+        <span><strong>Les achats (235 t) = 61% du bilan</strong> alors que l&apos;&eacute;nergie ne repr&eacute;sente que 7% &mdash; l&apos;impact r&eacute;el du labo est dans sa cha&icirc;ne d&apos;approvisionnement, pas dans ses factures</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;padding:.5rem;background:#e8f5e9;border-radius:8px">
+        <span style="font-size:1.3rem">&#127973;</span>
+        <span><strong>1 vol Paris-Tokyo A/R (7,6 t) = 1 Fran&ccedil;ais entier pendant 10 mois</strong> &mdash; c&apos;est aussi 26 fois un A/R Paris-Lyon en TGV (285 kg/trajet)</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:.7rem;padding:.5rem;background:#e3f2fd;border-radius:8px">
+        <span style="font-size:1.3rem">&#127919;</span>
+        <span><strong>Objectif 2030 : &minus;243 tCO&#8322;e &agrave; r&eacute;duire</strong> &mdash; &eacute;quivaut &agrave; annuler 4&nbsp;600 vols domestiques, ou acheter 850 laptops reconditioinn&eacute;s plut&ocirc;t que neufs chaque ann&eacute;e</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="page-prediction" class="page">
+  <div class="section-title">&#128202; Pr&#233;visions &amp; Projections 2025–2040</div>
+
+<div class="prev-wrap">
+  <div class="prev-metrics" id="p-kpis"></div>
+  <div class="card">
+    <div class="prev-tabs">
+      <button class="prev-tab active" onclick="pShowTab('historique',this)">Historique 2022–2024</button>
+      <button class="prev-tab" onclick="pShowTab('projections',this)">Projections 2025–2040</button>
+      <button class="prev-tab" onclick="pShowTab('mesures',this)">Simulation mesures</button>
+      <button class="prev-tab" onclick="pShowTab('indicateurs',this)">Indicateurs normalisés</button>
+      <button class="prev-tab" onclick="pShowTab('multilabos',this)">🔬 Autres Labos</button>
+    </div>
+    <div id="p-tab-historique" class="prev-tab-panel active">
+      <h2 style="font-size:15px;margin-bottom:1rem">Évolution des émissions 2022–2024 par poste</h2>
+      <div class="prev-legend" id="p-legend-histo"></div>
+      <div class="prev-chart-wrap"><canvas id="p-chartHisto" role="img" aria-label="Émissions ESYCOM 2022 à 2024">2022: 285t, 2023: 414t, 2024: 385.6t</canvas></div>
+      <hr class="prev-hr">
+      <table class="prev-dt" id="p-tableHisto"></table>
+      <div class="prev-hl" style="margin-top:1rem">
+        ⚠️ Le pic 2023 (+45 %) est dû à des achats exceptionnels (équipements ANR) et à la reprise des conférences post-Covid.
+        La baisse 2024 (−7 %) reflète une rationalisation des achats.
+      </div>
+    </div>
+    <div id="p-tab-projections" class="prev-tab-panel">
+      <h2 style="font-size:15px;margin-bottom:1rem">Sélectionnez un scénario de projection</h2>
+      <div class="prev-sc-cards" id="p-scenarioCards"></div>
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:1rem;flex-wrap:wrap">
+        <div class="prev-legend" id="p-legend-proj" style="flex:1;margin:0"></div>
+        <div style="display:flex;gap:8px;align-items:center;font-size:12px;color:#666">
+          <label>Horizon :</label>
+          <select id="p-horizonSelect" onchange="pUpdateHorizon()">
+            <option value="2026">Court terme (2025–2026)</option>
+            <option value="2030" selected>Moyen terme (2025–2030)</option>
+            <option value="2040">Long terme (2025–2040)</option>
+          </select>
+        </div>
+      </div>
+      <div class="prev-chart-wrap"><canvas id="p-chartProj" role="img" aria-label="Projections carbone ESYCOM 2024 à 2040">Projections selon 4 scénarios</canvas></div>
+      <div class="prev-hl" style="margin-top:1rem;font-size:12px">
+        🎯 <strong>Objectif CNRS 2030 :</strong> −50 % vs 2022 → cible <strong>143 tCO₂e</strong>.
+        Seul le scénario optimiste (152,8 tCO₂e) l'approche. Le statu quo mènerait à 572,8 tCO₂e en 2030 — 4× la cible.
+      </div>
+      <hr class="prev-hr">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:.75rem">
+        <span style="font-size:15px;font-weight:600">Détail par poste en</span>
+        <select id="p-yearDetail" onchange="pRenderTableProj()" style="font-size:14px;font-weight:600">
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+          <option value="2030" selected>2030</option>
+          <option value="2040">2040</option>
+        </select>
+      </div>
+      <table class="prev-dt" id="p-tableProj"></table>
+      <p class="prev-note">Planchers incompressibles appliqués à partir de 2027. Construction = amortissement fixe 50 ans.</p>
+    </div>
+    <div id="p-tab-mesures" class="prev-tab-panel">
+      <h2 style="font-size:15px;margin-bottom:1rem">Sélectionnez des mesures à combiner</h2>
+      <div class="prev-measures-grid" id="p-measuresGrid"></div>
+      <div id="p-mesureResult"><p class="prev-note">Sélectionnez une ou plusieurs mesures ci-dessus pour simuler leur impact sur 2025.</p></div>
+    </div>
+    <div id="p-tab-indicateurs" class="prev-tab-panel">
+      <h2 style="font-size:15px;margin-bottom:1rem">Indicateurs normalisés (GES-1point5)</h2>
+      <table class="prev-dt" id="p-tableIndic"></table>
+      <div class="prev-chart-sm" style="margin-top:1.25rem"><canvas id="p-chartIndic" role="img" aria-label="Intensité carbone/ETP 2022-2024">4.38, 7.02, 5.51</canvas></div>
+      <div class="prev-hl" style="margin-top:1rem">
+        🎯 Objectif CNRS 2030 : −50% → cible ≈ <strong>143 tCO₂e</strong> (vs 385,6 en 2024).
+        Cela nécessite une action structurelle sur les achats (premier poste d'émission).
+      </div>
+    </div>
+
+    <div id="p-tab-multilabos" class="prev-tab-panel">
+      <h2 style="font-size:15px;margin-bottom:1rem">Prédictions — Autres laboratoires CNRS</h2>
+      <div class="ml-info-box">
+        📊 Données issues de l'outil GES-1point5 pour 3 laboratoires avec historique complet (LAAS, Pprime, LRP).
+        Les projections utilisent le même algorithme que les prévisions ESYCOM (TCAC calculé sur les 2 dernières années hors COVID).
+      </div>
+
+      <!-- Onglets labos -->
+      <div class="ml-lab-nav">
+        <button class="ml-lab-btn active" onclick="mlSelectLab('LAAS',this)">
+          <span class="ml-lab-dot" style="background:#3ecf8e"></span>LAAS – UPR 8001
+        </button>
+        <button class="ml-lab-btn" onclick="mlSelectLab('PPRIME',this)">
+          <span class="ml-lab-dot" style="background:#f7a84f"></span>Pprime – UPR 3346
+        </button>
+        <button class="ml-lab-btn" onclick="mlSelectLab('LRP',this)">
+          <span class="ml-lab-dot" style="background:#f7d34f"></span>LRP – UMR 5520
+        </button>
+        <button class="ml-lab-btn" onclick="mlSelectLab('COMPARAISON',this)">
+          <span class="ml-lab-dot" style="background:linear-gradient(135deg,#4f8ef7,#3ecf8e);border-radius:2px"></span>Comparaison
+        </button>
+      </div>
+
+      <!-- Panels labos -->
+      <div id="ml-panel-LAAS" class="ml-lab-panel active"></div>
+      <div id="ml-panel-PPRIME" class="ml-lab-panel"></div>
+      <div id="ml-panel-LRP" class="ml-lab-panel"></div>
+      <div id="ml-panel-COMPARAISON" class="ml-lab-panel"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</main>
+<div id="total-live">Total: <span id="live-tot">385,6</span> tCO&#8322;eq</div>
+
+<script>
+const EF={
+  elec:0.0491,
+  chauf:{gaz:.227,fioul:.324,reseau:.117,elec:.0491,bois:.030},
+  transp:{avion_long:.390,avion_court:.516,tgv:.002,train:.006,voiture:.218,covoiturage:.109,car:.030}, // ×2 forçage radiatif (méthode GES-1point5)
+  dom:{voiture_seul:.218,covoiturage:.109,velo:0,rer_metro:.006,bus:.113,transilien:.004},
+  it:{laptop:285,desktop:320,ecran:290,serveur:1800,smartphone:55,imprimante:95}, // Ecodiag EcoInfo CNRS 2024 (fabrication+distribution+fin de vie)
+  ach:{chimie:.90,bio:.75,mecanique:.60,it_mat:.50,bureau:.40,services:.20,autre:.35},
+  dec:{dib:{incineration:.455,enf:.590,recyclage:.040},chimique:{incineration:1.3,enf:1.5,recyclage:.5},deee:{incineration:.5,enf:.6,recyclage:.15},papier:{incineration:.85,enf:.5,recyclage:.10},plastique:{incineration:2.0,enf:.5,recyclage:.15},verre:{incineration:.30,enf:.20,recyclage:.05}},
+  ref:{R410A:2088,R134a:1430,R32:675},
+  eau:.313,
+  ali:{viande:4.0,poisson:1.5,vegeta:.5},
+  construction:{beton:600,acier:700,bois:200,mixte:500} // kgCO2/m² brut, amortissement 50 ans appliqué dans le calcul
+};
+const MODS={electricite:"Electricite",chauffage:"Chauffage",deplacements:"Missions",domicile:"Domicile-travail",informatique:"Materiel IT",achats:"Achats",dechets:"Dechets",refrigerants:"Refrigerants",eau:"Eau",alimentation:"Alimentation",construction:"Construction"};
+const COLS={electricite:"#42a5f5",chauffage:"#ef5350",deplacements:"#ffa726",domicile:"#26c6da",informatique:"#7e57c2",achats:"#66bb6a",dechets:"#8d6e63",refrigerants:"#26a69a",eau:"#29b6f6",alimentation:"#d4e157",construction:"#78909c"};
+const D={electricite:[],chauffage:[],deplacements:[],domicile:[],informatique:[],achats:[],dechets:[],refrigerants:[],eau:[],alimentation:[],construction:[]};
+
+function showPage(id,btn){
+  if(id==="prediction") setTimeout(initPrevision,120);
+  if(id==="resultats") setTimeout(initResultats2024,50);
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  document.getElementById("page-"+id).classList.add("active");
+  if(btn)btn.classList.add("active");
+  if(id==="comparaison")initCmp();
+}
+function showMod(id,btn){
+  document.querySelectorAll(".module-panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".module-tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("mod-"+id).classList.add("active");
+  if(btn)btn.classList.add("active");
+}
+function rt(mod){
+  const tb=document.querySelector("#tbl-"+mod+" tbody");
+  tb.innerHTML=D[mod].map((r,i)=>`<tr>${r.c.map(v=>`<td>${v}</td>`).join("")}<td><button onclick="D.${mod}.splice(${i},1);rt('${mod}')" style="background:none;border:none;cursor:pointer;color:#c62828">&#10005;</button></td></tr>`).join("");
+  let t=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
+  document.getElementById("live-tot").textContent=(t/1000).toFixed(2);
+}
+function addElec(){const b=document.getElementById("e-bat").value||"Batiment",k=+document.getElementById("e-kwh").value||0,p=+document.getElementById("e-part").value/100,co2=k*p*EF.elec;D.electricite.push({co2,c:[b,k,(p*100)+"%",co2.toFixed(1)+" kg"]});rt("electricite")}
+function addChauf(){const b=document.getElementById("c-bat").value||"Batiment",t=document.getElementById("c-type").value,k=+document.getElementById("c-kwh").value||0,co2=k*EF.chauf[t];D.chauffage.push({co2,c:[b,t,k,co2.toFixed(1)+" kg"]});rt("chauffage")}
+function addDep(){const dest=document.getElementById("d-dest").value||"Mission",m=document.getElementById("d-mode").value,dist=+document.getElementById("d-dist").value||0,nb=+document.getElementById("d-nb").value||1,ar=+document.getElementById("d-ar").value,co2=dist*ar*nb*EF.transp[m];D.deplacements.push({co2,c:[dest,m,dist,nb,ar===2?"Oui":"Non",co2.toFixed(1)+" kg"]});rt("deplacements")}
+function addDom(){const m=document.getElementById("dom-mode").value,nb=+document.getElementById("dom-nb").value||1,dist=+document.getElementById("dom-dist").value||0,j=+document.getElementById("dom-jours").value||220,co2=dist*j*nb*EF.dom[m];D.domicile.push({co2,c:[m,nb,dist,j,co2.toFixed(1)+" kg"]});rt("domicile")}
+function addIT(){const t=document.getElementById("it-type").value,mod=document.getElementById("it-mod").value||"-",qty=+document.getElementById("it-qty").value||1,am=+document.getElementById("it-amort").value||5,co2=(EF.it[t]*qty)/am;D.informatique.push({co2,c:[t,mod,qty,am+"ans",co2.toFixed(1)+" kg/an"]});rt("informatique")}
+function addAch(){const cat=document.getElementById("ach-cat").value,mt=+document.getElementById("ach-montant").value||0,co2=mt*EF.ach[cat];D.achats.push({co2,c:[cat,mt+"e",EF.ach[cat],co2.toFixed(1)+" kg"]});rt("achats")}
+function addDec(){const t=document.getElementById("dec-type").value,v=document.getElementById("dec-valo").value,q=+document.getElementById("dec-qty").value||0,co2=q*(EF.dec[t][v]||.5);D.dechets.push({co2,c:[t,v,q,co2.toFixed(1)+" kg"]});rt("dechets")}
+function addRef(){const t=document.getElementById("ref-type").value,q=+document.getElementById("ref-qty").value||0,prg=EF.ref[t],co2=q*prg;D.refrigerants.push({co2,c:[t,q,prg,co2.toFixed(1)+" kg"]});rt("refrigerants")}
+function addEau(){const b=document.getElementById("eau-bat").value||"Batiment",m3=+document.getElementById("eau-m3").value||0,co2=m3*EF.eau;D.eau.push({co2,c:[b,m3,co2.toFixed(1)+" kg"]});rt("eau")}
+function addAli(){const t=document.getElementById("ali-type").value,nb=+document.getElementById("ali-nb").value||0,f=EF.ali[t],co2=nb*f;D.alimentation.push({co2,c:[t,nb,f,co2.toFixed(1)+" kg"]});rt("alimentation")}
+function addConst(){const b=document.getElementById("con-bat").value||"Batiment",s=+document.getElementById("con-surf").value||0,t=document.getElementById("con-type").value,fe=EF.construction[t],co2=s*1.3*fe/50;D.construction.push({co2,c:[b,s,t,fe,co2.toFixed(1)+" kg/an"]});rt("construction")}
+
+function prefElec(){D.electricite=[];[["Bat. Copernic",145000,60],["Bat. Bois Baudry",89000,100],["Site UGE Marne",67000,35]].forEach(([b,k,p])=>{const co2=k*(p/100)*EF.elec;D.electricite.push({co2,c:[b,k,p+"%",co2.toFixed(1)+" kg"]})});rt("electricite")}
+function prefChauf(){D.chauffage=[];[["Bat. Copernic","gaz",380000],["Bat. Bois Baudry","reseau",210000]].forEach(([b,t,k])=>{const co2=k*EF.chauf[t];D.chauffage.push({co2,c:[b,t,k,co2.toFixed(1)+" kg"]})});rt("chauffage")}
+function prefDep(){D.deplacements=[];[["Conference USA","avion_long",7200,3,2],["Conference Bruxelles","tgv",320,5,2],["Congres Paris-Lyon","tgv",450,8,2],["Seminaire Madrid","avion_court",1800,2,2],["Reunions Paris","rer_metro",20,12,2]].forEach(([dest,m,dist,nb,ar])=>{const co2=dist*ar*nb*EF.transp[m];D.deplacements.push({co2,c:[dest,m,dist,nb,"Oui",co2.toFixed(1)+" kg"]})});rt("deplacements")}
+function prefDom(){D.domicile=[];[["voiture_seul",35,30,220],["rer_metro",20,25,220],["velo",8,8,200]].forEach(([m,nb,dist,j])=>{const co2=dist*j*nb*EF.dom[m];D.domicile.push({co2,c:[m,nb,dist,j,co2.toFixed(1)+" kg"]})});rt("domicile")}
+function prefIT(){D.informatique=[];[["laptop","Divers",45,5],["desktop","PC labo",12,6],["ecran","Divers",38,7],["serveur","Infra",3,8]].forEach(([t,mod,qty,am])=>{const co2=(EF.it[t]*qty)/am;D.informatique.push({co2,c:[t,mod,qty,am+"ans",co2.toFixed(1)+" kg/an"]})});rt("informatique")}
+function prefAch(){D.achats=[];[["chimie",42000],["bio",85000],["mecanique",31000],["it_mat",28000],["services",56000]].forEach(([cat,mt])=>{const co2=mt*EF.ach[cat];D.achats.push({co2,c:[cat,mt+"e",EF.ach[cat],co2.toFixed(1)+" kg"]})});rt("achats")}
+function loadAll(){
+  prefElec();prefChauf();prefDep();prefDom();prefIT();prefAch();
+  D.eau=[];[["Bat. Copernic",4200],["Bat. Bois Baudry",2800]].forEach(([b,m3])=>{D.eau.push({co2:m3*EF.eau,c:[b,m3,(m3*EF.eau).toFixed(1)+" kg"]})});rt("eau");
+  D.dechets=[];[["dib","incineration",2400],["chimique","incineration",320],["deee","recyclage",180]].forEach(([t,v,q])=>{const co2=q*(EF.dec[t][v]||.5);D.dechets.push({co2,c:[t,v,q,co2.toFixed(1)+" kg"]})});rt("dechets");
+  D.alimentation=[];[["viande",4500],["vegeta",2200],["poisson",1200]].forEach(([t,nb])=>{const co2=nb*EF.ali[t];D.alimentation.push({co2,c:[t,nb,EF.ali[t],co2.toFixed(1)+" kg"]})});rt("alimentation");
+  alert("Toutes les donnees ESYCOM 2024 ont ete chargees !");
+}
+
+
+let rChart=null;
+
+// ── DONNÉES OFFICIELLES ESYCOM 2024 (source GES-1point5 / Labos 1point5) ──
+const DATA_2024_OFFICIAL = {
+  electricite:7600, chauffage:18400, deplacements:85200, domicile:12800,
+  informatique:6000, achats:235000, dechets:0, refrigerants:0,
+  eau:100, alimentation:0, construction:20500
+};
+// 7600+18400+85200+12800+6000+235000+100+20500 = 385600 kg = 385,6 tCO₂eq ✓
+
+let userCalculated = false;  // true dès qu'un calcul personnalisé a été lancé
+
+function renderResultats(tots, grand, ETP, isDefault) {
+  // Badge source
+  const badge = document.getElementById('res-source-badge');
+  if (badge) {
+    if (isDefault) {
+      badge.innerHTML = '&#128203; Donn&eacute;es officielles 2024';
+      badge.style.background = '#e8f5e9'; badge.style.color = '#2e7d32';
+      badge.style.borderColor = '#a5d6a7';
+    } else {
+      badge.innerHTML = '&#9999;&#65039; Vos donn&eacute;es saisies';
+      badge.style.background = '#e3f2fd'; badge.style.color = '#1565c0';
+      badge.style.borderColor = '#90caf9';
+    }
+  }
+  // Alerte
+  const alertEl = document.getElementById('res-alert');
+  if (isDefault) {
+    alertEl.innerHTML = '&#128202; Bilan officiel ESYCOM 2024 &mdash; <strong>385,6 tCO&#8322;eq</strong> (source&nbsp;: GES-1point5 / Labos 1point5)';
+    alertEl.className = 'alert success';
+  } else {
+    alertEl.innerHTML = 'Bilan calcul&eacute; &mdash; Total&nbsp;: <strong>' + (grand/1000).toFixed(2) + ' tCO&#8322;eq</strong> &mdash; <em>Vos donn&eacute;es saisies</em>';
+    alertEl.className = 'alert info';
+  }
+  // Barres
+  const bv = document.getElementById("res-bars");
+  const sorted = Object.entries(tots).sort((a,b) => b[1]-a[1]), mx = sorted[0][1]||1;
+  bv.innerHTML = sorted.map(([m,v]) =>
+    `<div class="result-item">
+      <div class="rl">${MODS[m]}</div>
+      <div class="bw"><div class="bf" style="width:${(v/mx*100).toFixed(1)}%;background:${COLS[m]}"></div></div>
+      <div class="rv" style="color:${COLS[m]}">${(v/1000).toFixed(2)} t</div>
+      <div style="width:42px;text-align:right;font-size:.75rem;color:#90a4ae">${(v/grand*100).toFixed(0)}%</div>
+    </div>`
+  ).join("");
+  // Graphique
+  const ctx = document.getElementById("chartResults").getContext("2d");
+  if (rChart) rChart.destroy();
+  rChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: sorted.map(([m]) => MODS[m]),
+      datasets: [{
+        label: "tCO₂eq",
+        data: sorted.map(([,v]) => +(v/1000).toFixed(3)),
+        backgroundColor: sorted.map(([m]) => COLS[m]),
+        borderRadius: 6
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => ` ${c.raw} tCO₂eq (${(c.raw/grand*1000*100).toFixed(0)}%)` } }
+      },
+      scales: { x: { title: { display: true, text: "tCO₂eq" } } }
+    }
+  });
+  // Recommandations enrichies
+  const rv = document.getElementById("res-recs");
+  const recs = [];
+  const achats_t = tots.achats/1000, dep_t = tots.deplacements/1000,
+        elec_t = tots.electricite/1000, dom_t = tots.domicile/1000,
+        it_t = tots.informatique/1000, constr_t = tots.construction/1000;
+  const total_t = grand/1000;
+
+  recs.push({cl:"success", t:`<strong>Bilan total : ${total_t.toFixed(1)} tCO₂eq</strong> &mdash; ${(total_t/ETP).toFixed(2)} tCO₂eq/ETP
+    &mdash; Objectif CNRS 2030 : <strong>143 t (−50% vs 2022)</strong> &mdash; &Eacute;cart : <strong>${(total_t-143).toFixed(0)} t &agrave; r&eacute;duire</strong>`});
+  if (achats_t > 50)
+    recs.push({cl:"warning", t:`<strong>🛒 Achats (${achats_t.toFixed(0)} t &mdash; ${(achats_t/total_t*100).toFixed(0)}%) :</strong>
+      Mutualiser les commandes inter-labos, privil&eacute;gier le reconditionn&eacute; (IT), regrouper les livraisons,
+      mieux coder les achats (NACRES). <em>Potentiel : −60 &agrave; −100 t/an.</em>`});
+  if (dep_t > 20)
+    recs.push({cl:"warning", t:`<strong>✈️ Missions (${dep_t.toFixed(0)} t &mdash; ${(dep_t/total_t*100).toFixed(0)}%) :</strong>
+      Imposer le train pour tout trajet &lt;6h, remplacer les conf&eacute;rences lointaines par vid&eacute;oconf&eacute;rence,
+      instaurer un quota carbone/ETP (2 t/an). <em>Potentiel : −30 &agrave; −50 t/an.</em>`});
+  if (elec_t > 3)
+    recs.push({cl:"info", t:`<strong>⚡ Énergie (${(elec_t+(tots.chauffage/1000)).toFixed(0)} t) :</strong>
+      Capteurs de pr&eacute;sence, LED, optimisation thermostat &agrave; 19°C, contrat &eacute;lectricit&eacute; verte.`});
+  if (dom_t > 5)
+    recs.push({cl:"info", t:`<strong>🚗 Domicile-travail (${dom_t.toFixed(0)} t) :</strong>
+      Remboursement pass Navigo 100%, forfait v&eacute;lo, plateforme covoiturage, t&eacute;l&eacute;travail 2j/sem.`});
+  if (it_t > 2)
+    recs.push({cl:"info", t:`<strong>💻 Numérique (${it_t.toFixed(0)} t) :</strong>
+      Allonger la dur&eacute;e de vie du mat&eacute;riel (&ge;7 ans), passer au reconditionn&eacute;, &eacute;teindre les serveurs inutilis&eacute;s.`});
+
+  rv.innerHTML = recs.map(r => `<div class="alert ${r.cl}" style="margin-bottom:.7rem">${r.t}</div>`).join("");
+}
+
+function initResultats2024() {
+  if (userCalculated) return; // ne pas écraser si l'utilisateur a calculé ses données
+  const tots = {...DATA_2024_OFFICIAL};
+  const grand = Object.values(tots).reduce((s,v) => s+v, 0);
+  const ETP = 59;
+  renderResultats(tots, grand, ETP, true);
+}
+
+function calculateAll(){
+  const tots={};let grand=0;
+  Object.keys(D).forEach(m=>{tots[m]=D[m].reduce((s,r)=>s+(r.co2||0),0);grand+=tots[m]});
+  const ETP=parseInt(document.getElementById("etp-val")?.value)||65;
+  document.getElementById("kpi-total").textContent=(grand/1000).toFixed(1);
+  document.getElementById("kpi-total").closest(".kpi").querySelector("label").textContent="Total GES 2024";
+  document.getElementById("kpi-pp").closest(".kpi").querySelector("label").textContent="Par personne 2024";
+  document.getElementById("kpi-evol").closest(".kpi").querySelector("label").textContent="2024 vs 2023";
+  document.getElementById("kpi-pp").textContent=(grand/1000/ETP).toFixed(2);
+  const prev=414220,evol=((grand-prev)/prev*100);
+  document.getElementById("kpi-evol").textContent=(evol>0?"+":"")+evol.toFixed(1)+"%";
+  const topM=Object.entries(tots).sort((a,b)=>b[1]-a[1])[0][0];
+  document.getElementById("kpi-top").textContent=MODS[topM];
+  // ← rendu délégué à renderResultats()
+  userCalculated = true;
+  renderResultats(tots, grand, ETP, false);
+  document.getElementById("cmp-tot").textContent=(grand/1000).toFixed(1)+" tCO2eq";
+  document.getElementById("cmp-pp").textContent=(grand/1000/ETP).toFixed(2)+" tCO2/ETP";
+  // go to results
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  document.getElementById("page-resultats").classList.add("active");
+  document.querySelectorAll("nav button")[2].classList.add("active");
+}
+
+// DASHBOARD CHARTS
+let dInit=false;
+function initDashboard(){
+  if(dInit)return;dInit=true;
+
+  // ── Répartition par module 2024 (source GES-1point5) ──
+  const mock2024={electricite:7600,chauffage:18400,deplacements:85200,domicile:12800,informatique:6000,achats:235000,dechets:0,refrigerants:0,eau:100,alimentation:0,construction:20500};
+  new Chart(document.getElementById("chartPie").getContext("2d"),{
+    type:"doughnut",
+    data:{labels:Object.values(MODS),datasets:[{data:Object.keys(mock2024).map(m=>+(mock2024[m]/1000).toFixed(2)),backgroundColor:Object.values(COLS),borderWidth:2}]},
+    options:{plugins:{legend:{position:"right",labels:{font:{size:10}}},title:{display:true,text:"ESYCOM 2024 — 385,6 tCO₂eq (GES-1point5)",font:{size:9},color:"#90a4ae"},tooltip:{callbacks:{label:c=>`${c.label} : ${c.raw} t (${(c.raw/385.6*100).toFixed(1)}%)`}}},cutout:"55%"}
+  });
+
+  // ── Évolution 2022 → 2023 → 2024 — top 5 postes ──
+  new Chart(document.getElementById("chartBar").getContext("2d"),{
+    type:"bar",
+    data:{labels:["Achats","Chauffage","Missions","Domicile-travail","Construction"],datasets:[
+      {label:"2022 (285 t)",data:[94,69,32,38,28],backgroundColor:"rgba(66,165,245,.75)",borderRadius:4},
+      {label:"2023 (414 t)",data:[136,87,98,11,28],backgroundColor:"rgba(255,167,38,.75)",borderRadius:4},
+      {label:"2024 (386 t)",data:[235,18.4,85.2,12.8,20.5],backgroundColor:"rgba(102,187,106,.85)",borderRadius:4}
+    ]},
+    options:{plugins:{legend:{position:"top",labels:{font:{size:10}}},title:{display:true,text:"Source : GES-1point5 ESYCOM 2022–2024",font:{size:10},color:"#90a4ae"}},scales:{y:{title:{display:true,text:"tCO₂eq"},beginAtZero:true}}}
+  });
+
+  // ── Déplacements & domicile-travail 2022 / 2023 / 2024 ──
+  new Chart(document.getElementById("chartTravel").getContext("2d"),{
+    type:"bar",
+    data:{labels:["Missions 2022","Dom.-trav. 2022","Missions 2023","Dom.-trav. 2023","Missions 2024","Dom.-trav. 2024"],datasets:[{
+      label:"tCO₂eq",
+      data:[31.92,38.22,98.45,11.48,85.2,12.8],
+      backgroundColor:["#ef5350","#ffa726","#e53935","#fb8c00","#b71c1c","#e65100"],
+      borderRadius:6
+    }]},
+    options:{plugins:{legend:{display:false},title:{display:true,text:"Source : GES-1point5 ESYCOM",font:{size:10},color:"#90a4ae"},tooltip:{callbacks:{label:c=>`${c.raw} tCO₂eq`}}},scales:{y:{title:{display:true,text:"tCO₂eq"},beginAtZero:true}}}
+  });
+
+  // ── Achats — catégories DDRS 2023 vs 2024 (tCO₂eq) ──
+  new Chart(document.getElementById("chartPurchases").getContext("2d"),{
+    type:"bar",
+    data:{labels:["Chimie / Bio","Mat. IT","Services","Mécanique","Bureau","Autre"],datasets:[
+      {label:"2023 (136 t)",data:[54,35,27,16,3,1],backgroundColor:"rgba(255,167,38,.75)",borderRadius:4},
+      {label:"2024 (235 t)",data:[89,66,33,24,14,9],backgroundColor:"rgba(102,187,106,.85)",borderRadius:4}
+    ]},
+    options:{plugins:{legend:{position:"top",labels:{font:{size:10}}},title:{display:true,text:"Achats ESYCOM 2023 vs 2024 — catégories DDRS (tCO₂eq)",font:{size:9},color:"#90a4ae"},tooltip:{callbacks:{label:c=>`${c.dataset.label} — ${c.label} : ${c.raw} t`}}},scales:{y:{title:{display:true,text:"tCO₂eq"},beginAtZero:true}}}
+  });
+}
+
+// COMPARAISON CHARTS
+let cmpInit=false;
+function initCmp(){
+  if(cmpInit)return;cmpInit=true;
+  // Chart 1 : benchmark réel tCO2/personne (horizontal bar)
+  new Chart(document.getElementById("chartCmp1").getContext("2d"),{type:"bar",data:{labels:["Objectif Paris 2030","Moy. nationale (~200 labos)","LRP 2023 (46 pers.)","Pprime 2023 (564 pers.)","ESYCOM 2024 (70 ETP)","LAAS 2023 (456 pers.)"],datasets:[{label:"tCO\u2082eq / personne",data:[0.8,2.1,4.61,4.85,5.51,7.0],backgroundColor:["#66bb6a","#90a4ae","#f7d34f","#f7a84f","#4f8ef7","#3ecf8e"],borderRadius:6}]},options:{indexAxis:"y",plugins:{legend:{display:false},title:{display:true,text:"Sources : GES-1point5 LAAS 2019\u20132023, BGES Pprime 2024, BGES LRP 2022, ESYCOM 2024",font:{size:10},color:"#90a4ae"}},scales:{x:{title:{display:true,text:"tCO\u2082eq / personne"},grid:{color:"rgba(255,255,255,.06)"}},y:{ticks:{font:{size:10}}}}}});
+  // Chart 2 : répartition postes % — stacked bar inter-labos
+  new Chart(document.getElementById("chartCmp2").getContext("2d"),{type:"bar",data:{labels:["ESYCOM 2024","LAAS 2023","Pprime 2023","LRP 2023"],datasets:[{label:"Achats",data:[61,57.5,50,50.5],backgroundColor:"#66bb6a"},{label:"Missions",data:[22,16,20,14.2],backgroundColor:"#ffa726"},{label:"\u00c9nergie",data:[7,13,15,31],backgroundColor:"#42a5f5"},{label:"Domicile",data:[3,7,10,17.9],backgroundColor:"#26c6da"},{label:"IT",data:[2,3,5,0],backgroundColor:"#7e57c2"},{label:"Construction/Autres",data:[5,3.5,0,6.4],backgroundColor:"#78909c"}]},options:{plugins:{legend:{position:"bottom",labels:{font:{size:10},padding:8}},title:{display:true,text:"R\u00e9partition des postes (% du total) \u2014 donn\u00e9es GES-1point5",font:{size:10},color:"#90a4ae"}},scales:{x:{stacked:true},y:{stacked:true,title:{display:true,text:"% du total"},max:100,grid:{color:"rgba(255,255,255,.06)"}}}}});
+  // Source : GES-1point5 ESYCOM 2022 & 2023 (2024 = données CSV à importer)
+  new Chart(document.getElementById("chartEvol").getContext("2d"),{type:"line",data:{labels:["2022","2023"],datasets:[{label:"Total tCO2eq",data:[285.24,414.22],borderColor:"#ffa726",backgroundColor:"rgba(255,167,38,.12)",fill:true,tension:.4,pointRadius:6},{label:"Missions prof.",data:[31.92,98.45],borderColor:"#ef5350",tension:.4,pointRadius:5},{label:"Achats",data:[94.01,135.90],borderColor:"#66bb6a",tension:.4,pointRadius:5},{label:"Energie (élec+chauf)",data:[89.02,105.76],borderColor:"#42a5f5",tension:.4,pointRadius:5}]},options:{plugins:{title:{display:true,text:"Source : GES-1point5 ESYCOM",font:{size:10},color:"#90a4ae"}},scales:{y:{title:{display:true,text:"tCO2eq"}}}}});
+}
+
+window.addEventListener("DOMContentLoaded",()=>{initDashboard();initResultats2024();});
+
+// ── UPLOAD CSV PAR SECTION ────────────────────────────────────────────────────
+
+function handleDropModule(e, moduleType){
+  e.preventDefault();
+  const zoneId = 'zone-' + moduleType;
+  document.getElementById(zoneId).classList.remove('drag');
+  const files = [...e.dataTransfer.files].filter(f => /\.csv$/i.test(f.name));
+  if(!files.length){
+    setModuleStatus(moduleType, '❌ Seuls les fichiers CSV sont acceptés.', 'err');
+    return;
+  }
+  parseCSVClient(files[0], moduleType);
+}
+
+function handleFileModule(e, moduleType){
+  const files = [...e.target.files];
+  e.target.value = '';
+  if(files.length) parseCSVClient(files[0], moduleType);
+}
+
+function setModuleStatus(moduleType, msg, cls=''){
+  const el = document.getElementById('status-' + moduleType);
+  if(!el) return;
+  el.textContent = msg;
+  el.className = 'import-status' + (cls ? ' ' + cls : '');
+}
+
+// Compatibilité ascendante (anciens appels éventuels)
+function handleDrop(e){ e.preventDefault(); }
+function handleFileInput(e){ e.target.value=''; }
+
+
+async function parseCSVClient(file, forcedType=null){
+  const msg=document.getElementById('up-msg');
+  const text=await file.text();
+  const delim=text.includes(';')?';':',';
+  const lines=text.split('\n').filter(l=>l.trim());
+  if(lines.length<2){
+    if(forcedType) setModuleStatus(forcedType,'❌ Fichier CSV vide','err');
+    else msg.innerHTML='<div class="up-msg up-err">❌ Fichier CSV vide</div>';
+    return;
+  }
+  const headers=lines[0].split(delim).map(h=>h.replace(/"/g,'').trim());
+  const rows=lines.slice(1).map(line=>{
+    const vals=line.split(delim).map(v=>v.replace(/"/g,'').trim());
+    return Object.fromEntries(headers.map((h,i)=>[h,vals[i]||'']));
+  });
+
+  // Si une section est forcée, on l'utilise directement ; sinon détection par en-têtes
+  let type=forcedType;
+  if(!type){
+    if(headers.includes('Catégorie DDRS')||headers.includes("Date d'engagement")) type='achats';
+    else if(headers.includes('Catégorie IT')||headers.includes('Désignation produit')) type='informatique';
+    else if(headers.includes('#mission')||headers.includes('Mode de transport')) type='missions';
+    else if(headers.includes('Source')&&headers.includes('N° commande')) type='commandes';
+    else if(headers.some(h=>/lec/i.test(h))&&headers.some(h=>/eau/i.test(h))) type='batiment';
+    else if(headers.some(h=>/mode/i.test(h))&&headers.some(h=>/kg|co2/i.test(h))) type='domicile';
+  }
+
+  if(!type){
+    const errMsg=`❌ CSV non reconnu. En-têtes : ${headers.slice(0,5).join(', ')}`;
+    msg.innerHTML=`<div class="up-msg up-err">${errMsg}</div>`;
+    return;
+  }
+
+  if(forcedType) setModuleStatus(forcedType,'⏳ Traitement en cours...');
+
+  const modules={};
+  if(type==='achats'){
+    const tot={};
+    rows.forEach(r=>{
+      // Priorité au code NACRES (colonne "Groupe de marchandise"), sinon catégories DDRS
+      const cat=mapNACRESClient(r['Groupe de marchandise']||'')||
+                 mapDDRSClient(r['Catégorie DDRS']||'',r['Sous-catégorie DDRS']||'',r['Désignation']||'');
+      const mt=parseFloat((r['Montant HT (€)']||'0').replace(',','.'))||0;
+      tot[cat]=(tot[cat]||0)+mt;
+    });
+    modules.achats=Object.entries(tot).map(([c,m])=>({categorie:c,montant:Math.round(m*100)/100,facteur:EF_ACH_JS[c]||.35,co2:Math.round(m*(EF_ACH_JS[c]||.35)*10)/10}));
+  }
+  else if(type==='informatique'){
+    const avgs={laptop:1200,desktop:1500,ecran:400,serveur:5000,smartphone:800,imprimante:600};
+    modules.informatique=rows.filter(r=>parseFloat((r['Montant HT (€)']||'0').replace(',','.'))||0).map(r=>{
+      const it=mapITClient(r['Catégorie IT']||'',r['Désignation produit']||'');
+      const mt=parseFloat((r['Montant HT (€)']||'0').replace(',','.'))||0;
+      const qty=Math.max(1,Math.round(mt/(avgs[it]||1000)));
+      return {type:it,modele:(r['Désignation produit']||r['Catégorie IT']||'').slice(0,50),qty,amort:5,co2:Math.round(EF_IT_JS[it]*qty/5*10)/10};
+    });
+  }
+  else if(type==='missions'){
+    const validRows=rows.slice(0,500).filter(r=>!isTcomOnly(r['Mode de transport']||''));
+    modules.deplacements=validRows.map((r,i)=>{
+      const dest=(r['Ville de destination']||'').trim()||`Mission ${i+1}`;
+      const mode=mapModeClient(r['Mode de transport']||'');
+      const nbRaw=parseInt(r['Nb personnes (voiture)']||'1')||1;
+      const nb=nbRaw===22?1:Math.max(1,nbRaw); // 22 = placeholder GESLAB → 1 personne
+      const arStr=(r['Aller-Retour']||'').toLowerCase();
+      const ar=(arStr.includes('oui')||arStr.includes('true'))?2:(mode==='avion_long'||mode==='avion_court')?2:1;
+      const {dist,modeAdj}=guessDist(dest,mode);
+      const ef=EF_TR_JS[modeAdj]||.218;
+      return {destination:dest,mode:modeAdj,dist,nb,ar,co2:Math.round(dist*ar*nb*ef*10)/10};
+    });
+  }
+  else if(type==='commandes'){
+    const tot={};
+    rows.forEach(r=>{
+      const cat=mapNACRESClient(r['Code NACRES']||'')||mapDDRSClient(r['Type dépense']||'',r['Thématique/Enveloppe']||'',r['Objet/Libellé']||'');
+      const mt=parseFloat((r['Montant HT (€)']||'0').replace(',','.'))||0;
+      tot[cat]=(tot[cat]||0)+mt;
+    });
+    modules.achats_commandes=Object.entries(tot).map(([c,m])=>({categorie:c,montant:Math.round(m*100)/100,facteur:EF_ACH_JS[c]||.35,co2:Math.round(m*(EF_ACH_JS[c]||.35)*10)/10,source:'CNRS/GESLAB'}));
+  }
+  else if(type==='domicile'){
+    const hMode = headers.find(h=>/mode/i.test(h));
+    const hCo2  = headers.find(h=>/kg|co2/i.test(h));
+    const modeMap={'voiture_seul':'voiture_seul','covoiturage':'covoiturage','velo':'velo','rer_metro':'rer_metro','bus':'bus','transilien':'transilien'};
+    const modeLabels={'voiture_seul':'Voiture (seul)','covoiturage':'Covoiturage','velo':'Vélo','rer_metro':'RER/Métro','bus':'Bus','transilien':'Transilien'};
+    let imported=0;
+    rows.forEach(r=>{
+      const raw=(r[hMode]||'').trim().toLowerCase().replace(/[^a-z_]/g,'_');
+      const mode=Object.keys(modeMap).find(k=>raw.includes(k.split('_')[0]))||'voiture_seul';
+      const co2=parseFloat((r[hCo2]||'0').replace(',','.'))||0;
+      if(co2>0){
+        const label=modeLabels[mode]||mode;
+        D.domicile.push({co2, c:[label, '—', 'total annuel (CSV)', '—', co2.toFixed(1)+' kg']});
+        rt('domicile');
+        imported++;
+      }
+    });
+    if(forcedType) setModuleStatus(forcedType,`✅ ${file.name} — ${imported} mode${imported>1?'s':''} importé${imported>1?'s':''}  (${(D.domicile.reduce((s,r)=>s+r.co2,0)/1000).toFixed(3)} tCO₂e)`,'ok');
+    const grand=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
+    const ETP3=parseInt(document.getElementById('etp-val')?.value)||65;
+    if(grand>0){
+      document.getElementById('kpi-total').textContent=(grand/1000).toFixed(1);
+      document.getElementById('kpi-pp').textContent=(grand/1000/ETP3).toFixed(2);
+    }
+    return;
+  }
+  else if(type==='batiment'){
+    // Fonction utilitaire : extrait le premier nombre d'une cellule texte
+    const parseNum = v => {
+      if(typeof v === 'number') return v;
+      if(!v) return 0;
+      const m = String(v).replace(/\s/g,'').match(/[\d]+(?:[.,]\d+)?/);
+      return m ? parseFloat(m[0].replace(',','.')) : 0;
+    };
+    // Colonnes reconnues (insensible à la casse et aux variantes)
+    const hEau   = headers.find(h=>/eau/i.test(h));
+    const hElec  = headers.find(h=>/lec/i.test(h));                     // Électricité (kWh)
+    const hGeoth = headers.find(h=>/rcu|oth|mwh/i.test(h));             // RCU/Géothermie (MWh)
+    const hGazNat= headers.find(h=>/gaz/i.test(h)&&/kwh/i.test(h));    // Gaz naturel (kWh) → chauffage
+    const hGazRef= headers.find(h=>/refrig/i.test(h)||(/gaz/i.test(h)&&!/kwh/i.test(h)&&/kg/i.test(h))); // Gaz réfrigérant (kg)
+    const hPlaq  = headers.find(h=>/plaq|bois/i.test(h));               // Plaquettes forestières (kg)
+    const hPart  = headers.find(h=>/part|%|labo/i.test(h));             // Part labo (%)
+    const hBat   = headers[0]; // première colonne = nom du bâtiment
+
+    rows.forEach(r => {
+      const bat = (r[hBat]||'').trim();
+      if(!bat) return;
+      // Part labo : multiplier entre 0 et 1 (colonne en %, ex. "3.0" → 0.03)
+      const part = hPart ? Math.min(1, parseNum(r[hPart]) / 100) : 1;
+
+      // Eau → mod-eau (EF.eau = 0.313 kgCO₂/m³)
+      if(hEau){
+        const m3 = parseNum(r[hEau]) * part;
+        if(m3 > 0){
+          const co2 = Math.round(m3 * EF.eau * 10) / 10;
+          D.eau.push({co2, c:[bat, m3.toFixed(0), (part*100).toFixed(1)+'%', co2.toFixed(1)+' kg']});
+          rt('eau');
+        }
+      }
+      // Électricité → mod-electricite (EF.elec = 0.0491 kgCO₂/kWh)
+      if(hElec){
+        const kwh = parseNum(r[hElec]) * part;
+        if(kwh > 0){
+          const co2 = Math.round(kwh * EF.elec * 10) / 10;
+          D.electricite.push({co2, c:[bat, kwh.toFixed(0), (part*100).toFixed(1)+'%', co2.toFixed(1)+' kg']});
+          rt('electricite');
+        }
+      }
+      // RCU/Géothermie → mod-chauffage (réseau chaleur, 0.117 kgCO₂/kWh ; 1 MWh = 1000 kWh)
+      if(hGeoth){
+        const mwh = parseNum(r[hGeoth]) * part;
+        if(mwh > 0){
+          const kwh = mwh * 1000;
+          const co2 = Math.round(kwh * EF.chauf.reseau * 10) / 10;
+          D.chauffage.push({co2, c:[bat, 'RCU/réseau chaleur', kwh.toFixed(0), co2.toFixed(1)+' kg']});
+          rt('chauffage');
+        }
+      }
+      // Gaz naturel (kWh) → mod-chauffage (EF.chauf.gaz = 0.227 kgCO₂/kWh)
+      if(hGazNat){
+        const kwh = parseNum(r[hGazNat]) * part;
+        if(kwh > 0){
+          const co2 = Math.round(kwh * EF.chauf.gaz * 10) / 10;
+          D.chauffage.push({co2, c:[bat, 'Gaz naturel', kwh.toFixed(0), co2.toFixed(1)+' kg']});
+          rt('chauffage');
+        }
+      }
+      // Plaquettes forestières (kg) → mod-chauffage (EF.chauf.bois = 0.030 kgCO₂/kWh ; PCI ≈ 3.5 kWh/kg)
+      if(hPlaq){
+        const kg = parseNum(r[hPlaq]) * part;
+        if(kg > 0){
+          const kwh = kg * 3.5;
+          const co2 = Math.round(kwh * EF.chauf.bois * 10) / 10;
+          D.chauffage.push({co2, c:[bat, 'Plaquettes forestières', kwh.toFixed(0), co2.toFixed(1)+' kg']});
+          rt('chauffage');
+        }
+      }
+      // Gaz réfrigérant (kg) → mod-refrigerants. Détecte R134a/R410A/R32 dans le nom de colonne.
+      if(hGazRef && hGazRef !== hGazNat){
+        const kg = parseNum(r[hGazRef]);
+        if(kg > 0){
+          const gasType = /R134a/i.test(hGazRef) ? 'R134a' : /R32/i.test(hGazRef) ? 'R32' : 'R410A';
+          const prg = EF.ref[gasType];
+          const co2 = Math.round(kg * prg * 10) / 10;
+          D.refrigerants.push({co2, c:[gasType+' ('+bat+')', kg, prg, co2.toFixed(1)+' kg']});
+          rt('refrigerants');
+        }
+      }
+    });
+  }
+
+  if(type==='batiment'){
+    // Injection directe dans D — pas besoin de applyModuleData
+    if(forcedType) setModuleStatus(forcedType,`✅ ${file.name} — données réparties dans Électricité, Eau, Chauffage, Réfrigérants`, 'ok');
+    const grand=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
+    const ETP2=parseInt(document.getElementById('etp-val')?.value)||65;
+    if(grand>0){
+      document.getElementById('kpi-total').textContent=(grand/1000).toFixed(1);
+      document.getElementById('kpi-pp').textContent=(grand/1000/ETP2).toFixed(2);
+    }
+    return;
+  }
+
+  applyModuleData({modules,stats:{rows:rows.length,type}},file.name);
+
+  // Mise à jour du statut de la zone
+  if(forcedType){
+    const nbRows=rows.length;
+    setModuleStatus(forcedType,`✅ ${file.name} — ${nbRows} ligne${nbRows>1?'s':''} importée${nbRows>1?'s':''}`, 'ok');
+  }
+}
+
+
+// Facteurs d'émission côté JS (miroir du serveur)
+const EF_ACH_JS={chimie:.90,bio:.75,mecanique:.60,it_mat:.50,bureau:.40,services:.20,autre:.35};
+const EF_IT_JS={laptop:285,desktop:320,ecran:290,serveur:1800,smartphone:55,imprimante:95}; // Ecodiag EcoInfo CNRS 2024
+const EF_TR_JS={avion_long:.390,avion_court:.516,tgv:.002,train:.006,voiture:.218,covoiturage:.109,car:.030,velo:0,rer_metro:.006}; // ×2 forçage radiatif
+
+function mapDDRSClient(cat,sub,desig){
+  const t=`${cat} ${sub} ${desig}`.toLowerCase();  // Préfixe numérique DDRS (ex : 1_Immobilisation, 2_Mobilier, 3_Services, 4_Produits)
+  if(/^1_|immobili/i.test(cat)){
+    if(/informatiq|numérique|bureautiq|ordina|serveur/.test(t)) return 'it_mat';
+    if(/mobilier|meuble/.test(t)) return 'bureau';
+    return 'mecanique'; // matériel scientifique par défaut
+  }
+  if(/^2_|^mobilier/i.test(cat)) return 'bureau';
+  if(/^3_/i.test(cat)) return 'services';
+  if(/^4_/i.test(cat)){
+    if(/chimiq|réactif|reactif|solvant/.test(t)) return 'chimie';
+    if(/biolog|biochimie|consommabl|pipette|tips/.test(t)) return 'bio';
+    if(/informatiq|numérique|logiciel|ordina/.test(t)) return 'it_mat';
+    if(/mécaniq|électroniq|mesure|instrum|optique/.test(t)) return 'mecanique';
+    if(/bureau|papier|fourniture/.test(t)) return 'bureau';
+    if(/aliment|épicerie|conserve|boisson|repas|traiteur/.test(t)) return 'autre';
+    return 'autre';
+  }
+  // Fallback (pas de préfixe numérique)  if(/chimie|chimiq|réactif|reactif|solvant/.test(t)) return 'chimie';
+  if(/biolog|biochimie|plastic|consommabl|pipette|tips/.test(t)) return 'bio';
+  if(/informatiq|numérique|logiciel|ordinat|serveur|réseau/.test(t)) return 'it_mat';
+  if(/mécaniq|mecani|électroniq|electroni|mesure|instrument|optique/.test(t)) return 'mecanique';
+  if(/bureau|papier|papeterie|fourniture|imprimante/.test(t)) return 'bureau';
+  if(/service|prestation|formation|publication|abonnement|maintenance/.test(t)) return 'services';
+  return 'autre';
+}
+function mapITClient(cat,desig){
+  const t=`${cat} ${desig}`.toLowerCase();
+  if(/portable|laptop|notebook|macbook/.test(t)) return 'laptop';
+  if(/fixe|desktop|station|tour|workstation/.test(t)) return 'desktop';
+  if(/écran|ecran|moniteur|display/.test(t)) return 'ecran';
+  if(/serveur|server|\brack\b|nas/.test(t)) return 'serveur';
+  if(/smartphone|téléphone|mobile|iphone/.test(t)) return 'smartphone';
+  if(/imprimante|printer|scanner/.test(t)) return 'imprimante';
+  return 'laptop';
+}
+function isTcomOnly(t){
+  const codes=new Set(t.toUpperCase().split(/\s+/));
+  return codes.size>0 && [...codes].every(c=>['TCOM','PARK',''].includes(c));
+}
+function mapModeClient(t){
+  const up=t.toUpperCase();
+  // Codes GESLAB
+  if(/\bVOLP\b|\bVOL\b/.test(up)) return 'avion_long';
+  if(/\bTRNP\b|\bTRN\b/.test(up)) return 'train';
+  if(/\bVEHI\b/.test(up)) return 'voiture';
+  // Codes textuels
+  const tl=t.toLowerCase();
+  if(/avion|flight|avn/.test(tl)) return 'avion_long';
+  if(/tgv|inoui|ouigo/.test(tl)) return 'tgv';
+  if(/train|ter|intercit|sncf/.test(tl)) return 'train';
+  if(/covoiturage|covoit/.test(tl)) return 'covoiturage';
+  if(/car|autocar|bus|flixbus/.test(tl)) return 'car';
+  return 'voiture';
+}
+function mapNACRESClient(code){
+  if(!code) return null;
+  const c=code.toUpperCase().replace(/[^A-Z]/g,'').substring(0,2);
+  if(c.length<2) return null;
+  const map={
+    AA:'autre',AB:'autre',                                      // Alimentation
+    BA:'bio',BB:'bio',BC:'bio',BD:'bio',BE:'bio',BF:'bio',BG:'bio',BH:'bio', // Biologie
+    CA:'chimie',CB:'chimie',CC:'chimie',CD:'chimie',CE:'chimie',CF:'chimie', // Chimie
+    DA:'it_mat',DB:'it_mat',                                    // Informatique/numérique
+    EA:'mecanique',EB:'mecanique',EC:'mecanique',               // Électronique/génie
+    GA:'mecanique',GB:'mecanique',GC:'mecanique',               // Mécanique
+    HA:'bio',HB:'bio',                                          // Sciences du vivant/santé
+    IA:'it_mat',IB:'it_mat',                                    // Instrumentation/bureautique
+    JA:'chimie',JB:'chimie',                                    // Chimie analytique
+    KA:'services',                                              // Voyages/déplacements
+    LA:'mecanique',LB:'mecanique',                              // Lasers, optique
+    MA:'mecanique',                                             // Métrologie, CND
+    PA:'services',PB:'services',                                // Prestations intellectuelles
+    QA:'services',QB:'services',                                // Sous-traitance
+    RA:'bureau',                                                // Reprographie, papeterie
+    SA:'autre',                                                 // Sécurité, EPI
+    VA:'bureau',                                                // Mobilier
+    XA:'services',                                              // Nettoyage, entretien
+    YA:'bureau'                                                 // Fournitures diverses
+  };
+  return map[c]||null;
+}
+const CITIES_FR_JS=new Set('PARIS,LYON,MARSEILLE,TOULOUSE,BORDEAUX,LILLE,NICE,NANTES,STRASBOURG,MONTPELLIER,RENNES,GRENOBLE,METZ,NANCY,DIJON,REIMS,CAEN,ROUEN,TOURS,BREST,ANGERS,LENS,AMIENS,CERGY,SACLAY,ORSAY,VERSAILLES,VINCENNES,MONTREUIL,CHAMPS-SUR-MARNE,CHAMPS SUR MARNE,MARNE LA VALLEE,JOINVILLE LE PONT,JOINVILLE-LE-PONT,CHELLES,VILLIERS SUR MARNE,NOISY LE GRAND,NOISY-LE-GRAND,VALENCIENNES,DUNKERQUE,ANTIBES,SOPHIA ANTIPOLIS,VALENCE,CHARTRES,ORLEANS,TOULON,AIX-EN-PROVENCE,AIX EN PROVENCE,MASSY,PALAISEAU,ARCUEIL,CACHAN,FONTENAY AUX ROSES,VILLETANEUSE,SAINT MANDE,ST MANDE,ALLASSAC,BOUGUENAIS'.split(','));
+const CITIES_EU_JS=new Set('VIENNE,VIENNA,BERLIN,MADRID,ROME,BRUSSELS,BRUXELLES,AMSTERDAM,PRAGUE,GENEVA,GENEVE,ZURICH,STOCKHOLM,COPENHAGEN,OSLO,HELSINKI,WARSAW,BARCELONA,BARCELONE,MUNICH,FRANKFURT,HAMBURG,ATHENES,ATHENS,LISBONNE,LISBON,DUBLIN,BUDAPEST,SOFIA,ZAGREB,FLORENCE,MILAN,NAPLES,BOLOGNA,BOLOGNE,TURIN,PORTO,SEVILLE,LA LAGUNA,EDINBURGH,GLASGOW,MANCHESTER,CAMBRIDGE,ROTTERDAM,BRUGES,GHENT,ANTWERP,LIEGE,CRACOVIE,KRAKOW,GDANSK,WROCLAW,POZNAN,TUNIS,CASABLANCA,ALGER,MARRAKECH,TENERIFE,NICOSIA,DRESDEN,GIRONE'.split(','));
+const CITIES_INTER_JS=new Set('SINGAPOUR,SINGAPORE,TOKYO,OSAKA,KYOTO,SAPPORO,HIROSHIMA,NAGOYA,SENDAI,KOBE,TOYAMA,BEIJING,PEKIN,SHANGHAI,CHENGDU,HONG KONG,HONG-KONG,SEOUL,BUSAN,TAIPEI,BANGKOK,KUALA LUMPUR,JAKARTA,HANOI,MUMBAI,DELHI,BANGALORE,DUBAI,ABU DHABI,DOHA,RIYAD,TEL AVIV,ISTANBUL,NEW YORK,NEW-YORK,BOSTON,WASHINGTON,CHICAGO,LOS ANGELES,SAN FRANCISCO,SEATTLE,DALLAS,HOUSTON,MIAMI,ATLANTA,TORONTO,MONTREAL,VANCOUVER,OTTAWA,MEXICO,BOGOTA,LIMA,SANTIAGO,SAO PAULO,BUENOS AIRES,NAIROBI,CAIRO,JOHANNESBURG,CAPE TOWN,DAKAR,LAGOS,SYDNEY,MELBOURNE,BRISBANE,PERTH,AUCKLAND,INCHEON,JEDDAH,TOKYO-SAPPORO,XIAN,SHENZHEN,HENAN'.split(','));
+function guessDist(dest,mode){
+  const d=dest.toUpperCase().trim();
+  if(CITIES_INTER_JS.has(d)||/TOKYO|JAPAN|JAPON|OSAKA|NAGOYA|TOYAMA|KYOTO|SAPPORO|SINGAPORE|SINGAPO/.test(d))
+    return {dist:8500,modeAdj:'avion_long'};
+  if(CITIES_EU_JS.has(d))
+    return {dist:1300,modeAdj:mode==='avion_long'?'avion_court':mode};
+  if(CITIES_FR_JS.has(d))
+    return {dist:350,modeAdj:mode==='avion_long'?'avion_court':mode};
+  // Fallback selon mode
+  if(mode==='avion_long') return {dist:1300,modeAdj:'avion_court'};
+  if(mode==='train'||mode==='tgv') return {dist:500,modeAdj:mode};
+  return {dist:350,modeAdj:mode};
+}
+
+function applyModuleData(data, filename){
+  const msg=document.getElementById('up-msg');
+  const mods=data.modules||{};
+  const loaded=[];
+
+  if(mods.achats?.length){
+    const items=mods.achats.map(a=>({co2:a.co2,c:[a.categorie,a.montant+'€',a.facteur,a.co2.toFixed(1)+' kg']}));
+    D.achats=[...(D.achats||[]),...items]; rt('achats'); loaded.push('Achats');
+  }
+  if(mods.achats_commandes?.length){
+    const extra=mods.achats_commandes.map(a=>({co2:a.co2,c:[a.categorie+(a.source?' ('+a.source+')':''),a.montant+'€',a.facteur,a.co2.toFixed(1)+' kg']}));
+    D.achats=[...(D.achats||[]),...extra]; rt('achats');
+    if(!loaded.includes('Achats')) loaded.push('Achats');
+  }
+  if(mods.commandes?.length){
+    const extra=mods.commandes.map(a=>({co2:a.co2,c:[a.categorie+' (cmde)',a.montant+'€',a.facteur,a.co2.toFixed(1)+' kg']}));
+    D.achats=[...(D.achats||[]),...extra]; rt('achats');
+    if(!loaded.includes('Achats')) loaded.push('Achats');
+  }
+  if(mods.informatique?.length){
+    const items=mods.informatique.map(i=>({co2:i.co2,c:[i.type,i.modele||'-',i.qty,i.amort+'ans',i.co2.toFixed(1)+' kg/an']}));
+    D.informatique=[...(D.informatique||[]),...items]; rt('informatique'); loaded.push('Informatique');
+  }
+  if(mods.deplacements?.length){
+    const items=mods.deplacements.map(d=>({co2:d.co2,c:[d.destination,d.mode,d.dist,d.nb,d.ar===2?'Oui':'Non',d.co2.toFixed(1)+' kg']}));
+    D.deplacements=[...(D.deplacements||[]),...items]; rt('deplacements'); loaded.push('Missions');
+  }
+
+  const n=data.stats?.rows||0;
+  msg.innerHTML=loaded.length
+    ? `<div class="up-msg up-ok">✅ <strong>${filename}</strong> — ${loaded.join(', ')} mis à jour${n?' ('+n+' lignes)':''}</div>`
+    : `<div class="up-msg up-info">ℹ️ Aucun module reconnu dans ${filename}</div>`;
+
+  // Mettre à jour les KPIs du dashboard aussi
+  const grand=Object.values(D).flat().reduce((s,r)=>s+(r.co2||0),0);
+  if(grand>0){
+    document.getElementById('kpi-total').textContent=(grand/1000).toFixed(1);
+    document.getElementById('kpi-pp').textContent=(grand/1000/80).toFixed(2);
+  }
+}
+
+/* ══ MODULE PRÉVISIONS ESYCOM ══ */
+const P_POSTES = ['achats','missions','energie','construction','domicile','it'];
+const P_LABELS = { achats:'Achats & commandes', missions:'Missions pro.', energie:'Bâtiment & énergie', construction:'Construction bâtiment', domicile:'Domicile-travail', it:'Matériel informatique' };
+const P_COLORS = { achats:'#1a6f44', missions:'#d97706', energie:'#2563eb', construction:'#7c3aed', domicile:'#db2777', it:'#0891b2' };
+const P_DATA = {
+  2022:{ achats:97.0, missions:82.0, energie:46.0, construction:20.5, domicile:25.0, it:14.5, total:285.0, etp:65, publis:46 },
+  2023:{ achats:210.0, missions:105.0, energie:35.0, construction:20.5, domicile:28.0, it:15.5, total:414.0, etp:59, publis:52 },
+  2024:{ achats:235.0, missions:85.2, energie:26.0, construction:20.5, domicile:12.8, it:6.0, total:385.6, etp:70, publis:55 },
+};
+const P_PLANCHERS = { achats:40, missions:8, energie:12, construction:20.5, domicile:4, it:1.5 };
+const P_PLAFONDS  = { achats:500, missions:200, energie:60, construction:20.5, domicile:35, it:25 };
+const P_SCENARIOS = {
+  tendance:     { nom:'Statu quo', desc:'Achats +12%/an, missions −8%/an', cls:'tendance', mod:{ achats:1.12, missions:0.92, energie:0.98, construction:1.00, domicile:0.95, it:0.95 } },
+  stabilisation:{ nom:'Stabilisation', desc:'Achats gelés, légères baisses', cls:'stabilisation', mod:{ achats:1.00, missions:0.92, energie:0.98, construction:1.00, domicile:0.95, it:0.90 } },
+  optimiste:    { nom:'Optimiste −28%', desc:'Reconditionné + vols limités', cls:'optimiste', mod:{ achats:0.85, missions:0.78, energie:0.93, construction:1.00, domicile:0.88, it:0.82 } },
+  pessimiste:   { nom:'Pessimiste +111%', desc:'Nouveaux projets ANR', cls:'pessimiste', mod:{ achats:1.20, missions:1.15, energie:1.03, construction:1.00, domicile:1.05, it:1.10 } },
+};
+const P_MESURES = [
+  { id:'pm1', nom:'Mieux qualifier les codes NACRES', poste:'achats', pct:15, cout:0, meta:'−35 tCO₂e · Gratuit · Réduire le "divers non classé" (50 tCO₂e)' },
+  { id:'pm2', nom:'50% budget IT en reconditionné', poste:'achats', pct:20, cout:3000, meta:'−47 tCO₂e · 3 000 €/an' },
+  { id:'pm3', nom:'Limiter vols intercontinentaux (max 5/an)', poste:'missions', pct:37, cout:0, meta:'−31.5 tCO₂e · Gratuit · 8 → 5 vols long courrier' },
+  { id:'pm4', nom:'Train obligatoire < 6h de trajet', poste:'missions', pct:21, cout:5000, meta:'−18 tCO₂e · 5 000 €/an' },
+  { id:'pm5', nom:'Quota carbone missions (2 tCO₂e/an)', poste:'missions', pct:25, cout:500, meta:'−21.3 tCO₂e · 500 €/an' },
+  { id:'pm6', nom:'Plan covoiturage domicile-travail', poste:'domicile', pct:40, cout:1000, meta:'−5.1 tCO₂e · 1 000 €/an' },
+  { id:'pm7', nom:'Mutualisation équipements inter-labos', poste:'achats', pct:10, cout:0, meta:'−23.5 tCO₂e · Gratuit' },
+];
+
+function pProj(sc_key, yr) {
+  const n = yr-2024, sc = P_SCENARIOS[sc_key], b = P_DATA[2024];
+  let total=0; const r={};
+  P_POSTES.forEach(p=>{ let v=b[p]*Math.pow(sc.mod[p],n); v=Math.max(v,P_PLANCHERS[p]); v=Math.min(v,P_PLAFONDS[p]); r[p]=+v.toFixed(1); total+=r[p]; });
+  r.total=+total.toFixed(1); return r;
+}
+function pPct(v1,v2){ return v1===0?0:+((v2-v1)/v1*100).toFixed(1); }
+function pBadge(val,inv){
+  const n=+val; const up=inv?n<-2:n>2; const dn=inv?n>2:n<-2;
+  if(up) return `<span class="prev-badge prev-badge-red">↑ +${val}%</span>`;
+  if(dn) return `<span class="prev-badge prev-badge-green">↓ ${val}%</span>`;
+  return `<span class="prev-badge" style="background:#f1f0ea;color:#555">→ ${val}%</span>`;
+}
+function pShowTab(id,btn){
+  document.querySelectorAll('#page-prediction .prev-tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#page-prediction .prev-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('p-tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'multilabos' && !window._mlDone) {
+    window._mlDone = true;
+    setTimeout(()=>{ mlRenderLab('LAAS'); }, 50);
+  }
+}
+
+let pChartHisto, pChartProj, pChartIndic;
+
+function pRenderKPIs(){
+  const kpis=[
+    {l:'Émissions 2024',v:'385,6 tCO₂e',s:'données GES-1point5',c:''},
+    {l:'vs 2023',v:'−7 %',s:'baisse après pic 2023 (+45%)',c:'green'},
+    {l:'Statu quo 2030',v:'572,8 tCO₂e',s:'sans mesure — cible 143 t',c:'red'},
+    {l:'Optimiste 2030',v:'152,8 tCO₂e',s:'proche objectif CNRS (143 t)',c:'green'},
+  ];
+  document.getElementById('p-kpis').innerHTML=kpis.map(k=>
+    `<div class="prev-metric ${k.c}"><div class="prev-metric-label">${k.l}</div><div class="prev-metric-val">${k.v}</div><div class="prev-metric-sub">${k.s}</div></div>`
+  ).join('');
+}
+
+function pRenderHistorique(){
+  document.getElementById('p-legend-histo').innerHTML=P_POSTES.map(p=>
+    `<span class="prev-legend-item"><span class="prev-legend-dot" style="background:${P_COLORS[p]}"></span>${P_LABELS[p]}</span>`
+  ).join('');
+  const ctx=document.getElementById('p-chartHisto').getContext('2d');
+  pChartHisto=new Chart(ctx,{type:'bar',data:{labels:['2022','2023','2024'],datasets:P_POSTES.map(p=>({label:P_LABELS[p],data:[P_DATA[2022][p],P_DATA[2023][p],P_DATA[2024][p]],backgroundColor:P_COLORS[p]}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw} tCO₂e`}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,ticks:{callback:v=>v+' t'},grid:{color:'rgba(0,0,0,0.05)'}}}}});
+  const yrs=[2022,2023,2024];
+  let rows=P_POSTES.map(p=>{const vals=yrs.map(y=>P_DATA[y][p]);const tr=pPct(vals[0],vals[2]);return `<tr><td>${P_LABELS[p]}</td>${vals.map(v=>`<td>${v.toFixed(1)}</td>`).join('')}<td>${pBadge(tr)}</td></tr>`;});
+  rows.push(`<tr class="total"><td>TOTAL</td>${yrs.map(y=>`<td>${P_DATA[y].total.toFixed(1)}</td>`).join('')}<td>${pBadge(pPct(285,385.6))}</td></tr>`);
+  document.getElementById('p-tableHisto').innerHTML=`<thead><tr><th>Poste</th><th>2022</th><th>2023</th><th>2024</th><th>Tendance 22→24</th></tr></thead><tbody>${rows.join('')}</tbody>`;
+}
+
+let pSelSc='stabilisation';
+const pScColors={tendance:'#d97706',stabilisation:'#2563eb',optimiste:'#1a6f44',pessimiste:'#b83232'};
+const pDashes={tendance:[],stabilisation:[6,3],optimiste:[8,4],pessimiste:[3,3]};
+
+function pRenderScCards(){
+  document.getElementById('p-scenarioCards').innerHTML=Object.entries(P_SCENARIOS).map(([k,sc])=>{
+    const v26=pProj(k,2026).total; const tr=pPct(385.6,v26);
+    return `<div class="prev-sc-card ${sc.cls} ${k===pSelSc?'selected':''}" onclick="pSelScenario('${k}')"><div class="sc-name">${sc.nom}</div><div class="sc-desc">${sc.desc}</div><div class="sc-val">${v26.toFixed(1)} <span style="font-size:12px;font-weight:400;color:#888">tCO₂e 2026</span></div><div style="margin-top:6px">${pBadge(tr)}</div></div>`;
+  }).join('');
+}
+
+function pGetYears(h){ if(h<=2026) return [2024,2025,2026]; if(h<=2030) return [2024,2025,2026,2027,2028,2029,2030]; return [2024,2025,2026,2027,2028,2029,2030,2032,2034,2036,2038,2040]; }
+function pGetLabels(h){ return pGetYears(h).map(String); }
+
+function pRenderChartProj(){
+  const h=parseInt(document.getElementById('p-horizonSelect').value);
+  const yrs=pGetYears(h); const labs=pGetLabels(h);
+  if(pChartProj) pChartProj.destroy();
+  const datasets=Object.entries(P_SCENARIOS).map(([k,sc])=>({label:sc.nom,data:yrs.map(y=>pProj(k,y).total),borderColor:pScColors[k],backgroundColor:'transparent',borderWidth:k===pSelSc?3:1.5,borderDash:pDashes[k],pointRadius:h>2030?3:4,tension:.3}));
+  if(h>=2030) datasets.push({label:'Cible CNRS 2030',data:yrs.map(y=>y>=2030?143:null),borderColor:'#dc2626',borderDash:[4,2],borderWidth:1.5,pointRadius:0,tension:0,backgroundColor:'transparent'});
+  document.getElementById('p-legend-proj').innerHTML=Object.entries(P_SCENARIOS).map(([k,sc])=>`<span class="prev-legend-item"><span class="prev-legend-dot" style="background:${pScColors[k]}"></span>${sc.nom}</span>`).join('')+(h>=2030?`<span class="prev-legend-item"><span class="prev-legend-dot" style="background:#dc2626;height:3px;border-radius:0"></span>Cible CNRS 2030</span>`:'');
+  pChartProj=new Chart(document.getElementById('p-chartProj').getContext('2d'),{type:'line',data:{labels:labs,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw===null?null:` ${c.dataset.label}: ${c.raw.toFixed(1)} tCO₂e`}}},scales:{x:{grid:{display:false}},y:{min:60,ticks:{callback:v=>v+' t'},grid:{color:'rgba(0,0,0,0.05)'}}}}});
+}
+
+function pUpdateHorizon(){ pRenderChartProj(); }
+
+function pRenderTableProj(){
+  const yr=parseInt(document.getElementById('p-yearDetail').value);
+  const sc_keys=Object.keys(P_SCENARIOS);
+  const header=`<thead><tr><th>Poste (${yr})</th>${sc_keys.map(k=>`<th>${P_SCENARIOS[k].nom}</th>`).join('')}</tr></thead>`;
+  const bodyRows=P_POSTES.map(p=>{const b=P_DATA[2024][p];const vals=sc_keys.map(k=>pProj(k,yr)[p]);return `<tr><td>${P_LABELS[p]} <span style="color:#aaa;font-size:11px">(${b.toFixed(1)} en 2024)</span></td>${vals.map(v=>`<td>${v.toFixed(1)}</td>`).join('')}</tr>`;});
+  const totals=sc_keys.map(k=>pProj(k,yr).total);
+  bodyRows.push(`<tr class="total"><td>TOTAL ${yr}</td>${totals.map(v=>`<td>${v.toFixed(1)}</td>`).join('')}</tr>`);
+  if(yr>=2030) bodyRows.push(`<tr><td style="color:#dc2626;font-size:12px">🎯 Cible CNRS 2030</td>${sc_keys.map(()=>`<td style="color:#dc2626;font-weight:600">143,0</td>`).join('')}</tr>`);
+  document.getElementById('p-tableProj').innerHTML=header+'<tbody>'+bodyRows.join('')+'</tbody>';
+}
+
+function pSelScenario(k){ pSelSc=k; pRenderScCards(); pRenderChartProj(); }
+
+const pSelMesures=new Set();
+function pRenderMesures(){
+  document.getElementById('p-measuresGrid').innerHTML=P_MESURES.map(m=>`<div class="prev-measure-item ${pSelMesures.has(m.id)?'selected':''}" onclick="pToggleM('${m.id}')"><div class="m-name">${m.nom}</div><div class="m-meta">${m.meta}</div></div>`).join('');
+  pUpdateResultM();
+}
+function pToggleM(id){ pSelMesures.has(id)?pSelMesures.delete(id):pSelMesures.add(id); pRenderMesures(); }
+function pUpdateResultM(){
+  const base={achats:235.0,missions:85.2,energie:26.0,construction:20.5,domicile:12.8,it:6.0};
+  const reds={achats:0,missions:0,energie:0,construction:0,domicile:0,it:0}; let cout=0;
+  pSelMesures.forEach(id=>{ const m=P_MESURES.find(x=>x.id===id); reds[m.poste]+=base[m.poste]*m.pct/100; cout+=m.cout; });
+  const apres={}; let tot=0;
+  P_POSTES.forEach(p=>{ apres[p]=Math.max(0,+(base[p]-reds[p]).toFixed(1)); tot+=apres[p]; });
+  tot=+tot.toFixed(1); const sav=+(385.6-tot).toFixed(1); const savPct=+((sav/385.6)*100).toFixed(1);
+  if(!pSelMesures.size){ document.getElementById('p-mesureResult').innerHTML='<p class="prev-note">Sélectionnez une ou plusieurs mesures ci-dessus.</p>'; return; }
+  const rows=P_POSTES.map(p=>`<div class="prev-result-row"><span>${P_LABELS[p]}</span><span style="display:flex;gap:16px;align-items:center"><span style="color:#888;font-size:12px">${base[p].toFixed(1)} t</span>${reds[p]>0?`<span style="color:#1a6f44;font-size:12px">−${reds[p].toFixed(1)} t</span>`:''}<strong>${apres[p].toFixed(1)} tCO₂e</strong></span></div>`).join('');
+  document.getElementById('p-mesureResult').innerHTML=`<div class="prev-result-box"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem"><span style="font-size:13px;font-weight:600">Résultat simulation — impact sur 2025</span><span class="prev-badge prev-badge-green">−${sav} tCO₂e (−${savPct}%)</span></div>${rows}<div class="prev-result-row"><span>TOTAL</span><span style="display:flex;gap:16px;align-items:center"><span style="color:#888;font-size:12px">385,6 t</span><span style="color:#1a6f44;font-size:12px">−${sav} t</span><strong>${tot.toFixed(1)} tCO₂e</strong></span></div><div style="margin-top:.75rem;font-size:12px;color:#666">Coût total : <strong>${cout.toLocaleString('fr-FR')} €/an</strong>${cout>0?' · Efficacité : <strong>'+((sav/(cout/1000)).toFixed(1))+'</strong> tCO₂e / k€':''}</div></div>`;
+}
+
+function pRenderIndicateurs(){
+  const yrs=[2022,2023,2024];
+  function ind(y){ const d=P_DATA[y]; return {'Intensité / membre (tCO₂e/ETP)':(d.total/d.etp).toFixed(2),'Intensité surface (tCO₂e/m²)':(d.total/6192).toFixed(4),'IPEC (publis / tCO₂e)':(d.publis/d.total).toFixed(4)}; }
+  const inds=yrs.map(y=>ind(y)); const names=Object.keys(inds[0]);
+  const rows=names.map(n=>{ const vs=yrs.map((_,i)=>inds[i][n]); const tr=pPct(+vs[0],+vs[2]); const isIPEC=n.includes('IPEC'); return `<tr><td>${n}</td>${vs.map(v=>`<td>${v}</td>`).join('')}<td>${pBadge(tr,isIPEC)}</td></tr>`; });
+  rows.push(`<tr class="total"><td>Émissions totales</td>${yrs.map(y=>`<td>${P_DATA[y].total.toFixed(1)}</td>`).join('')}<td>${pBadge(pPct(285,385.6))}</td></tr>`);
+  document.getElementById('p-tableIndic').innerHTML=`<thead><tr><th>Indicateur</th><th>2022</th><th>2023</th><th>2024</th><th>Évolution</th></tr></thead><tbody>${rows.join('')}</tbody>`;
+  pChartIndic=new Chart(document.getElementById('p-chartIndic').getContext('2d'),{type:'bar',data:{labels:['2022','2023','2024'],datasets:[{label:'tCO₂e/ETP',data:[4.38,7.02,5.51],backgroundColor:['#1a6f44','#b83232','#d97706']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.raw} tCO₂e/ETP`}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{callback:v=>v+' t/ETP'}}}}});
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MULTI-LABOS DATA & FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
+const ML_LABS = {
+  LAAS: {
+    name: 'LAAS — UPR 8001', location: 'Toulouse', color: '#3ecf8e',
+    effectif: 456, unite: 'personnes',
+    historical: { 2019:3656, 2020:2480, 2021:3020, 2022:3681, 2023:3192 },
+    postes: { Achats:1836, Missions:511, Électricité:223, 'Dom.-trav.':223, Chauffage:191, IT:96 },
+    target2030: 1645, targetRef: 2019, targetPct: -55,
+    note: '456 personnes (01/01–31/12/2023). Objectif Accord de Paris : −55 % vs 2019. FE 2022 utilisés pour 2023.',
+    sources: ['GES-1point5 LAAS 2019–2023 (rapport public)']
+  },
+  PPRIME: {
+    name: 'Pprime — UPR 3346', location: 'Poitiers', color: '#f7a84f',
+    effectif: 564, unite: 'personnes',
+    historical: { 2019:3107, 2020:2550, 2021:3580, 2022:3250, 2023:2733 },
+    postes: { Achats:1366, Missions:546, Énergie:410, Domicile:273, IT:137 },
+    target2030: 1950, targetRef: 2022, targetPct: -40,
+    note: '564 personnes en 2023. Objectif Pprime : −40 % vs 2022. 2022 incomplet (données CPER/FEDER manquantes).',
+    sources: ['BGES CoDir Pprime sep. 2024', 'Charte GES Pprime (Finale)']
+  },
+  LRP: {
+    name: 'LRP — UMR 5520', location: 'Grenoble', color: '#f7d34f',
+    effectif: 46, unite: 'personnes',
+    historical: { 2016:152, 2017:178, 2018:200, 2019:244, 2020:134, 2021:198, 2022:164, 2023:212 },
+    postes: { Achats:107, Chauffage:46, 'Dom.-trav.':38, Missions:30, Électricité:20, Autres:9 },
+    target2030: 122, targetRef: 2019, targetPct: -50,
+    note: 'Moy. 2016–2022 = 203,7 t/an · 4,4 tCO₂/pers. Données 2023 estimées. +23%/an de budget.',
+    sources: ['Rapport BGES LRP 2016–2022 (Gautier, juin 2023)']
+  }
+};
+
+const ML_ESYCOM_HIST = { 2022:285, 2023:414, 2024:385.6 };
+
+let mlCurrentLab = 'LAAS';
+const mlCharts = {};
+
+function mlCAGR(historical) {
+  const yrs = Object.keys(historical).map(Number).sort().filter(y => y !== 2020);
+  if (yrs.length < 2) return 0;
+  const y1 = yrs[yrs.length-2], y2 = yrs[yrs.length-1];
+  return (historical[y2]/historical[y1]) - 1;
+}
+
+function mlProject(base, cagr, fromYear, toYear) {
+  const res = {};
+  for (let y = fromYear; y <= toYear; y++) res[y] = base * Math.pow(1+cagr, y-fromYear);
+  return res;
+}
+
+function mlLinear(base, target, fromYear, toYear) {
+  const res = {};
+  const N = toYear - fromYear;
+  for (let y = fromYear; y <= toYear; y++) res[y] = base + (target-base)*(y-fromYear)/N;
+  return res;
+}
+
+function mlDestroyChart(id) {
+  if (mlCharts[id]) { try { mlCharts[id].destroy(); } catch(e){} delete mlCharts[id]; }
+}
+
+function mlSelectLab(id, btn) {
+  mlCurrentLab = id;
+  document.querySelectorAll('.ml-lab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('.ml-lab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('ml-panel-'+id).classList.add('active');
+  if (id === 'COMPARAISON') { mlRenderComparaison(); return; }
+  mlRenderLab(id);
+}
+
+function mlRenderLab(id) {
+  const lab = ML_LABS[id];
+  const panel = document.getElementById('ml-panel-'+id);
+  if (!lab || !panel) return;
+
+  const years = Object.keys(lab.historical).map(Number).sort();
+  const lastYear = years[years.length-1];
+  const lastVal = lab.historical[lastYear];
+  const refVal = lab.historical[lab.targetRef] || lastVal;
+  const cagr = mlCAGR(lab.historical);
+  const pctVsRef = ((lastVal-refVal)/refVal*100).toFixed(1);
+  const trendEndYear = mlProject(lastVal, cagr, lastYear, 2030);
+
+  // Proj années
+  const projYrs = [lastYear];
+  for (let y = lastYear+1; y <= 2030; y++) projYrs.push(y);
+
+  const tend = mlProject(lastVal, cagr, lastYear, 2030);
+  const stab = mlProject(lastVal, 0, lastYear, 2030);
+  const opti = mlProject(lastVal, -0.07, lastYear, 2030);
+  const cible = mlLinear(lastVal, lab.target2030, lastYear, 2030);
+
+  const allYrs = [...new Set([...years, ...projYrs])].sort();
+  const chartId = 'ml-chart-'+id;
+  const postesChartId = 'ml-chart-postes-'+id;
+
+  panel.innerHTML = `
+    <div class="ml-kpi-row">
+      <div class="ml-kpi" style="border-color:${lab.color}">
+        <div class="ml-kpi-l">Émissions ${lastYear}</div>
+        <div class="ml-kpi-v" style="color:${lab.color}">${lastVal.toFixed(0)} t</div>
+        <div class="ml-kpi-s">${(lastVal/lab.effectif).toFixed(1)} t/${lab.unite.includes('ETP')?'ETP':'pers.'}</div>
+      </div>
+      <div class="ml-kpi" style="border-color:#1a6f44">
+        <div class="ml-kpi-l">Objectif 2030 (${lab.targetPct}%)</div>
+        <div class="ml-kpi-v" style="color:#1a6f44">${lab.target2030} t</div>
+        <div class="ml-kpi-s">ref. ${lab.targetRef} : ${refVal.toFixed(0)} t</div>
+      </div>
+      <div class="ml-kpi" style="border-color:${parseFloat(pctVsRef)<0?'#1a6f44':'#c62828'}">
+        <div class="ml-kpi-l">vs référence ${lab.targetRef}</div>
+        <div class="ml-kpi-v" style="color:${parseFloat(pctVsRef)<0?'#1a6f44':'#c62828'}">${parseFloat(pctVsRef)>0?'+':''}${pctVsRef}%</div>
+        <div class="ml-kpi-s">Tendance TCAC : ${(cagr*100).toFixed(1)}%/an</div>
+      </div>
+      <div class="ml-kpi" style="border-color:#d97706">
+        <div class="ml-kpi-l">Statu quo 2030</div>
+        <div class="ml-kpi-v" style="color:#d97706">${tend[2030].toFixed(0)} t</div>
+        <div class="ml-kpi-s">Écart cible : +${(tend[2030]-lab.target2030).toFixed(0)} t</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;margin-bottom:1rem">
+      <div class="chart-box" style="padding:1.25rem">
+        <h3 style="font-size:.85rem;font-weight:700;color:#546e7a;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid #eceff1">
+          📈 Projections 2025–2030 — ${lab.name}
+        </h3>
+        <div class="prev-legend" id="ml-legend-${id}" style="margin-bottom:.75rem;font-size:11px"></div>
+        <div style="position:relative;height:240px"><canvas id="${chartId}"></canvas></div>
+      </div>
+      <div class="chart-box" style="padding:1.25rem">
+        <h3 style="font-size:.85rem;font-weight:700;color:#546e7a;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid #eceff1">
+          🥧 Postes d'émission (${lastYear})
+        </h3>
+        <div style="position:relative;height:240px"><canvas id="${postesChartId}"></canvas></div>
+      </div>
+    </div>
+    <div class="prev-hl">ℹ️ ${lab.note} · Sources : ${lab.sources.join(' · ')}</div>
+    <hr class="prev-hr">
+    <table class="prev-dt" style="margin-top:.5rem">
+      <thead><tr><th>Année</th><th>Historique</th><th>Statu quo</th><th>Stabilisation</th><th>Optimiste −7%</th><th>Trajectoire cible</th></tr></thead>
+      <tbody>
+        ${allYrs.map(y => {
+          const h = lab.historical[y];
+          const isProj = !h && projYrs.includes(y);
+          return `<tr style="${isProj?'color:#999':''}">
+            <td><strong>${y}</strong></td>
+            <td>${h!=null ? h.toFixed(0)+' t' : '—'}</td>
+            <td style="color:#d97706">${tend[y]!=null ? tend[y].toFixed(0)+' t' : '—'}</td>
+            <td style="color:#2563eb">${stab[y]!=null ? stab[y].toFixed(0)+' t' : '—'}</td>
+            <td style="color:#1a6f44">${opti[y]!=null ? opti[y].toFixed(0)+' t' : '—'}</td>
+            <td style="color:#7c3aed">${(y>=lastYear&&y<=2030&&cible[y]!=null) ? cible[y].toFixed(0)+' t' : '—'}</td>
+          </tr>`;
+        }).join('')}
+        <tr style="background:#f0faf5;font-weight:700">
+          <td>🎯 Cible 2030</td>
+          <td colspan="5" style="color:#1a6f44">${lab.target2030} tCO₂e (${lab.targetPct}% vs ${lab.targetRef})</td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+
+  // Legend
+  const legendEl = document.getElementById('ml-legend-'+id);
+  if (legendEl) legendEl.innerHTML = [
+    ['#d97706','Statu quo'],['#2563eb','Stabilisation'],['#1a6f44','Optimiste −7%/an'],['#7c3aed','Traj. cible'],['#dc2626','Cible 2030']
+  ].map(([c,l])=>`<span class="prev-legend-item"><span class="prev-legend-dot" style="background:${c}"></span>${l}</span>`).join('');
+
+  // Chart projections
+  mlDestroyChart(chartId);
+  const ctx = document.getElementById(chartId);
+  if (ctx) {
+    const hist_ds = allYrs.map(y => lab.historical[y] ?? null);
+    const tend_ds = allYrs.map(y => projYrs.includes(y) ? tend[y] : null);
+    const stab_ds = allYrs.map(y => projYrs.includes(y) ? stab[y] : null);
+    const opti_ds = allYrs.map(y => projYrs.includes(y) ? opti[y] : null);
+    const cible_ds = allYrs.map(y => (y>=lastYear&&y<=2030&&cible[y]!=null) ? cible[y] : null);
+    const target_ds = allYrs.map(() => lab.target2030);
+    mlCharts[chartId] = new Chart(ctx, {
+      type: 'line',
+      data: { labels: allYrs, datasets: [
+        { label:'Historique', data:hist_ds, borderColor:lab.color, backgroundColor:lab.color+'33', borderWidth:3, pointRadius:5, tension:.3, fill:false },
+        { label:'Statu quo', data:tend_ds, borderColor:'#d97706', borderWidth:2, borderDash:[6,3], pointRadius:2, tension:.3, fill:false },
+        { label:'Stabilisation', data:stab_ds, borderColor:'#2563eb', borderWidth:1.5, borderDash:[4,4], pointRadius:2, tension:.3, fill:false },
+        { label:'Optimiste', data:opti_ds, borderColor:'#1a6f44', borderWidth:2, borderDash:[8,3], pointRadius:2, tension:.3, fill:false },
+        { label:'Traj. cible', data:cible_ds, borderColor:'#7c3aed', borderWidth:2, borderDash:[2,2], pointRadius:2, tension:.3, fill:false },
+        { label:'Objectif 2030', data:target_ds, borderColor:'#dc2626', borderWidth:1.5, borderDash:[10,5], pointRadius:0, fill:false }
+      ]},
+      options: { responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+        plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.raw===null?null:` ${c.dataset.label}: ${c.raw.toFixed(0)} t`}} },
+        scales:{ x:{ticks:{color:'#888',font:{size:11}},grid:{color:'rgba(0,0,0,.05)'}}, y:{ticks:{color:'#888',callback:v=>v.toFixed(0)+' t'},grid:{color:'rgba(0,0,0,.05)'}} }
+      }
+    });
+  }
+
+  // Chart postes
+  mlDestroyChart(postesChartId);
+  const pCtx = document.getElementById(postesChartId);
+  if (pCtx && lab.postes) {
+    const pLabels = Object.keys(lab.postes);
+    const pVals = Object.values(lab.postes);
+    const pColors = ['#1a6f44','#d97706','#2563eb','#dc2626','#7c3aed','#0891b2','#db2777','#78909c'];
+    mlCharts[postesChartId] = new Chart(pCtx, {
+      type: 'doughnut',
+      data: { labels: pLabels, datasets:[{ data:pVals, backgroundColor:pColors.slice(0,pLabels.length), borderColor:'#f4f3ee', borderWidth:3 }] },
+      options: { responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{position:'bottom',labels:{font:{size:10},padding:8,color:'#555'}}, tooltip:{callbacks:{label:c=>` ${c.label}: ${c.parsed.toFixed(0)} t (${(c.parsed/pVals.reduce((a,b)=>a+b)*100).toFixed(0)}%)`}} }
+      }
+    });
+  }
+}
+
+function mlRenderComparaison() {
+  const panel = document.getElementById('ml-panel-COMPARAISON');
+  if (!panel) return;
+  panel.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem">
+      ${[{id:'ESYCOM',color:'#2e7d32',hist:ML_ESYCOM_HIST,eff:70,target:143,tRef:2022,tPct:-50,loc:'Marne-la-Vallée'},
+         ...Object.entries(ML_LABS).map(([id,l])=>({id,color:l.color,hist:l.historical,eff:l.effectif,target:l.target2030,tRef:l.targetRef,tPct:l.targetPct,loc:l.location}))
+        ].map(lab => {
+        const yrs = Object.keys(lab.hist).map(Number).sort();
+        const last = yrs[yrs.length-1];
+        const lastV = lab.hist[last];
+        const ref = lab.hist[lab.tRef] || lastV;
+        const pctRef = ((lastV-ref)/ref*100).toFixed(1);
+        const prog = Math.max(0,Math.min(100, ((ref-lastV)/(ref-lab.target)*100)));
+        return `<div class="labo-card" style="border-top-color:${lab.color}">
+          <h4>${lab.id}${lab.id==='ESYCOM'?'&nbsp;<span style="font-size:10px;background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:4px">Ce labo</span>':''}</h4>
+          <div class="sub">${lab.loc} · ${lab.eff} ${lab.id==='ESYCOM'?'ETP':'pers.'}</div>
+          <div class="tot" style="color:${lab.color}">${lastV.toFixed(0)} t</div>
+          <div class="pp">${(lastV/lab.eff).toFixed(1)} t/pers. · ${last}</div>
+          <div style="margin-top:.75rem;font-size:12px;display:flex;justify-content:space-between">
+            <span>vs ${lab.tRef} : <strong style="color:${parseFloat(pctRef)<0?'#1a6f44':'#c62828'}">${parseFloat(pctRef)>0?'+':''}${pctRef}%</strong></span>
+            <span>Cible : <strong>${lab.target} t</strong></span>
+          </div>
+          <div style="margin-top:6px;height:6px;background:#eceff1;border-radius:20px;overflow:hidden">
+            <div style="width:${Math.max(2,prog).toFixed(0)}%;height:100%;background:${lab.color};border-radius:20px"></div>
+          </div>
+          <div style="font-size:10px;color:#888;margin-top:3px">${prog.toFixed(0)}% de l'objectif atteint</div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem">
+      <div class="chart-box" style="padding:1.25rem">
+        <h3 style="font-size:.85rem;font-weight:700;color:#546e7a;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid #eceff1">
+          📈 Émissions historiques — tous labos
+        </h3>
+        <div style="position:relative;height:260px"><canvas id="ml-chart-histoComp"></canvas></div>
+      </div>
+      <div class="chart-box" style="padding:1.25rem">
+        <h3 style="font-size:.85rem;font-weight:700;color:#546e7a;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid #eceff1">
+          ⚡ Intensité carbone (tCO₂e/pers.)
+        </h3>
+        <div style="position:relative;height:260px"><canvas id="ml-chart-intensity"></canvas></div>
+      </div>
+    </div>
+
+    <div class="chart-box" style="padding:1.25rem;margin-bottom:1rem">
+      <h3 style="font-size:.85rem;font-weight:700;color:#546e7a;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid #eceff1">
+        🎯 Projections scénario optimiste (−7%/an) vs cible 2030
+      </h3>
+      <div style="position:relative;height:260px"><canvas id="ml-chart-projComp"></canvas></div>
+    </div>
+  `;
+
+  // Chart émissions historiques
+  const allLabsComp = [
+    {id:'ESYCOM',color:'#2e7d32',hist:ML_ESYCOM_HIST},
+    ...Object.entries(ML_LABS).map(([id,l])=>({id,color:l.color,hist:l.historical}))
+  ];
+  const allYrsComp = [...new Set(allLabsComp.flatMap(l=>Object.keys(l.hist).map(Number)))].sort();
+
+  mlDestroyChart('ml-chart-histoComp');
+  const hCtx = document.getElementById('ml-chart-histoComp');
+  if (hCtx) {
+    mlCharts['ml-chart-histoComp'] = new Chart(hCtx, {
+      type: 'line',
+      data: { labels: allYrsComp, datasets: allLabsComp.map(l=>({
+        label: l.id, data: allYrsComp.map(y=>l.hist[y]??null),
+        borderColor: l.color, backgroundColor: l.color+'22',
+        borderWidth: 2.5, pointRadius: 4, tension: .3, fill: false
+      }))},
+      options: { responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+        plugins:{ legend:{labels:{font:{size:11},padding:8,color:'#444'}}, tooltip:{callbacks:{label:c=>c.raw===null?null:` ${c.dataset.label}: ${c.raw.toFixed(0)} tCO₂`}} },
+        scales:{ x:{ticks:{color:'#888',font:{size:11}},grid:{color:'rgba(0,0,0,.05)'}}, y:{ticks:{color:'#888',callback:v=>v.toFixed(0)+' t'},grid:{color:'rgba(0,0,0,.05)'}} }
+      }
+    });
+  }
+
+  // Chart intensité
+  const intensityData = [
+    {id:'ESYCOM',eff:70,hist:ML_ESYCOM_HIST,color:'#2e7d32'},
+    ...Object.entries(ML_LABS).map(([id,l])=>({id,eff:l.effectif,hist:l.historical,color:l.color}))
+  ].map(l=>{
+    const yrs = Object.keys(l.hist).map(Number).sort();
+    const last = yrs[yrs.length-1];
+    return {id:l.id, val:+(l.hist[last]/l.eff).toFixed(2), color:l.color};
+  });
+
+  mlDestroyChart('ml-chart-intensity');
+  const iCtx = document.getElementById('ml-chart-intensity');
+  if (iCtx) {
+    mlCharts['ml-chart-intensity'] = new Chart(iCtx, {
+      type: 'bar',
+      data: { labels: intensityData.map(d=>d.id), datasets: [
+        { label:'tCO₂e/pers.', data:intensityData.map(d=>d.val), backgroundColor:intensityData.map(d=>d.color), borderRadius:6 },
+        { type:'line', label:'Moy. CNRS (~6.3 t)', data:intensityData.map(()=>6.3), borderColor:'#dc2626', borderDash:[6,3], borderWidth:2, pointRadius:0, fill:false }
+      ]},
+      options: { responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{labels:{font:{size:11},color:'#444'}}, tooltip:{callbacks:{label:c=>` ${c.parsed.y.toFixed(2)} tCO₂/pers.`}} },
+        scales:{ x:{ticks:{color:'#888',font:{size:11}},grid:{display:false}}, y:{ticks:{color:'#888',callback:v=>v.toFixed(1)+' t'},grid:{color:'rgba(0,0,0,.05)'}} }
+      }
+    });
+  }
+
+  // Chart projections comparées
+  const allLabsProj = [
+    {id:'ESYCOM',color:'#2e7d32',hist:ML_ESYCOM_HIST,target:143},
+    ...Object.entries(ML_LABS).map(([id,l])=>({id,color:l.color,hist:l.historical,target:l.target2030}))
+  ];
+  const projYrsComp = [2024,2025,2026,2027,2028,2029,2030];
+
+  mlDestroyChart('ml-chart-projComp');
+  const pCtxC = document.getElementById('ml-chart-projComp');
+  if (pCtxC) {
+    const datasets = allLabsProj.map(l => {
+      const yrs = Object.keys(l.hist).map(Number).sort();
+      const last = yrs[yrs.length-1];
+      const lastV = l.hist[last];
+      const cagr = -0.07;
+      const proj = mlProject(lastV, cagr, last, 2030);
+      // Normalize: show pct vs last year
+      const data = projYrsComp.map(y => {
+        if (y < last) return null;
+        return +(proj[y]/lastV*100).toFixed(1);
+      });
+      return { label:`${l.id} (${lastV.toFixed(0)}t)`, data, borderColor:l.color, backgroundColor:'transparent', borderWidth:2, pointRadius:3, tension:.3, fill:false };
+    });
+    datasets.push({ label:'Objectif −50% (cible min)', data:projYrsComp.map(()=>50), borderColor:'#dc2626', borderDash:[5,3], borderWidth:1.5, pointRadius:0, fill:false });
+    mlCharts['ml-chart-projComp'] = new Chart(pCtxC, {
+      type: 'line',
+      data: { labels: projYrsComp, datasets },
+      options: { responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+        plugins:{ legend:{labels:{font:{size:11},color:'#444'}}, tooltip:{callbacks:{label:c=>c.raw===null?null:` ${c.dataset.label}: ${c.raw.toFixed(1)}% du niveau 2024`}} },
+        scales:{ x:{ticks:{color:'#888',font:{size:11}},grid:{display:false}}, y:{min:40,max:110,ticks:{color:'#888',callback:v=>v+'%'},grid:{color:'rgba(0,0,0,.05)'},title:{display:true,text:'% par rapport dernière année',color:'#888',font:{size:11}}} }
+      }
+    });
+  }
+}
+
+function initPrevision() {
+  if (window._pDone) return;
+  window._pDone = true;
+  pRenderKPIs(); pRenderHistorique(); pRenderScCards();
+  pRenderChartProj(); pRenderTableProj(); pRenderMesures(); pRenderIndicateurs();
+}
+
+</script>
+</body>
+</html>
