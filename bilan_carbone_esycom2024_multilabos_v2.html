@@ -441,7 +441,6 @@
     <button class="module-tab" onclick="showMod('domicile',this)">&#128652; Domicile</button>
     <button class="module-tab" onclick="showMod('informatique',this)">&#128187; Informatique</button>
     <button class="module-tab" onclick="showMod('achats',this)">&#128722; Achats</button>
-    <button class="module-tab" onclick="showMod('alimentation',this)">&#127374; Alimentation</button>
     <button class="module-tab" onclick="showMod('construction',this)">&#127963;&#65039; Construction</button>
   </div>
 
@@ -582,21 +581,6 @@
     </div>
   </div>
 
-  <div class="card module-panel" id="mod-alimentation">
-    <h2>&#127374; Alimentation (restauration collective)</h2>
-    <div class="tbl-wrap"><table id="tbl-alimentation"><thead><tr><th>Type repas</th><th>Nb repas/an</th><th>kgCO&#8322;/repas</th><th>kgCO&#8322;eq</th><th></th></tr></thead><tbody></tbody></table></div>
-    <div class="form-row" style="margin-top:1rem">
-      <div class="field"><label>Type</label>
-        <select id="ali-type">
-          <option value="viande">Avec viande &mdash; 4,0 kgCO&#8322;</option>
-          <option value="poisson">Poisson &mdash; 1,5 kgCO&#8322;</option>
-          <option value="vegeta">V&eacute;g&eacute;tarien &mdash; 0,5 kgCO&#8322;</option>
-        </select>
-      </div>
-      <div class="field"><label>Nb repas / an</label><input id="ali-nb" type="number" placeholder="0"></div>
-    </div>
-    <div class="btn-row"><button class="btn btn-green" onclick="addAli()">+ Ajouter</button></div>
-  </div>
 
   <div class="card module-panel" id="mod-construction">
     <h2>&#127963;&#65039; Construction du b&acirc;timent</h2>
@@ -933,12 +917,11 @@ const EF={
   dom:{voiture_seul:.218,covoiturage:.109,velo:0,rer_metro:.006,bus:.113,transilien:.004},
   it:{laptop:285,desktop:320,ecran:290,serveur:1800,smartphone:55,imprimante:95}, // Ecodiag EcoInfo CNRS 2024 (fabrication+distribution+fin de vie)
   ach:{chimie:.90,bio:.75,mecanique:.60,it_mat:.50,bureau:.40,services:.20,autre:.35},
-  ali:{viande:4.0,poisson:1.5,vegeta:.5},
   construction:{beton:600,acier:700,bois:200,mixte:500} // kgCO2/m² brut, amortissement 50 ans appliqué dans le calcul
 };
-const MODS={electricite:"Electricite",chauffage:"Chauffage",deplacements:"Missions",domicile:"Domicile-travail",informatique:"Materiel IT",achats:"Achats",alimentation:"Alimentation",construction:"Construction"};
-const COLS={electricite:"#42a5f5",chauffage:"#ef5350",deplacements:"#ffa726",domicile:"#26c6da",informatique:"#7e57c2",achats:"#66bb6a",alimentation:"#d4e157",construction:"#78909c"};
-const D={electricite:[],chauffage:[],deplacements:[],domicile:[],informatique:[],achats:[],alimentation:[],construction:[]};
+const MODS={electricite:"Electricite",chauffage:"Chauffage",deplacements:"Missions",domicile:"Domicile-travail",informatique:"Materiel IT",achats:"Achats",construction:"Construction"};
+const COLS={electricite:"#42a5f5",chauffage:"#ef5350",deplacements:"#ffa726",domicile:"#26c6da",informatique:"#7e57c2",achats:"#66bb6a",construction:"#78909c"};
+const D={electricite:[],chauffage:[],deplacements:[],domicile:[],informatique:[],achats:[],construction:[]};
 
 function showPage(id,btn){
   if(id==="prediction") setTimeout(initPrevision,120);
@@ -967,7 +950,6 @@ function addDep(){const dest=document.getElementById("d-dest").value||"Mission",
 function addDom(){const m=document.getElementById("dom-mode").value,nb=+document.getElementById("dom-nb").value||1,dist=+document.getElementById("dom-dist").value||0,j=+document.getElementById("dom-jours").value||220,co2=dist*j*nb*EF.dom[m];D.domicile.push({co2,c:[m,nb,dist,j,co2.toFixed(1)+" kg"]});rt("domicile")}
 function addIT(){const t=document.getElementById("it-type").value,mod=document.getElementById("it-mod").value||"-",qty=+document.getElementById("it-qty").value||1,am=+document.getElementById("it-amort").value||5,co2=(EF.it[t]*qty)/am;D.informatique.push({co2,c:[t,mod,qty,am+"ans",co2.toFixed(1)+" kg/an"]});rt("informatique")}
 function addAch(){const cat=document.getElementById("ach-cat").value,mt=+document.getElementById("ach-montant").value||0,co2=mt*EF.ach[cat];D.achats.push({co2,c:[cat,mt+"e",EF.ach[cat],co2.toFixed(1)+" kg"]});rt("achats")}
-function addAli(){const t=document.getElementById("ali-type").value,nb=+document.getElementById("ali-nb").value||0,f=EF.ali[t],co2=nb*f;D.alimentation.push({co2,c:[t,nb,f,co2.toFixed(1)+" kg"]});rt("alimentation")}
 function addConst(){const b=document.getElementById("con-bat").value||"Batiment",s=+document.getElementById("con-surf").value||0,t=document.getElementById("con-type").value,fe=EF.construction[t],co2=s*1.3*fe/50;D.construction.push({co2,c:[b,s,t,fe,co2.toFixed(1)+" kg/an"]});rt("construction")}
 
 function prefElec(){D.electricite=[];[["Bat. Copernic",145000,60],["Bat. Bois Baudry",89000,100],["Site UGE Marne",67000,35]].forEach(([b,k,p])=>{const co2=k*(p/100)*EF.elec;D.electricite.push({co2,c:[b,k,p+"%",co2.toFixed(1)+" kg"]})});rt("electricite")}
@@ -978,7 +960,6 @@ function prefIT(){D.informatique=[];[["laptop","Divers",45,5],["desktop","PC lab
 function prefAch(){D.achats=[];[["chimie",42000],["bio",85000],["mecanique",31000],["it_mat",28000],["services",56000]].forEach(([cat,mt])=>{const co2=mt*EF.ach[cat];D.achats.push({co2,c:[cat,mt+"e",EF.ach[cat],co2.toFixed(1)+" kg"]})});rt("achats")}
 function loadAll(){
   prefElec();prefChauf();prefDep();prefDom();prefIT();prefAch();
-  D.alimentation=[];[["viande",4500],["vegeta",2200],["poisson",1200]].forEach(([t,nb])=>{const co2=nb*EF.ali[t];D.alimentation.push({co2,c:[t,nb,EF.ali[t],co2.toFixed(1)+" kg"]})});rt("alimentation");
   alert("Toutes les donnees ESYCOM 2024 ont ete chargees !");
 }
 
@@ -988,7 +969,7 @@ let rChart=null;
 // ── DONNÉES OFFICIELLES ESYCOM 2024 (source GES-1point5 / Labos 1point5) ──
 const DATA_2024_OFFICIAL = {
   electricite:7600, chauffage:18400, deplacements:85200, domicile:12800,
-  informatique:6000, achats:235000, alimentation:0, construction:20500
+  informatique:6000, achats:235000, construction:20500
 };
 // 7600+18400+85200+12800+6000+235000+20500 = 385500 kg = 385,5 tCO₂eq ✓
 
@@ -1121,7 +1102,7 @@ function initDashboard(){
   if(dInit)return;dInit=true;
 
   // ── Répartition par module 2024 (source GES-1point5) ──
-  const mock2024={electricite:7600,chauffage:18400,deplacements:85200,domicile:12800,informatique:6000,achats:235000,alimentation:0,construction:20500};
+  const mock2024={electricite:7600,chauffage:18400,deplacements:85200,domicile:12800,informatique:6000,achats:235000,construction:20500};
   new Chart(document.getElementById("chartPie").getContext("2d"),{
     type:"doughnut",
     data:{labels:Object.values(MODS),datasets:[{data:Object.keys(mock2024).map(m=>+(mock2024[m]/1000).toFixed(2)),backgroundColor:Object.values(COLS),borderWidth:2}]},
