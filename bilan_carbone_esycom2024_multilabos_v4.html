@@ -779,7 +779,7 @@ header :focus-visible{outline-color:var(--orange)}
         </select>
       </div>
     </div>
-    <div class="btn-row"><button class="btn btn-green" onclick="addConst()">+ Ajouter</button></div>
+    <div class="btn-row"><button class="btn btn-green" onclick="addConst()">+ Ajouter</button><button class="btn btn-blue" onclick="prefConst()">Charger donn&eacute;es ESYCOM</button></div>
   </div>
 
   <div class="card">
@@ -1270,6 +1270,7 @@ function prefDep(){D.deplacements=[];[["Conference USA","avion_long",7200,3,2],[
 function prefDom(){D.domicile=[];[["voiture_seul",35,30,220],["rer_metro",20,25,220],["velo",8,8,200]].forEach(([m,nb,dist,j])=>{const co2=dist*j*nb*EF.dom[m];D.domicile.push({co2,c:[m,nb,dist,j,co2.toFixed(1)+" kg"]})});rt("domicile")}
 function prefIT(){D.informatique=[];[["laptop","Divers",45,5],["desktop","PC labo",12,6],["ecran","Divers",38,7],["serveur","Infra",3,8]].forEach(([t,mod,qty,am])=>{const co2=(EF.it[t]*qty)/am;D.informatique.push({co2,c:[t,mod,qty,am+"ans",co2.toFixed(1)+" kg/an"]})});rt("informatique")}
 function prefAch(){D.achats=[];[["chimie",42000],["bio",85000],["mecanique",31000],["it_mat",28000],["services",56000]].forEach(([cat,mt])=>{const co2=mt*EF.ach[cat];D.achats.push({co2,c:[cat,mt+"e",EF.ach[cat],co2.toFixed(1)+" kg"]})});rt("achats")}
+function prefConst(){D.construction=[];[["ESIEE",729,"mixte"],["COPERNIC",530,"mixte"],["LAVOISIER",319,"mixte"]].forEach(([b,s,t])=>{const fe=EF.construction[t],co2=s*1.3*fe/50;D.construction.push({co2,c:[b,s,t,fe,co2.toFixed(1)+" kg/an"]})});rt("construction")}
 function loadAll(){
   prefElec();prefChauf();prefDep();prefDom();prefIT();prefAch();
   alert("Toutes les donnees ESYCOM 2024 ont ete chargees !");
